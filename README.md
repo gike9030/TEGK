@@ -1,1 +1,2 @@
 "# TEGK" 
+Labas Ka tu
