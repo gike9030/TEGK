@@ -10,8 +10,6 @@ Features:
 •	LeaderBoard
 •	Taškų davimo ir gavimo Sistema už sukurtas ir išspręstas korteles
 
-
-
 Deadline 1: 10-16
 Sukurti flashcardai ir filtruoti pagal kategoriją.
 
