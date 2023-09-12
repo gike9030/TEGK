@@ -14,7 +14,12 @@ namespace FlashcardsApp.Controllers
         [HttpPost]
         public IActionResult Index(List<IFormFile> files)
         {
-            long size = files.Sum(f => f.Length);
+
+			if (files.Count < 1)
+			{
+				return View(_data);
+			}
+			long size = files.Sum(f => f.Length);
 
             var filePaths = new List<string>();
             foreach (var formFile in files)
@@ -29,6 +34,7 @@ namespace FlashcardsApp.Controllers
                     }
                 }
             }
+            
             _data.FileName = filePaths[0];
             _data.Text = new StreamReader(filePaths[0]).ReadToEnd();
             _data.FileSize = _data.Text.Length;
