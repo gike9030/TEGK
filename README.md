@@ -1,4 +1,8 @@
 # Software Engineering project (TEGK)
+
+## Description:
+Web application for creating and sharing flash card collections with your university friends.
+
 ## Features:
 - Login
 - Mokymosi kortelės (flashcards)galimybė vartotojui sukurti savo korteles
