@@ -12,32 +12,25 @@ namespace FlashcardsApp.Controllers
 		}
 		
         [HttpPost]
-        public IActionResult Index(List<IFormFile> files)
+        public IActionResult Index(IFormFile files)
         {
+            IFormFile file = files;
 
-			if (files.Count < 1)
+			if (file == null)
 			{
 				return View(_data);
 			}
-			long size = files.Sum(f => f.Length);
 
-            var filePaths = new List<string>();
-            foreach (var formFile in files)
+            long size = file.Length;
+            var filePath = Path.GetTempFileName();
+            using (var stream = new FileStream(filePath, FileMode.Create))
             {
-                if (formFile.Length > 0)
-                {
-                    var filePath = Path.GetTempFileName();
-                    filePaths.Add(filePath);
-                    using (var stream = new FileStream(filePath, FileMode.Create))
-                    {
-                        formFile.CopyTo(stream);
-                    }
-                }
+                file.CopyTo(stream);
             }
-            
-            _data.FileName = filePaths[0];
-            _data.Text = new StreamReader(filePaths[0]).ReadToEnd();
-            _data.FileSize = _data.Text.Length;
+
+            _data.FileName = filePath;
+            _data.Text = new StreamReader(filePath).ReadToEnd();
+            _data.FileSize = (int) size;
 
             return View(_data);
 
