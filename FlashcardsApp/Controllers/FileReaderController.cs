@@ -1,12 +1,14 @@
 ﻿using FlashcardsApp.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FlashcardsApp.Controllers
 {
+    [Authorize]
     public class FileReaderController : Controller
     {
 		private FileData _data = new FileData() { };
-		public IActionResult Index()
+        public IActionResult Index()
 		{
             return View(_data);
 		}
