@@ -20,6 +20,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using System.ComponentModel;
+using System.Security.Claims;
 
 namespace FlashcardsApp.Areas.Identity.Pages.Account
 {
@@ -132,6 +133,9 @@ namespace FlashcardsApp.Areas.Identity.Pages.Account
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
                 var result = await _userManager.CreateAsync(user, Input.Password);
+                
+                await _userManager.AddClaimAsync(user, new Claim("FirstName", user.FirstName));
+                await _userManager.AddClaimAsync(user, new Claim("LastName", user.LastName));
 
                 if (result.Succeeded)
                 {
