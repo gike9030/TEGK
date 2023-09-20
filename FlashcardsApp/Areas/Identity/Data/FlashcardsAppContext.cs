@@ -1,4 +1,5 @@
 ﻿using FlashcardsApp.Areas.Identity.Data;
+using FlashcardsApp.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -19,4 +20,7 @@ public class FlashcardsAppContext : IdentityDbContext<FlashcardsAppUser>
         // For example, you can rename the ASP.NET Identity table names and more.
         // Add your customizations after calling base.OnModelCreating(builder);
     }
+
+    public DbSet<FlashcardCollection> FlashcardCollection { get; set; }
+    public DbSet<FlashcardViewModel> FlashcardViewModel { get; set; }
 }
