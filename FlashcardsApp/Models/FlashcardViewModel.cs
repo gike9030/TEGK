@@ -12,7 +12,7 @@ namespace FlashcardsApp.Models
         [Required]
         public string Answer { get; set; }
 
-        public int FlashcardCollectionId { get; set; }
-        public FlashcardCollection FlashcardCollection { get; set; }
+        public int? FlashcardCollectionId { get; set; }
+        public FlashcardCollection? FlashcardCollection { get; set; }
     }
 }

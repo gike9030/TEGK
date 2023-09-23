@@ -12,7 +12,7 @@ namespace FlashcardsApp.Models
 
         [Required]
         public string CollectionName { get; set; }
-        public ICollection<FlashcardViewModel>? Flashcards { get; set; } = new List<FlashcardViewModel>();
+        public ICollection<FlashcardViewModel> Flashcards { get; set; } = new List<FlashcardViewModel>();
         public DateTime CreatedDateTime { get; set; } = DateTime.Now;
         public int ViewCount { get; set; }
         public int Hearts {  get; set; }
@@ -20,7 +20,7 @@ namespace FlashcardsApp.Models
         public int Like { get; set; }
         public int Angry { get; set; }
 
-        public string FlashcardsAppUserId { get; set; }
-        public FlashcardsAppUser FlashcardsAppUser { get; set; }
+        public string? FlashcardsAppUserId { get; set; }
+        public FlashcardsAppUser? FlashcardsAppUser { get; set; }
     }
 }
