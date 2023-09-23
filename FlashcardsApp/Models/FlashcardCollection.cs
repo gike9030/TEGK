@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Collections.Generic;
 using System;
-
+using FlashcardsApp.Areas.Identity.Data;
 
 namespace FlashcardsApp.Models
 {
@@ -10,9 +10,9 @@ namespace FlashcardsApp.Models
         [Key]
         public int CollectionId { get; set; }
 
-        public string? CollectionName { get; set; }
-        public int UserId { get; set; }
-        public List<FlashcardViewModel>? Flashcards { get; set; }
+        [Required]
+        public string CollectionName { get; set; }
+        public ICollection<FlashcardViewModel>? Flashcards { get; set; } = new List<FlashcardViewModel>();
         public DateTime CreatedDateTime { get; set; } = DateTime.Now;
         public int ViewCount { get; set; }
         public int Hearts {  get; set; }
@@ -20,5 +20,7 @@ namespace FlashcardsApp.Models
         public int Like { get; set; }
         public int Angry { get; set; }
 
+        public string FlashcardsAppUserId { get; set; }
+        public FlashcardsAppUser FlashcardsAppUser { get; set; }
     }
 }

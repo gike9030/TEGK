@@ -76,14 +76,17 @@ namespace FlashcardsApp.Controllers
                 if (existingCollection != null)
                 {
                     existingCollection.CollectionName = collection.CollectionName;
-                    existingCollection.UserId = collection.UserId;
+                    existingCollection.FlashcardsAppUserId = collection.FlashcardsAppUserId;
 
                     if (existingCollection.Flashcards == null)
                     {
                         existingCollection.Flashcards = new List<FlashcardViewModel>();
                     }
 
-                    existingCollection.Flashcards.AddRange(collection.Flashcards);
+                    foreach (var flashcard in collection.Flashcards)
+                    {
+                        existingCollection.Flashcards.Add(flashcard);
+                    }
                 }
                 else
                 {
