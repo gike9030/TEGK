@@ -24,7 +24,14 @@
         <label>Back Side</label>
         <input name="NewFlashcardBackSide" class="form-control" />
     </div>
-
+    @{
+        if (ViewData.ModelState.TryGetValue("NewFlashcardError", out var errorField) && errorField.Errors.Count > 0)
+        {
+            <div class="alert alert-danger">
+                @errorField.Errors.First().ErrorMessage
+            </div>
+        }
+    }
     <button type="submit" class="btn btn-success">Save Changes</button>
 </form>
 <h2>Existing Flashcards</h2>
