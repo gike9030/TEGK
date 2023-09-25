@@ -1,4 +1,8 @@
-﻿@model FlashcardsApp.Models.FlashcardCollection
+﻿@using FlashcardsApp.Areas.Identity.Data;
+@using Microsoft.AspNetCore.Identity;
+@model FlashcardsApp.Models.FlashcardCollection
+
+@inject UserManager<FlashcardsAppUser> UserManager
 
 @{
     ViewData["Title"] = "Edit Flashcard Collection";
@@ -7,7 +11,7 @@
 <h1>@ViewData["Title"]</h1>
 
 <form asp-action="Edit" method="post">
-    <input type="hidden" asp-for="CollectionId" />
+    <input type="hidden" asp-for="FlashcardsAppUserId" value="@UserManager.GetUserId(User)" />
 
     <div class="form-group">
         <label asp-for="CollectionName" class="control-label">Collection Name</label>
@@ -18,25 +22,18 @@
     <h2>Add a New Flashcard</h2>
     <div class="form-group">
         <label>Front Side</label>
-        <input name="NewFlashcardFrontSide" class="form-control" />
+        <input name="NewFlashcardFrontSide" class="form-control" required />
     </div>
     <div class="form-group">
         <label>Back Side</label>
-        <input name="NewFlashcardBackSide" class="form-control" />
+        <input name="NewFlashcardBackSide" class="form-control" required />
     </div>
-    @{
-        if (ViewData.ModelState.TryGetValue("NewFlashcardError", out var errorField) && errorField.Errors.Count > 0)
-        {
-            <div class="alert alert-danger">
-                @errorField.Errors.First().ErrorMessage
-            </div>
-        }
-    }
+
     <button type="submit" class="btn btn-success">Save Changes</button>
 </form>
 <h2>Existing Flashcards</h2>
 <div id="existingFlashcards">
-    @if (Model.Flashcards != null && Model.Flashcards.Any())
+    @if (Model.Flashcards.Count > 0)
     {
         foreach (var flashcard in Model.Flashcards)
         {
@@ -70,12 +67,15 @@
         text-align: center;
         vertical-align: top;
     }
+
     .flashcard-question, .flashcard-answer {
         padding: 20px;
     }
+
     .flashcard-question {
         background-color: #f9f9f9;
     }
+
     .flashcard-answer {
         background-color: #fff;
     }

@@ -1,4 +1,8 @@
-﻿@model FlashcardsApp.Models.FlashcardCollection
+﻿@using FlashcardsApp.Areas.Identity.Data;
+@using Microsoft.AspNetCore.Identity;
+@model FlashcardsApp.Models.FlashcardCollection
+
+@inject UserManager<FlashcardsAppUser> UserManager
 
 @{
     ViewData["Title"] = "Create Flashcard Collection";
@@ -14,6 +18,7 @@
                 <div class="card-body">
                     <form asp-action="CreateFlashcardCollection" method="post">
                         <div class="form-group">
+                            <input type="hidden" asp-for="FlashcardsAppUserId" value="@UserManager.GetUserId(User)" />
                             <label asp-for="CollectionName" class="control-label">Collection Name</label>
                             <input asp-for="CollectionName" class="form-control" />
                             <span asp-validation-for="CollectionName" class="text-danger"></span>

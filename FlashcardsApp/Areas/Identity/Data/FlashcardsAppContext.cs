@@ -27,7 +27,7 @@ public class FlashcardsAppContext : IdentityDbContext<FlashcardsAppUser>
 
         builder.Entity<FlashcardCollection>()
         .HasOne(e => e.FlashcardsAppUser)
-        .WithMany(e => e.flashcardCollections)
+        .WithMany(e => e.FlashcardCollections)
         .HasForeignKey(e => e.FlashcardsAppUserId)
         .IsRequired();
 

@@ -1,26 +1,32 @@
-﻿using FlashcardsApp.Models;
+﻿using FlashcardsApp.Data;
+using FlashcardsApp.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace FlashcardsApp.Controllers
 {
+    [Authorize]
     public class FlashcardCollectionController : Controller
     {
-        private static List<FlashcardCollection> flashcardCollections = new List<FlashcardCollection>();
+        private readonly FlashcardsAppContext _db;
 
+        public FlashcardCollectionController(FlashcardsAppContext db)
+        {
+            _db = db;
+        }
         public IActionResult Index()
         {
+            List<FlashcardCollection> flashcardCollections = _db.FlashcardCollection.Include(flashcardCollection => flashcardCollection.Flashcards).ToList();
+
             return View(flashcardCollections);
         }
 
         public IActionResult CreateFlashcardCollection()
         {
-            var model = new FlashcardCollection
-            {
-                Flashcards = new List<FlashcardViewModel>()
-            };
-            return View(model);
+            return View();
         }
 
         [HttpPost]
@@ -28,7 +34,8 @@ namespace FlashcardsApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                flashcardCollections.Add(collection);
+                _db.FlashcardCollection.Add(collection);
+                _db.SaveChanges();
                 return RedirectToAction("Index");
             }
             return View(collection);
@@ -37,60 +44,42 @@ namespace FlashcardsApp.Controllers
         [HttpGet]
         public IActionResult Edit(int id)
         {
-            var collection = flashcardCollections.FirstOrDefault(c => c.CollectionId == id);
+            var collection = _db.FlashcardCollection
+                .Include(flashcardCollection => flashcardCollection.Flashcards)
+                .FirstOrDefault(flashcardCollection => flashcardCollection.Id == id);
             if (collection == null)
             {
-                return NotFound();
-            }
-
-            if (collection.Flashcards == null)
-            {
-                collection.Flashcards = new List<FlashcardViewModel>();
+                return RedirectToAction("Index");
             }
 
             return View(collection);
         }
 
         [HttpPost]
-        public IActionResult Edit(FlashcardCollection collection, string NewFlashcardFrontSide, string NewFlashcardBackSide)
+        public IActionResult Edit(FlashcardCollection cardCollection, string NewFlashcardFrontSide, string NewFlashcardBackSide)
         {
-            var existingCollection = flashcardCollections.FirstOrDefault(c => c.CollectionId == collection.CollectionId);
+            var collection = _db.FlashcardCollection
+            .Include(flashcardCollection => flashcardCollection.Flashcards)
+            .FirstOrDefault(flashcardCollection => flashcardCollection.Id == cardCollection.Id);
 
-            // Check if the collection exists
-            if (existingCollection == null)
+            if (ModelState.IsValid && collection != null)
             {
-                return NotFound("Collection not found");
-            }
+                collection.CollectionName = cardCollection.CollectionName;
 
-            // Validate the new flashcard data
-            if (string.IsNullOrEmpty(NewFlashcardFrontSide) || string.IsNullOrEmpty(NewFlashcardBackSide))
-            {
-                ModelState.AddModelError("NewFlashcardError", "Both Front Side and Back Side must be filled out.");
-            }
-            else
-            {
-                // Add the new flashcard to the existing collection
                 var newFlashcard = new FlashcardViewModel
                 {
                     Question = NewFlashcardFrontSide,
-                    Answer = NewFlashcardBackSide
+                    Answer = NewFlashcardBackSide,
+                    FlashcardCollection = collection,
+                    FlashcardCollectionId = collection.Id
                 };
 
-                existingCollection.Flashcards ??= new List<FlashcardViewModel>();
-
-                existingCollection.Flashcards.Add(newFlashcard);
-
-                // Redirect to the Edit view for the updated collection
-                return RedirectToAction("Edit", new { id = existingCollection.CollectionId });
+                _db.FlashcardViewModel.Add(newFlashcard);
+                _db.Update(collection);
+                _db.SaveChanges();
             }
 
-            // If we've reached this point, it means validation failed. 
-            // Reset the Flashcards to the existing ones before returning the View.
-            collection.Flashcards = existingCollection.Flashcards;
             return View(collection);
         }
-
-
-
     }
 }
