@@ -1,0 +1,45 @@
+﻿@model IEnumerable<FlashcardsApp.Models.FlashcardCollection>
+
+@{
+    ViewData["Title"] = "Flashcard Collections";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Collection Name</th>
+            <th>Number of Flashcards</th>
+            <th>Created Date</th>
+            <th>View Count</th>
+            <th>Hearts</th>
+            <th>Haha</th>
+            <th>Like</th>
+            <th>Angry</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var collection in Model)
+        {
+            <tr>
+                <td>@collection.CollectionName</td>
+                <td>@(collection.Flashcards?.Count ?? 0)</td>
+                <td>@collection.CreatedDateTime.ToShortDateString()</td>
+                <td>@collection.ViewCount</td>
+                <td>@collection.Hearts</td>
+                <td>@collection.Haha</td>
+                <td>@collection.Like</td>
+                <td>@collection.Angry</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@collection.Id" class="btn btn-primary btn-sm">Edit</a>
+                    <a asp-action="Details" asp-route-id="@collection.Id" class="btn btn-info btn-sm">Details</a>
+                    <a asp-action="Delete" asp-route-id="@collection.Id" class="btn btn-danger btn-sm">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a asp-action="CreateFlashcardCollection" class="btn btn-success">Create New Collection</a>

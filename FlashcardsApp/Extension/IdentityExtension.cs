@@ -9,7 +9,7 @@ namespace FlashcardsApp.Extension
 {
     public static class IdentityExtension
     {
-        public static string GetFirstName(this UserManager<FlashcardsAppUser> UserManager, ClaimsPrincipal principal)
+        public static string? GetFirstName(this UserManager<FlashcardsAppUser> UserManager, ClaimsPrincipal principal)
         {
             if (principal == null)
             {

@@ -1,0 +1,82 @@
+﻿@using FlashcardsApp.Areas.Identity.Data;
+@using Microsoft.AspNetCore.Identity;
+@model FlashcardsApp.Models.FlashcardCollection
+
+@inject UserManager<FlashcardsAppUser> UserManager
+
+@{
+    ViewData["Title"] = "Edit Flashcard Collection";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="FlashcardsAppUserId" value="@UserManager.GetUserId(User)" />
+
+    <div class="form-group">
+        <label asp-for="CollectionName" class="control-label">Collection Name</label>
+        <input asp-for="CollectionName" class="form-control" />
+        <span asp-validation-for="CollectionName" class="text-danger"></span>
+    </div>
+
+    <h2>Add a New Flashcard</h2>
+    <div class="form-group">
+        <label>Front Side</label>
+        <input name="NewFlashcardFrontSide" class="form-control" required />
+    </div>
+    <div class="form-group">
+        <label>Back Side</label>
+        <input name="NewFlashcardBackSide" class="form-control" required />
+    </div>
+
+    <button type="submit" class="btn btn-success">Save Changes</button>
+</form>
+<h2>Existing Flashcards</h2>
+<div id="existingFlashcards">
+    @if (Model.Flashcards.Count > 0)
+    {
+        foreach (var flashcard in Model.Flashcards)
+        {
+            <div class="flashcard-container">
+                <div class="flashcard-question">
+                    <label>Question:</label>
+                    <p>@flashcard.Question</p>
+                </div>
+                <div class="flashcard-answer">
+                    <label>Answer:</label>
+                    <p>@flashcard.Answer</p>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <p>No flashcards added yet.</p>
+    }
+</div>
+
+
+<style>
+    .flashcard-container {
+        display: inline-block;
+        width: 200px;
+        height: 300px;
+        margin: 10px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        text-align: center;
+        vertical-align: top;
+    }
+
+    .flashcard-question, .flashcard-answer {
+        padding: 20px;
+    }
+
+    .flashcard-question {
+        background-color: #f9f9f9;
+    }
+
+    .flashcard-answer {
+        background-color: #fff;
+    }
+</style>
