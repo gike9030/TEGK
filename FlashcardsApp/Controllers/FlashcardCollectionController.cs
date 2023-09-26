@@ -81,5 +81,92 @@ namespace FlashcardsApp.Controllers
 
             return View(collection);
         }
+        [HttpPost]
+        public IActionResult Delete(int id)
+        {
+            var collection = _db.FlashcardCollection
+                .Include(flashcardCollection => flashcardCollection.Flashcards)
+                .FirstOrDefault(flashcardCollection => flashcardCollection.Id == id);
+
+            if (collection == null)
+            {
+                return NotFound("Collection not found");
+            }
+
+            // Remove all associated flashcards first
+            foreach (var flashcard in collection.Flashcards)
+            {
+                _db.FlashcardViewModel.Remove(flashcard);
+            }
+
+            _db.FlashcardCollection.Remove(collection);
+            _db.SaveChanges();
+
+            return RedirectToAction("Index");
+        }
+
+        [HttpGet]
+        public IActionResult ViewCollection(int id)
+        {
+            var collection = _db.FlashcardCollection
+                .Include(flashcardCollection => flashcardCollection.Flashcards)
+                .FirstOrDefault(flashcardCollection => flashcardCollection.Id == id);
+
+            if (collection == null)
+            {
+                return NotFound();
+            }
+
+            return View(collection);
+        }
+        [HttpGet]
+        public IActionResult EditFlashcard(int id) // id is the FlashcardViewModel's Id
+        {
+            var flashcard = _db.FlashcardViewModel.FirstOrDefault(f => f.Id == id);
+            if (flashcard == null)
+            {
+                return NotFound();
+            }
+            return View(flashcard);
+        }
+        [HttpPost]
+        public IActionResult EditFlashcard(FlashcardViewModel editedFlashcard)
+        {
+            if (ModelState.IsValid)
+            {
+                var flashcard = _db.FlashcardViewModel.FirstOrDefault(f => f.Id == editedFlashcard.Id);
+                if (flashcard == null)
+                {
+                    return NotFound();
+                }
+
+                flashcard.Question = editedFlashcard.Question;
+                flashcard.Answer = editedFlashcard.Answer;
+
+                _db.Entry(flashcard).State = EntityState.Modified;
+                _db.SaveChanges();
+
+                return RedirectToAction("Edit", new { id = flashcard.FlashcardCollectionId }); // Redirect back to the collection edit page
+            }
+            return View(editedFlashcard);
+        }
+        [HttpPost]
+        public IActionResult DeleteFlashcard(int id)
+        {
+            var flashcard = _db.FlashcardViewModel.Find(id);
+            if (flashcard == null)
+            {
+                return NotFound();
+            }
+
+            int collectionId = flashcard.FlashcardCollectionId;
+
+            _db.FlashcardViewModel.Remove(flashcard);
+            _db.SaveChanges();
+
+            return RedirectToAction("Edit", new { id = collectionId });
+        }
+
     }
+
 }

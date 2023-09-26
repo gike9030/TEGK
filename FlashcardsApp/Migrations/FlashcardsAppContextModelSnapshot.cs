@@ -42,11 +42,9 @@ namespace FlashcardsApp.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("FirstName")
-                        .IsRequired()
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("LastName")
-                        .IsRequired()
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<bool>("LockoutEnabled")
@@ -97,20 +95,25 @@ namespace FlashcardsApp.Migrations
 
             modelBuilder.Entity("FlashcardsApp.Models.FlashcardCollection", b =>
                 {
-                    b.Property<int>("CollectionId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CollectionId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("Angry")
                         .HasColumnType("int");
 
                     b.Property<string>("CollectionName")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreatedDateTime")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("FlashcardsAppUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("Haha")
                         .HasColumnType("int");
@@ -121,37 +124,38 @@ namespace FlashcardsApp.Migrations
                     b.Property<int>("Like")
                         .HasColumnType("int");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
                     b.Property<int>("ViewCount")
                         .HasColumnType("int");
 
-                    b.HasKey("CollectionId");
+                    b.HasKey("Id");
+
+                    b.HasIndex("FlashcardsAppUserId");
 
                     b.ToTable("FlashcardCollection");
                 });
 
             modelBuilder.Entity("FlashcardsApp.Models.FlashcardViewModel", b =>
                 {
-                    b.Property<int>("FlashcardId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("FlashcardId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Answer")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("FlashcardCollectionCollectionId")
+                    b.Property<int>("FlashcardCollectionId")
                         .HasColumnType("int");
 
                     b.Property<string>("Question")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("FlashcardId");
+                    b.HasKey("Id");
 
-                    b.HasIndex("FlashcardCollectionCollectionId");
+                    b.HasIndex("FlashcardCollectionId");
 
                     b.ToTable("FlashcardViewModel");
                 });
@@ -293,11 +297,26 @@ namespace FlashcardsApp.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("FlashcardsApp.Models.FlashcardCollection", b =>
+                {
+                    b.HasOne("FlashcardsApp.Areas.Identity.Data.FlashcardsAppUser", "FlashcardsAppUser")
+                        .WithMany("FlashcardCollections")
+                        .HasForeignKey("FlashcardsAppUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("FlashcardsAppUser");
+                });
+
             modelBuilder.Entity("FlashcardsApp.Models.FlashcardViewModel", b =>
                 {
-                    b.HasOne("FlashcardsApp.Models.FlashcardCollection", null)
+                    b.HasOne("FlashcardsApp.Models.FlashcardCollection", "FlashcardCollection")
                         .WithMany("Flashcards")
-                        .HasForeignKey("FlashcardCollectionCollectionId");
+                        .HasForeignKey("FlashcardCollectionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("FlashcardCollection");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -349,6 +368,11 @@ namespace FlashcardsApp.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("FlashcardsApp.Areas.Identity.Data.FlashcardsAppUser", b =>
+                {
+                    b.Navigation("FlashcardCollections");
                 });
 
             modelBuilder.Entity("FlashcardsApp.Models.FlashcardCollection", b =>
