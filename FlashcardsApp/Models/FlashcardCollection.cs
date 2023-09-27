@@ -20,7 +20,18 @@ namespace FlashcardsApp.Models
         public int Like { get; set; }
         public int Angry { get; set; }
 
+        [Required]
+        public Category Category { get; set; }
+
         public string? FlashcardsAppUserId { get; set; }
         public FlashcardsAppUser? FlashcardsAppUser { get; set; }
+    }
+    public enum Category
+    {
+        Matematika,
+        Fizika,
+        Medicina,
+        Istorija,
+        Politika
     }
 }
