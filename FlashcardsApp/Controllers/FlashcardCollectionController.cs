@@ -167,6 +167,13 @@ namespace FlashcardsApp.Controllers
             return RedirectToAction("Edit", new { id = collectionId });
         }
 
+
+        [HttpGet]
+        public IActionResult ViewCollections()
+        {
+            return RedirectToAction("Index");
+        }
+
     }
 
 }
