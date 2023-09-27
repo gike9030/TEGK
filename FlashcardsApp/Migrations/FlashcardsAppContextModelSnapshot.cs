@@ -104,6 +104,9 @@ namespace FlashcardsApp.Migrations
                     b.Property<int>("Angry")
                         .HasColumnType("int");
 
+                    b.Property<int>("Category")
+                        .HasColumnType("int");
+
                     b.Property<string>("CollectionName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -134,7 +137,7 @@ namespace FlashcardsApp.Migrations
                     b.ToTable("FlashcardCollection");
                 });
 
-            modelBuilder.Entity("FlashcardsApp.Models.FlashcardViewModel", b =>
+            modelBuilder.Entity("FlashcardsApp.Models.Flashcards", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -308,7 +311,7 @@ namespace FlashcardsApp.Migrations
                     b.Navigation("FlashcardsAppUser");
                 });
 
-            modelBuilder.Entity("FlashcardsApp.Models.FlashcardViewModel", b =>
+            modelBuilder.Entity("FlashcardsApp.Models.Flashcards", b =>
                 {
                     b.HasOne("FlashcardsApp.Models.FlashcardCollection", "FlashcardCollection")
                         .WithMany("Flashcards")

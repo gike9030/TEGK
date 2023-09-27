@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace FlashcardsApp.Migrations
 {
     /// <inheritdoc />
-    public partial class MyMigration0 : Migration
+    public partial class kajus : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
