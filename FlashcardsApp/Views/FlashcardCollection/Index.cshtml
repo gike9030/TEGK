@@ -12,7 +12,7 @@
             <th>Collection Name</th>
             <th>Number of Flashcards</th>
             <th>Created Date</th>
-            <th>View Count</th>
+            <th>Category</th>
             <th>Hearts</th>
             <th>Haha</th>
             <th>Like</th>
@@ -27,7 +27,7 @@
                 <td>@collection.CollectionName</td>
                 <td>@(collection.Flashcards?.Count ?? 0)</td>
                 <td>@collection.CreatedDateTime.ToShortDateString()</td>
-                <td>@collection.ViewCount</td>
+                <td>@collection.Category</td>
                 <td>@collection.Hearts</td>
                 <td>@collection.Haha</td>
                 <td>@collection.Like</td>
