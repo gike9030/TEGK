@@ -19,7 +19,7 @@ public class FlashcardsAppContext : IdentityDbContext<FlashcardsAppUser>
     {
         base.OnModelCreating(builder);
 
-        builder.Entity<FlashcardViewModel>()
+        builder.Entity<Flashcards>()
         .HasOne(e => e.FlashcardCollection)
         .WithMany(e => e.Flashcards)
         .HasForeignKey(e => e.FlashcardCollectionId)
@@ -37,5 +37,5 @@ public class FlashcardsAppContext : IdentityDbContext<FlashcardsAppUser>
     }
 
     public DbSet<FlashcardCollection> FlashcardCollection { get; set; }
-    public DbSet<FlashcardViewModel> FlashcardViewModel { get; set; }
+    public DbSet<Flashcards> FlashcardViewModel { get; set; }
 }
