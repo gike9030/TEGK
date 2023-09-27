@@ -1,0 +1,31 @@
+﻿@model FlashcardsApp.Models.FlashcardViewModel
+
+@{
+    ViewData["Title"] = "Edit Flashcard";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<form asp-action="EditFlashcard" method="post">
+    <input type="hidden" asp-for="Id" />
+
+    <div class="form-group">
+        <label asp-for="Question" class="control-label">Question</label>
+        <input asp-for="Question" class="form-control" />
+        <span asp-validation-for="Question" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Answer" class="control-label">Answer</label>
+        <input asp-for="Answer" class="form-control" />
+        <span asp-validation-for="Answer" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-success">Save Changes</button>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

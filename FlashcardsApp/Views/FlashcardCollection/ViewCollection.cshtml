@@ -1,0 +1,55 @@
+﻿@model FlashcardsApp.Models.FlashcardCollection
+
+@{
+    ViewData["Title"] = "View Flashcards";
+}
+
+<h1>@Model.CollectionName</h1>
+
+<div>
+    @if (Model.Flashcards != null && Model.Flashcards.Any())
+    {
+        foreach (var flashcard in Model.Flashcards)
+        {
+            <div class="flashcard-container">
+                <div class="flashcard-question">
+                    <label>Question:</label>
+                    <p>@flashcard.Question</p>
+                </div>
+                <div class="flashcard-answer">
+                    <label>Answer:</label>
+                    <p>@flashcard.Answer</p>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <p>No flashcards in this collection.</p>
+    }
+</div>
+
+<style>
+    .flashcard-container {
+        display: inline-block;
+        width: 600px;
+        height: 300px;
+        margin: 10px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        text-align: center;
+        vertical-align: top;
+    }
+
+    .flashcard-question, .flashcard-answer {
+        padding: 20px;
+    }
+
+    .flashcard-question {
+        background-color: #f9f9f9;
+    }
+
+    .flashcard-answer {
+        background-color: #fff;
+    }
+</style>
