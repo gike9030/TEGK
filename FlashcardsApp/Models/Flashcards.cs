@@ -3,7 +3,7 @@ using Microsoft.Identity.Client;
 
 namespace FlashcardsApp.Models
 {
-    public class FlashcardViewModel
+    public class Flashcards
     {
         [Key]
         public int Id { get; set; }

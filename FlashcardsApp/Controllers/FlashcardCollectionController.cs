@@ -66,7 +66,7 @@ namespace FlashcardsApp.Controllers
             {
                 collection.CollectionName = cardCollection.CollectionName;
 
-                var newFlashcard = new FlashcardViewModel
+                var newFlashcard = new Flashcards
                 {
                     Question = NewFlashcardFrontSide,
                     Answer = NewFlashcardBackSide,
@@ -130,7 +130,7 @@ namespace FlashcardsApp.Controllers
             return View(flashcard);
         }
         [HttpPost]
-        public IActionResult EditFlashcard(FlashcardViewModel editedFlashcard)
+        public IActionResult EditFlashcard(Flashcards editedFlashcard)
         {
             if (ModelState.IsValid)
             {
@@ -175,5 +175,6 @@ namespace FlashcardsApp.Controllers
         }
 
     }
+
 
 }

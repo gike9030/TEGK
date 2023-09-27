@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FlashcardsApp.Migrations
 {
     [DbContext(typeof(FlashcardsAppContext))]
-    [Migration("20230926102245_MyMigration0")]
-    partial class MyMigration0
+    [Migration("20230927191149_kajuss")]
+    partial class kajuss
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -107,6 +107,9 @@ namespace FlashcardsApp.Migrations
                     b.Property<int>("Angry")
                         .HasColumnType("int");
 
+                    b.Property<int>("Category")
+                        .HasColumnType("int");
+
                     b.Property<string>("CollectionName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -137,7 +140,7 @@ namespace FlashcardsApp.Migrations
                     b.ToTable("FlashcardCollection");
                 });
 
-            modelBuilder.Entity("FlashcardsApp.Models.FlashcardViewModel", b =>
+            modelBuilder.Entity("FlashcardsApp.Models.Flashcards", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -311,7 +314,7 @@ namespace FlashcardsApp.Migrations
                     b.Navigation("FlashcardsAppUser");
                 });
 
-            modelBuilder.Entity("FlashcardsApp.Models.FlashcardViewModel", b =>
+            modelBuilder.Entity("FlashcardsApp.Models.Flashcards", b =>
                 {
                     b.HasOne("FlashcardsApp.Models.FlashcardCollection", "FlashcardCollection")
                         .WithMany("Flashcards")
