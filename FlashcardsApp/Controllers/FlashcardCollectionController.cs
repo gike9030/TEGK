@@ -40,7 +40,6 @@ namespace FlashcardsApp.Controllers
         }
 
         [HttpPost]
-        [HttpPost]
         public IActionResult CreateFlashcardCollection(FlashcardCollection collection)
         {
             if (ModelState.IsValid)
