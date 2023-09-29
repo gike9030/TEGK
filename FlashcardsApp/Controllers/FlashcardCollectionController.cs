@@ -28,6 +28,7 @@ namespace FlashcardsApp.Controllers
                     flashcardCollections = flashcardCollections.Where(f => f.Category == categoryValue);
                 }
             }
+            ViewBag.CurrentSort = sortByCategory;
 
             return View(flashcardCollections.ToList());
         }

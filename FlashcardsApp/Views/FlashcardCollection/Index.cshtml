@@ -11,7 +11,7 @@
 <form asp-action="Index" method="get" class="mb-3">
     <label for="sortByCategory">Sort by Category:</label>
     <select id="sortByCategory" name="sortByCategory" onchange="this.form.submit();">
-        <option value="">--Select Category--</option>
+        <option value="">--View All Categories--</option>
         @foreach (var category in categories)
         {
             if (category == ViewBag.CurrentSort)
@@ -23,10 +23,10 @@
                 <option value="@category">@category</option>
             }
         }
-
-
     </select>
 </form>
+
+
 
 <h1>@ViewData["Title"]</h1>
 
