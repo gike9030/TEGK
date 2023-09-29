@@ -28,7 +28,9 @@
                             <select asp-for="Category" asp-items="Html.GetEnumSelectList<Category>()" class="form-select shadow-sm">
                                 <option value="">Select a category...</option>
                             </select>
+                            <span asp-validation-for="Category" class="text-danger"></span>
                         </div>
+
 
 
                         <!-- Add Collection button next to Add Flashcard button -->

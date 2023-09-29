@@ -17,7 +17,10 @@ namespace FlashcardsApp.Models
         public DateTime CreatedDateTime { get; set; } = DateTime.Now;
         public int ViewCount { get; set; }
         public ICollection<Reaction> Reactions { get; set; } = new List<Reaction>();
-        public Category Category { get; set; }
+
+        [Required(ErrorMessage = "Please select a category.")]
+        public Category? Category { get; set; }
+
 
         public string? FlashcardsAppUserId { get; set; }
         public FlashcardsAppUser? FlashcardsAppUser { get; set; }
