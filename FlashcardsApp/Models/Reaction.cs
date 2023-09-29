@@ -2,7 +2,6 @@
 {
     public class Reaction
     {
-        [Key]
         public int ReactionId { get; set; }
         
         public ReactionType Type { get; set; }
