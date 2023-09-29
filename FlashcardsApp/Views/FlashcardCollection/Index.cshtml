@@ -4,6 +4,30 @@
     ViewData["Title"] = "Flashcard Collections";
 }
 
+@{
+    var categories = Enum.GetNames(typeof(FlashcardsApp.Models.Category));
+}
+
+<form asp-action="Index" method="get" class="mb-3">
+    <label for="sortByCategory">Sort by Category:</label>
+    <select id="sortByCategory" name="sortByCategory" onchange="this.form.submit();">
+        <option value="">--Select Category--</option>
+        @foreach (var category in categories)
+        {
+            if (category == ViewBag.CurrentSort)
+            {
+                <option value="@category" selected>@category</option>
+            }
+            else
+            {
+                <option value="@category">@category</option>
+            }
+        }
+
+
+    </select>
+</form>
+
 <h1>@ViewData["Title"]</h1>
 
 <table class="table">

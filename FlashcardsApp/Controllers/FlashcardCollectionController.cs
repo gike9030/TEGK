@@ -17,12 +17,21 @@ namespace FlashcardsApp.Controllers
         {
             _db = db;
         }
-        public IActionResult Index()
+        public IActionResult Index(string sortByCategory = null)
         {
-            List<FlashcardCollection> flashcardCollections = _db.FlashcardCollection.Include(flashcardCollection => flashcardCollection.Flashcards).ToList();
+            IQueryable<FlashcardCollection> flashcardCollections = _db.FlashcardCollection.Include(f => f.Flashcards);
 
-            return View(flashcardCollections);
+            if (!string.IsNullOrEmpty(sortByCategory))
+            {
+                if (Enum.TryParse(sortByCategory, out Category categoryValue))
+                {
+                    flashcardCollections = flashcardCollections.Where(f => f.Category == categoryValue);
+                }
+            }
+
+            return View(flashcardCollections.ToList());
         }
+
 
         public IActionResult CreateFlashcardCollection()
         {

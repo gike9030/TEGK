@@ -26,11 +26,12 @@ namespace FlashcardsApp.Models
     }
     public enum Category
     {
-        Matematika,
-        Fizika,
-        Medicina,
-        Istorija,
-        Politika
+        ComputerScience,
+        Mathematics,
+        Physics,
+        Medicine,
+        History
     }
+
 
 }
