@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System;
 using FlashcardsApp.Areas.Identity.Data;
+using static System.Collections.Specialized.BitVector32;
 
 namespace FlashcardsApp.Models
 {
@@ -15,14 +16,19 @@ namespace FlashcardsApp.Models
         public ICollection<Flashcards> Flashcards { get; set; } = new List<Flashcards>();
         public DateTime CreatedDateTime { get; set; } = DateTime.Now;
         public int ViewCount { get; set; }
-        public int Hearts { get; set; }
-        public int Haha { get; set; }
-        public int Like { get; set; }
-        public int Angry { get; set; }
-
+        public ICollection<Reaction> Reactions { get; set; } = new List<Reaction>();
         public Category Category { get; set; }
+
         public string? FlashcardsAppUserId { get; set; }
         public FlashcardsAppUser? FlashcardsAppUser { get; set; }
+    }
+
+    public enum ReactionType
+    {
+        Hearts,
+        Haha,
+        Like,
+        Angry
     }
     public enum Category
     {
