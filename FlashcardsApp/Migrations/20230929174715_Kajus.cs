@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace FlashcardsApp.Migrations
 {
     /// <inheritdoc />
-    public partial class kajus : Migration
+    public partial class Kajus : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -167,10 +167,7 @@ namespace FlashcardsApp.Migrations
                     CollectionName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CreatedDateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ViewCount = table.Column<int>(type: "int", nullable: false),
-                    Hearts = table.Column<int>(type: "int", nullable: false),
-                    Haha = table.Column<int>(type: "int", nullable: false),
-                    Like = table.Column<int>(type: "int", nullable: false),
-                    Angry = table.Column<int>(type: "int", nullable: false),
+                    Category = table.Column<int>(type: "int", nullable: false),
                     FlashcardsAppUserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
@@ -203,6 +200,26 @@ namespace FlashcardsApp.Migrations
                         principalTable: "FlashcardCollection",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Reactions",
+                columns: table => new
+                {
+                    ReactionId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Type = table.Column<int>(type: "int", nullable: false),
+                    Count = table.Column<int>(type: "int", nullable: false),
+                    FlashcardCollectionId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Reactions", x => x.ReactionId);
+                    table.ForeignKey(
+                        name: "FK_Reactions_FlashcardCollection_FlashcardCollectionId",
+                        column: x => x.FlashcardCollectionId,
+                        principalTable: "FlashcardCollection",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(
@@ -253,6 +270,11 @@ namespace FlashcardsApp.Migrations
                 name: "IX_FlashcardViewModel_FlashcardCollectionId",
                 table: "FlashcardViewModel",
                 column: "FlashcardCollectionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Reactions_FlashcardCollectionId",
+                table: "Reactions",
+                column: "FlashcardCollectionId");
         }
 
         /// <inheritdoc />
@@ -275,6 +297,9 @@ namespace FlashcardsApp.Migrations
 
             migrationBuilder.DropTable(
                 name: "FlashcardViewModel");
+
+            migrationBuilder.DropTable(
+                name: "Reactions");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");

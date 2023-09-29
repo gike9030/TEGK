@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FlashcardsApp.Migrations
 {
     [DbContext(typeof(FlashcardsAppContext))]
-    [Migration("20230927185922_kajus")]
-    partial class kajus
+    [Migration("20230929174715_Kajus")]
+    partial class Kajus
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -104,7 +104,7 @@ namespace FlashcardsApp.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("Angry")
+                    b.Property<int>("Category")
                         .HasColumnType("int");
 
                     b.Property<string>("CollectionName")
@@ -117,15 +117,6 @@ namespace FlashcardsApp.Migrations
                     b.Property<string>("FlashcardsAppUserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("Haha")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Hearts")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Like")
-                        .HasColumnType("int");
 
                     b.Property<int>("ViewCount")
                         .HasColumnType("int");
@@ -161,6 +152,30 @@ namespace FlashcardsApp.Migrations
                     b.HasIndex("FlashcardCollectionId");
 
                     b.ToTable("FlashcardViewModel");
+                });
+
+            modelBuilder.Entity("FlashcardsApp.Models.Reaction", b =>
+                {
+                    b.Property<int>("ReactionId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ReactionId"));
+
+                    b.Property<int>("Count")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("FlashcardCollectionId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.HasKey("ReactionId");
+
+                    b.HasIndex("FlashcardCollectionId");
+
+                    b.ToTable("Reactions");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -322,6 +337,15 @@ namespace FlashcardsApp.Migrations
                     b.Navigation("FlashcardCollection");
                 });
 
+            modelBuilder.Entity("FlashcardsApp.Models.Reaction", b =>
+                {
+                    b.HasOne("FlashcardsApp.Models.FlashcardCollection", "FlashcardCollection")
+                        .WithMany("Reactions")
+                        .HasForeignKey("FlashcardCollectionId");
+
+                    b.Navigation("FlashcardCollection");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -381,6 +405,8 @@ namespace FlashcardsApp.Migrations
             modelBuilder.Entity("FlashcardsApp.Models.FlashcardCollection", b =>
                 {
                     b.Navigation("Flashcards");
+
+                    b.Navigation("Reactions");
                 });
 #pragma warning restore 612, 618
         }

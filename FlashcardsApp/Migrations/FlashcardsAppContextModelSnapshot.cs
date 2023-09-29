@@ -153,11 +153,11 @@ namespace FlashcardsApp.Migrations
 
             modelBuilder.Entity("FlashcardsApp.Models.Reaction", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("ReactionId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ReactionId"));
 
                     b.Property<int>("Count")
                         .HasColumnType("int");
@@ -168,7 +168,7 @@ namespace FlashcardsApp.Migrations
                     b.Property<int>("Type")
                         .HasColumnType("int");
 
-                    b.HasKey("Id");
+                    b.HasKey("ReactionId");
 
                     b.HasIndex("FlashcardCollectionId");
 

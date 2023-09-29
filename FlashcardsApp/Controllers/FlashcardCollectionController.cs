@@ -51,6 +51,7 @@ namespace FlashcardsApp.Controllers
             return View(collection);
         }
 
+
         [HttpGet]
         public IActionResult Edit(int id)
         {
