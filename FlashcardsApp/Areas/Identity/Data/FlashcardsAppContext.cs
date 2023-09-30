@@ -25,7 +25,7 @@ public class FlashcardsAppContext : IdentityDbContext<FlashcardsAppUser>
         .HasForeignKey(e => e.FlashcardCollectionId)
         .IsRequired();
 
-        builder.Entity<FlashcardCollection>()
+        builder.Entity<FlashcardCollection<Flashcards>>()
         .HasOne(e => e.FlashcardsAppUser)
         .WithMany(e => e.FlashcardCollections)
         .HasForeignKey(e => e.FlashcardsAppUserId)
@@ -36,7 +36,7 @@ public class FlashcardsAppContext : IdentityDbContext<FlashcardsAppUser>
         // Add your customizations after calling base.OnModelCreating(builder);
     }
 
-    public DbSet<FlashcardCollection> FlashcardCollection { get; set; }
+    public DbSet<FlashcardCollection<Flashcards>> FlashcardCollection { get; set; }
     public DbSet<Flashcards> FlashcardViewModel { get; set; }
-    public DbSet<Reaction> Reactions { get; set; }
+    public DbSet<Reaction<Flashcards>> Reactions { get; set; }
 }

@@ -19,6 +19,6 @@ public class FlashcardsAppUser : IdentityUser
     [PersonalData]
     [Column(TypeName = "nvarchar(100)")]
     public string? LastName { get; set; }
-    public ICollection<FlashcardCollection> FlashcardCollections { get; set; } = new List<FlashcardCollection>();
+    public ICollection<FlashcardCollection<Flashcards>> FlashcardCollections { get; set; } = new List<FlashcardCollection<Flashcards>>();
 }
 
