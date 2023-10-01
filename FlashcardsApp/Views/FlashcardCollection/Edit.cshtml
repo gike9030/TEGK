@@ -10,23 +10,32 @@
 
 <h1>@ViewData["Title"]</h1>
 
-<form asp-action="Edit" method="post">
+<form asp-action="Edit" method="post" enctype="multipart/form-data">
     <input type="hidden" asp-for="FlashcardsAppUserId" value="@UserManager.GetUserId(User)" />
 
     <div class="form-group">
         <label asp-for="CollectionName" class="control-label">Collection Name</label>
         <input asp-for="CollectionName" class="form-control" />
+        <input type="hidden" id="originalCollectionName" value="@Model.CollectionName" />
         <span asp-validation-for="CollectionName" class="text-danger"></span>
     </div>
 
     <h2>Add a New Flashcard</h2>
     <div class="form-group">
         <label>Front Side</label>
-        <input name="NewFlashcardFrontSide" class="form-control" required />
+        <input name="NewFlashcardFrontSide" class="form-control"/>
     </div>
     <div class="form-group">
         <label>Back Side</label>
-        <input name="NewFlashcardBackSide" class="form-control" required />
+        <input name="NewFlashcardBackSide" class="form-control"/>
+    </div>
+
+    <h2>Add New Flashcards from a File</h2>
+    <div class="form-group">
+        <label for="flashcardFile">
+            <span class="tooltip-text">Upload a text file with flashcard questions and answers</span>
+        </label>
+        <input type="file" name="flashcardFile" id="flashcardFile" accept=".txt" class="form-control"/>
     </div>
 
     <button type="submit" class="btn btn-success">Save Changes</button>
@@ -101,4 +110,46 @@
     .flashcard-answer {
         background-color: #fff;
     }
+
+    .tooltip-text {
+        position: relative;
+        cursor: pointer;
+        color: #007BFF;
+    }
+
+        .tooltip-text:hover::after {
+            content: '.txt file structure:\A Question\A Answer\A (The flashcards need to be\A seperated by a new line)\A ...';
+            position: absolute;
+            bottom: -105px;
+            left: 0;
+            padding: 8px 12px;
+            color: #fff;
+            background-color: #333;
+            border-radius: 4px;
+            font-size: 12px;
+            z-index: 10;
+            max-width: 250px;
+            white-space: pre-line;
+        }
+
+
 </style>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('form').submit(function (e) {
+            var frontSide = $('[name="NewFlashcardFrontSide"]').val();
+            var backSide = $('[name="NewFlashcardBackSide"]').val();
+            var file = $('#flashcardFile').val();
+            var currentCollectionName = $('[name="CollectionName"]').val();
+            var originalCollectionName = $('#originalCollectionName').val();
+
+            if (!frontSide && !backSide && !file && currentCollectionName === originalCollectionName) {
+                e.preventDefault();
+                alert('Please fill in the boxes for uploading a single Flashcard or the box to upload a file.');
+            }
+        });
+    });
+</script>
+

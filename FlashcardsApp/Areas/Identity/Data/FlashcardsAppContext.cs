@@ -37,6 +37,6 @@ public class FlashcardsAppContext : IdentityDbContext<FlashcardsAppUser>
     }
 
     public DbSet<FlashcardCollection> FlashcardCollection { get; set; }
-    public DbSet<Flashcards> FlashcardViewModel { get; set; }
+    public DbSet<Flashcards> Flashcards { get; set; }
     public DbSet<Reaction> Reactions { get; set; }
 }
