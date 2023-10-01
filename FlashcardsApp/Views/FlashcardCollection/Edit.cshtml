@@ -1,4 +1,4 @@
-﻿@using FlashcardsApp.Areas.Identity.Data;
+@using FlashcardsApp.Areas.Identity.Data;
 @using Microsoft.AspNetCore.Identity;
 @model FlashcardsApp.Models.FlashcardCollection<Flashcards>
 
@@ -12,7 +12,7 @@
 
 <form asp-action="Edit" method="post" enctype="multipart/form-data">
     <input type="hidden" asp-for="FlashcardsAppUserId" value="@UserManager.GetUserId(User)" />
-
+  
     <input type="hidden" asp-for="Category" />
     <div class="form-group">
         <label asp-for="CollectionName" class="control-label">Collection Name</label>
@@ -153,4 +153,3 @@
         });
     });
 </script>
-

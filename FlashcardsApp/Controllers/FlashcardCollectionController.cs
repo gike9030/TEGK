@@ -1,4 +1,4 @@
-﻿using FlashcardsApp.Data;
+using FlashcardsApp.Data;
 using FlashcardsApp.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -50,6 +50,7 @@ namespace FlashcardsApp.Controllers
             }
             return View(collection);
         }
+
 
         [HttpGet]
         public IActionResult Edit(int id)

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Reflection.Emit;
 using FlashcardsApp.Areas.Identity.Data;
 using FlashcardsApp.Models;
