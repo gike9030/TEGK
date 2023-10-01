@@ -11,7 +11,7 @@ namespace FlashcardsApp.Controllers
     {
         public IActionResult Index()
         {
-            return View(new FlashcardCollection());
+            return View(new FlashcardCollection<Flashcards>());
         }
 
         [HttpPost]
@@ -39,7 +39,7 @@ namespace FlashcardsApp.Controllers
                 return View(new FileData());
             }
 
-            FlashcardCollection flashcardCollection = new FlashcardCollection
+            FlashcardCollection<Flashcards> flashcardCollection = new FlashcardCollection<Flashcards>
             {
                 CollectionName = fileContent[0]
             };

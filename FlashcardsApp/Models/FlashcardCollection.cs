@@ -6,17 +6,17 @@ using static System.Collections.Specialized.BitVector32;
 
 namespace FlashcardsApp.Models
 {
-    public class FlashcardCollection
+    public class FlashcardCollection<FlashcardType>
     {
         [Key]
         public int Id { get; set; }
 
         [Required]
         public string? CollectionName { get; set; }
-        public ICollection<Flashcards> Flashcards { get; set; } = new List<Flashcards>();
+        public ICollection<FlashcardType> Flashcards { get; set; } = new List<FlashcardType>();
         public DateTime CreatedDateTime { get; set; } = DateTime.Now;
         public int ViewCount { get; set; }
-        public ICollection<Reaction> Reactions { get; set; } = new List<Reaction>();
+        public ICollection<Reaction<FlashcardType>> Reactions { get; set; } = new List<Reaction<FlashcardType>>();
 
         [Required(ErrorMessage = "Please select a category.")]
         public Category? Category { get; set; }
@@ -41,6 +41,4 @@ namespace FlashcardsApp.Models
         Medicine,
         History
     }
-
-
 }
