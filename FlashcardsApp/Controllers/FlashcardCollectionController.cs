@@ -19,7 +19,7 @@ namespace FlashcardsApp.Controllers
         }
         public IActionResult Index(string sortByCategory = null)
         {
-            IQueryable<FlashcardCollection> flashcardCollections = _db.FlashcardCollection.Include(f => f.Flashcards);
+            IQueryable<FlashcardCollection<Flashcards>> flashcardCollections = _db.FlashcardCollection.Include(f => f.Flashcards);
 
             if (!string.IsNullOrEmpty(sortByCategory))
             {
@@ -40,7 +40,7 @@ namespace FlashcardsApp.Controllers
         }
 
         [HttpPost]
-        public IActionResult CreateFlashcardCollection(FlashcardCollection collection)
+        public IActionResult CreateFlashcardCollection(FlashcardCollection<Flashcards> collection)
         {
             if (ModelState.IsValid)
             {
@@ -66,7 +66,7 @@ namespace FlashcardsApp.Controllers
         }
 
         [HttpPost]
-        public IActionResult Edit(FlashcardCollection cardCollection, string NewFlashcardFrontSide, string NewFlashcardBackSide, IFormFile flashcardFile)
+        public IActionResult Edit(FlashcardCollection<Flashcards> cardCollection, string NewFlashcardFrontSide, string NewFlashcardBackSide, IFormFile flashcardFile)
         {
             var collection = _db.FlashcardCollection
             .Include(flashcardCollection => flashcardCollection.Flashcards)

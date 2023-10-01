@@ -1,6 +1,6 @@
 ﻿@using FlashcardsApp.Areas.Identity.Data;
 @using Microsoft.AspNetCore.Identity;
-@model FlashcardsApp.Models.FlashcardCollection
+@model FlashcardsApp.Models.FlashcardCollection<Flashcards>
 
 @inject UserManager<FlashcardsAppUser> UserManager
 
@@ -28,6 +28,7 @@
                             <select asp-for="Category" asp-items="Html.GetEnumSelectList<Category>()" class="form-select shadow-sm">
                                 <option value="">Select a category...</option>
                             </select>
+                            <span asp-validation-for="Category" class="text-danger"></span>
                         </div>
 
 
