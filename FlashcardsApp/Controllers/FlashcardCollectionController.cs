@@ -17,7 +17,7 @@ namespace FlashcardsApp.Controllers
         {
             _db = db;
         }
-        public IActionResult Index(string sortByCategory = null)
+        public IActionResult Index(string? sortByCategory = null)
         {
             IQueryable<FlashcardCollection<Flashcards>> flashcardCollections = _db.FlashcardCollection.Include(f => f.Flashcards);
 
