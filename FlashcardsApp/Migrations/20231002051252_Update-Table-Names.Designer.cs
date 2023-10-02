@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FlashcardsApp.Migrations
 {
     [DbContext(typeof(FlashcardsAppContext))]
-    [Migration("20230929182237_NewMigration")]
-    partial class NewMigration
+    [Migration("20231002051252_Update-Table-Names")]
+    partial class UpdateTableNames
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -96,7 +96,7 @@ namespace FlashcardsApp.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("FlashcardsApp.Models.FlashcardCollection", b =>
+            modelBuilder.Entity("FlashcardsApp.Models.FlashcardCollection<FlashcardsApp.Models.Flashcards>", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -154,7 +154,7 @@ namespace FlashcardsApp.Migrations
                     b.ToTable("Flashcards");
                 });
 
-            modelBuilder.Entity("FlashcardsApp.Models.Reaction", b =>
+            modelBuilder.Entity("FlashcardsApp.Models.Reaction<FlashcardsApp.Models.Flashcards>", b =>
                 {
                     b.Property<int>("ReactionId")
                         .ValueGeneratedOnAdd()
@@ -315,7 +315,7 @@ namespace FlashcardsApp.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("FlashcardsApp.Models.FlashcardCollection", b =>
+            modelBuilder.Entity("FlashcardsApp.Models.FlashcardCollection<FlashcardsApp.Models.Flashcards>", b =>
                 {
                     b.HasOne("FlashcardsApp.Areas.Identity.Data.FlashcardsAppUser", "FlashcardsAppUser")
                         .WithMany("FlashcardCollections")
@@ -328,7 +328,7 @@ namespace FlashcardsApp.Migrations
 
             modelBuilder.Entity("FlashcardsApp.Models.Flashcards", b =>
                 {
-                    b.HasOne("FlashcardsApp.Models.FlashcardCollection", "FlashcardCollection")
+                    b.HasOne("FlashcardsApp.Models.FlashcardCollection<FlashcardsApp.Models.Flashcards>", "FlashcardCollection")
                         .WithMany("Flashcards")
                         .HasForeignKey("FlashcardCollectionId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -337,9 +337,9 @@ namespace FlashcardsApp.Migrations
                     b.Navigation("FlashcardCollection");
                 });
 
-            modelBuilder.Entity("FlashcardsApp.Models.Reaction", b =>
+            modelBuilder.Entity("FlashcardsApp.Models.Reaction<FlashcardsApp.Models.Flashcards>", b =>
                 {
-                    b.HasOne("FlashcardsApp.Models.FlashcardCollection", "FlashcardCollection")
+                    b.HasOne("FlashcardsApp.Models.FlashcardCollection<FlashcardsApp.Models.Flashcards>", "FlashcardCollection")
                         .WithMany("Reactions")
                         .HasForeignKey("FlashcardCollectionId");
 
@@ -402,7 +402,7 @@ namespace FlashcardsApp.Migrations
                     b.Navigation("FlashcardCollections");
                 });
 
-            modelBuilder.Entity("FlashcardsApp.Models.FlashcardCollection", b =>
+            modelBuilder.Entity("FlashcardsApp.Models.FlashcardCollection<FlashcardsApp.Models.Flashcards>", b =>
                 {
                     b.Navigation("Flashcards");
 
