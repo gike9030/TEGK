@@ -10,7 +10,7 @@ namespace FlashcardsApp.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.RenameTable("flashcardViewModel", null, "Flashcard", null);
+            migrationBuilder.RenameTable("flashcardViewModel", null, "Flashcards", null);
         }
 
         /// <inheritdoc />
