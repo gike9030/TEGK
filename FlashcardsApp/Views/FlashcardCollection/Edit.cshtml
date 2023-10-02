@@ -10,7 +10,7 @@
 
 <h1>@ViewData["Title"]</h1>
 
-<form asp-action="Edit" method="post" enctype="multipart/form-data">
+<form id="editCollectionForm" asp-action="Edit" method="post" enctype="multipart/form-data">
     <input type="hidden" asp-for="FlashcardsAppUserId" value="@UserManager.GetUserId(User)" />
   
     <input type="hidden" asp-for="Category" />
@@ -139,7 +139,7 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     $(document).ready(function () {
-        $('form').submit(function (e) {
+        $('#editCollectionForm').submit(function (e) {
             var frontSide = $('[name="NewFlashcardFrontSide"]').val();
             var backSide = $('[name="NewFlashcardBackSide"]').val();
             var file = $('#flashcardFile').val();
