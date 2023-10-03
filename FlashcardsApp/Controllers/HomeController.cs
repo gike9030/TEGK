@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using FlashcardsApp.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -29,8 +29,6 @@ namespace FlashcardsApp.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel(Activity.Current?.Id ?? HttpContext.TraceIdentifier));
-
         }
-
     }
 }

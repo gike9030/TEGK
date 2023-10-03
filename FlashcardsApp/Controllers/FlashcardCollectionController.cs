@@ -1,4 +1,4 @@
-﻿using FlashcardsApp.Data;
+using FlashcardsApp.Data;
 using FlashcardsApp.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -17,7 +17,7 @@ namespace FlashcardsApp.Controllers
         {
             _db = db;
         }
-        public IActionResult Index(string sortByCategory = null)
+        public IActionResult Index(string? sortByCategory = null)
         {
             IQueryable<FlashcardCollection<Flashcards>> flashcardCollections = _db.FlashcardCollection.Include(f => f.Flashcards);
 
@@ -67,25 +67,54 @@ namespace FlashcardsApp.Controllers
         }
 
         [HttpPost]
-        public IActionResult Edit(FlashcardCollection<Flashcards> cardCollection, string NewFlashcardFrontSide, string NewFlashcardBackSide)
+        public IActionResult Edit(FlashcardCollection<Flashcards> cardCollection, string NewFlashcardFrontSide, string NewFlashcardBackSide, IFormFile flashcardFile)
         {
             var collection = _db.FlashcardCollection
             .Include(flashcardCollection => flashcardCollection.Flashcards)
             .FirstOrDefault(flashcardCollection => flashcardCollection.Id == cardCollection.Id);
 
-            if (ModelState.IsValid && collection != null)
+            if (collection != null)
             {
                 collection.CollectionName = cardCollection.CollectionName;
 
-                var newFlashcard = new Flashcards
+                
+                if (!string.IsNullOrEmpty(NewFlashcardFrontSide) && !string.IsNullOrEmpty(NewFlashcardBackSide))
                 {
-                    Question = NewFlashcardFrontSide,
-                    Answer = NewFlashcardBackSide,
-                    FlashcardCollection = collection,
-                    FlashcardCollectionId = collection.Id
-                };
+                    var newFlashcard = new Flashcards
+                    {
+                        Question = NewFlashcardFrontSide,
+                        Answer = NewFlashcardBackSide,
+                        FlashcardCollection = collection,
+                        FlashcardCollectionId = collection.Id
+                    };
+                    _db.Flashcards.Add(newFlashcard);
+                }
+                
+                if (flashcardFile != null && flashcardFile.Length > 0)
+                {
+                    using (var reader = new StreamReader(flashcardFile.OpenReadStream()))
+                    {
+                        string content = reader.ReadToEnd();
+                        var flashcards = content.Split(new[] { "\r\n\r\n", "\n\n" }, StringSplitOptions.RemoveEmptyEntries);
 
-                _db.FlashcardViewModel.Add(newFlashcard);
+                        foreach (var item in flashcards)
+                        {
+                            var parts = item.Split(new[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries);
+                            if (parts.Length == 2)
+                            {
+                                var newFlashcard = new Flashcards
+                                {
+                                    Question = parts[0],
+                                    Answer = parts[1],
+                                    FlashcardCollection = collection,
+                                    FlashcardCollectionId = collection.Id
+                                };
+                                _db.Flashcards.Add(newFlashcard);
+                            }
+                        }
+                    }
+                }
+
                 _db.Update(collection);
                 _db.SaveChanges();
             }
@@ -107,7 +136,7 @@ namespace FlashcardsApp.Controllers
             // Remove all associated flashcards first
             foreach (var flashcard in collection.Flashcards)
             {
-                _db.FlashcardViewModel.Remove(flashcard);
+                _db.Flashcards.Remove(flashcard);
             }
 
             _db.FlashcardCollection.Remove(collection);
@@ -131,9 +160,9 @@ namespace FlashcardsApp.Controllers
             return View(collection);
         }
         [HttpGet]
-        public IActionResult EditFlashcard(int id) // id is the FlashcardViewModel's Id
+        public IActionResult EditFlashcard(int id) // id is the Flashcards Model's Id
         {
-            var flashcard = _db.FlashcardViewModel.FirstOrDefault(f => f.Id == id);
+            var flashcard = _db.Flashcards.FirstOrDefault(f => f.Id == id);
             if (flashcard == null)
             {
                 return NotFound();
@@ -145,7 +174,7 @@ namespace FlashcardsApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                var flashcard = _db.FlashcardViewModel.FirstOrDefault(f => f.Id == editedFlashcard.Id);
+                var flashcard = _db.Flashcards.FirstOrDefault(f => f.Id == editedFlashcard.Id);
                 if (flashcard == null)
                 {
                     return NotFound();
@@ -164,7 +193,7 @@ namespace FlashcardsApp.Controllers
         [HttpPost]
         public IActionResult DeleteFlashcard(int id)
         {
-            var flashcard = _db.FlashcardViewModel.Find(id);
+            var flashcard = _db.Flashcards.Find(id);
             if (flashcard == null)
             {
                 return NotFound();
@@ -172,7 +201,7 @@ namespace FlashcardsApp.Controllers
 
             int collectionId = flashcard.FlashcardCollectionId;
 
-            _db.FlashcardViewModel.Remove(flashcard);
+            _db.Flashcards.Remove(flashcard);
             _db.SaveChanges();
 
             return RedirectToAction("Edit", new { id = collectionId });

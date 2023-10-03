@@ -1,4 +1,4 @@
-﻿using FlashcardsApp.Models;
+using FlashcardsApp.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -69,16 +69,6 @@ namespace FlashcardsApp.Controllers
 
             // TODO: Save the flashcardCollection to your database or wherever you need
             return RedirectToAction("YourActionName", "YourControllerName", flashcardCollection);
-            // Prepare the data to be sent to the view
-            FileData data = new FileData
-            {
-                FileName = file.FileName,
-                FileSize = (int)size,
-                Text = string.Join(Environment.NewLine, fileContent)
-            };
-
-            return View(data);
         }
-
     }
 }

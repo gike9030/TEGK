@@ -1,4 +1,5 @@
-﻿using System.Reflection.Emit;
+using System;
+using System.Reflection.Emit;
 using FlashcardsApp.Areas.Identity.Data;
 using FlashcardsApp.Models;
 using Microsoft.AspNetCore.Identity;
@@ -37,6 +38,6 @@ public class FlashcardsAppContext : IdentityDbContext<FlashcardsAppUser>
     }
 
     public DbSet<FlashcardCollection<Flashcards>> FlashcardCollection { get; set; }
-    public DbSet<Flashcards> FlashcardViewModel { get; set; }
+    public DbSet<Flashcards> Flashcards { get; set; }
     public DbSet<Reaction<Flashcards>> Reactions { get; set; }
 }
