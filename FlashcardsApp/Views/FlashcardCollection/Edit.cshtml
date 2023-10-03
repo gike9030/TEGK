@@ -8,13 +8,14 @@
     ViewData["Title"] = "Edit Flashcard Collection";
 }
 
-<h1>@ViewData["Title"]</h1>
+<h1 style="text-align:center">@ViewData["Title"]</h1>
 
-<form id="editCollectionForm" asp-action="Edit" method="post" enctype="multipart/form-data">
+<form id="editCollectionForm" asp-action="Edit" method="post" enctype="multipart/form-data" class="mb-5">
     <input type="hidden" asp-for="FlashcardsAppUserId" value="@UserManager.GetUserId(User)" />
   
     <input type="hidden" asp-for="Category" />
-    <div class="form-group">
+    <h2>Change collection name</h2>
+    <div class="form-group mb-5">
         <label asp-for="CollectionName" class="control-label">Collection Name</label>
         <input asp-for="CollectionName" class="form-control" />
         <input type="hidden" id="originalCollectionName" value="@Model.CollectionName" />
@@ -22,11 +23,9 @@
     </div>
 
     <h2>Add a New Flashcard</h2>
-    <div class="form-group">
+    <div class="form-group mb-5">
         <label>Front Side</label>
         <input name="NewFlashcardFrontSide" class="form-control"/>
-    </div>
-    <div class="form-group">
         <label>Back Side</label>
         <input name="NewFlashcardBackSide" class="form-control"/>
     </div>
