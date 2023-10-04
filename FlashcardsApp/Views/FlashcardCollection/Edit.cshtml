@@ -9,37 +9,56 @@
 }
 
 <h1 style="text-align:center">@ViewData["Title"]</h1>
+<div class="row mt-5 border p-2 editContainer">
+    <ul class="navbar-nav mr-auto col-3 border-end">
+        <li class="nav-item active">
+            <button type="button" class="editButton nav-link active" data-target="editField1">Add flashcard</button>
+        </li>
+        <li class="nav-item">
+            <button type="button" class="editButton nav-link" data-target="editField2">Change name</button>
+        </li>
+        <li class="nav-item">
+            <button type="button" class="editButton nav-link" data-target="editField3">Add flashcards from file</button>
+        </li>
+    </ul>
+    
+    <form id="editField1" asp-action="AddFlashcard" method="post" class="mb-5 editField visible col-9">
+        <h2>Add a New Flashcard</h2>
+        <input type="hidden" asp-for="Id" />
+        <div class="form-group mb-5">
+            <label>Front Side</label>
+            <input name="NewFlashcardFrontSide" class="form-control" required />
+            <label>Back Side</label>
+            <input name="NewFlashcardBackSide" class="form-control" required />
+        </div>
+        <button type="submit" class="btn btn-success">Add flashcard</button>
+    </form>
 
-<form id="editCollectionForm" asp-action="Edit" method="post" enctype="multipart/form-data" class="mb-5">
-    <input type="hidden" asp-for="FlashcardsAppUserId" value="@UserManager.GetUserId(User)" />
-  
-    <input type="hidden" asp-for="Category" />
-    <h2>Change collection name</h2>
-    <div class="form-group mb-5">
-        <label asp-for="CollectionName" class="control-label">Collection Name</label>
-        <input asp-for="CollectionName" class="form-control" />
-        <input type="hidden" id="originalCollectionName" value="@Model.CollectionName" />
-        <span asp-validation-for="CollectionName" class="text-danger"></span>
-    </div>
+    <form id="editField2" asp-action="RenameCollection" method="post" class="mb-5 editField col-9">
+        <input type="hidden" asp-for="Id" />
+        <h2>Change collection name</h2>
+        <div class="form-group mb-5">
+            <label asp-for="CollectionName" class="control-label">Collection Name</label>
+            <input asp-for="CollectionName" class="form-control" required />
+            @* <input type="hidden" id="originalCollectionName" value="@Model.CollectionName" /> *@
+            <span asp-validation-for="CollectionName" class="text-danger"></span>
+        </div>
+        <button type="submit" class="btn btn-success">Rename collection</button>
+    </form>
 
-    <h2>Add a New Flashcard</h2>
-    <div class="form-group mb-5">
-        <label>Front Side</label>
-        <input name="NewFlashcardFrontSide" class="form-control"/>
-        <label>Back Side</label>
-        <input name="NewFlashcardBackSide" class="form-control"/>
-    </div>
+    <form id="editField3" asp-action="Edit" method="post" enctype="multipart/form-data" class="mb-5 editField col-9">
+        <h2>Add New Flashcards from a File</h2>
+        <input type="hidden" asp-for="Id" />
+        <div class="form-group">
+            <label for="flashcardFile">
+                <span class="tooltip-text">Upload a text file with flashcard questions and answers</span>
+            </label>
+            <input type="file" name="flashcardFile" id="flashcardFile" accept=".txt" class="form-control"/>
+        </div>
+        <button type="submit" class="btn btn-success">Add flashcards from file</button>
+    </form>
+</div>
 
-    <h2>Add New Flashcards from a File</h2>
-    <div class="form-group">
-        <label for="flashcardFile">
-            <span class="tooltip-text">Upload a text file with flashcard questions and answers</span>
-        </label>
-        <input type="file" name="flashcardFile" id="flashcardFile" accept=".txt" class="form-control"/>
-    </div>
-
-    <button type="submit" class="btn btn-success">Save Changes</button>
-</form>
 <h2>Existing Flashcards</h2>
 <div id="existingFlashcards">
     @if (Model.Flashcards != null && Model.Flashcards.Any())
@@ -117,22 +136,42 @@
         color: #007BFF;
     }
 
-        .tooltip-text:hover::after {
-            content: '.txt file structure:\A Question\A Answer\A (The flashcards need to be\A seperated by a new line)\A ...';
-            position: absolute;
-            bottom: -105px;
-            left: 0;
-            padding: 8px 12px;
-            color: #fff;
-            background-color: #333;
-            border-radius: 4px;
-            font-size: 12px;
-            z-index: 10;
-            max-width: 250px;
-            white-space: pre-line;
-        }
+    .tooltip-text:hover::after {
+        content: '.txt file structure:\A Question\A Answer\A (The flashcards need to be\A seperated by a new line)\A ...';
+        position: absolute;
+        bottom: -105px;
+        left: 0;
+        padding: 8px 12px;
+        color: #fff;
+        background-color: #333;
+        border-radius: 4px;
+        font-size: 12px;
+        z-index: 10;
+        max-width: 250px;
+        white-space: pre-line;
+    }
 
+    .editField {
+        display: none;
+    }
 
+    .visible {
+        display: block !important;
+    }
+
+    .editButton {
+        width: 100%;
+        text-align: left;
+        height: fit-content;
+        display: block;
+        background: transparent;
+        border: none;
+    }
+
+    .editContainer {
+        height: 90vh;
+        max-height: 350px;
+    }
 </style>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -151,4 +190,23 @@
             }
         });
     });
+
+    function handleEditButtonClick(e) { 
+        let targetId = e.target.getAttribute("data-target");
+        let visible = document.querySelectorAll(".visible");
+        
+        if (visible.length > 0)
+            visible[0].classList.remove("visible");
+        
+        let target = document.getElementById(targetId);
+        target.classList.add("visible");
+    }
+
+    let editButtons = document.querySelectorAll(".editButton");
+    
+    editButtons.forEach((button) => {
+        button.addEventListener('click', handleEditButtonClick);
+    });
+
+
 </script>

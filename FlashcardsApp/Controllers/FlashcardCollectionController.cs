@@ -66,63 +66,71 @@ namespace FlashcardsApp.Controllers
         }
 
         [HttpPost]
-        public IActionResult Edit(FlashcardCollection<Flashcards> cardCollection, string NewFlashcardFrontSide, string NewFlashcardBackSide, IFormFile? flashcardFile)
+        public IActionResult RenameCollection(FlashcardCollection<Flashcards> cardCollection)
         {
-            var collection = _db.FlashcardCollection
-            .Include(flashcardCollection => flashcardCollection.Flashcards)
-            .FirstOrDefault(flashcardCollection => flashcardCollection.Id == cardCollection.Id);
-            
-            if (collection == null)
+            var collection = _db.FlashcardCollection.FirstOrDefault(flashcardCollection => flashcardCollection.Id == cardCollection.Id);
+
+            if (collection != null)
             {
-				return View(collection);
-			}
+                collection.CollectionName = cardCollection.CollectionName;
+                
+                _db.Update(collection);
+                _db.SaveChanges();           
+            }
+            return RedirectToAction("Edit", collection);
+        }
 
-            collection.CollectionName = cardCollection.CollectionName;
-			
-            _db.Update(collection);
+        [HttpPost]
+        public IActionResult AddFlashcard(FlashcardCollection<Flashcards> cardCollection, string NewFlashcardFrontSide, string NewFlashcardBackSide)
+        {
+            var collection = _db.FlashcardCollection.FirstOrDefault(flashcardCollection => flashcardCollection.Id == cardCollection.Id);
 
-			if (!string.IsNullOrEmpty(NewFlashcardFrontSide) && !string.IsNullOrEmpty(NewFlashcardBackSide))
+            if (collection != null)
             {
                 var newFlashcard = new Flashcards
                 {
                     Question = NewFlashcardFrontSide,
                     Answer = NewFlashcardBackSide,
-                    FlashcardCollection = collection,
                     FlashcardCollectionId = collection.Id
                 };
 
                 _db.Flashcards.Add(newFlashcard);
-			}
+                _db.SaveChanges();
+            }
+            return RedirectToAction("Edit", collection);
+        }
 
-			_db.SaveChanges();
+        [HttpPost]
+        public IActionResult AddFlashcardsFromFile(FlashcardCollection<Flashcards> cardCollection, IFormFile? flashcardFile)
+        {
+            var collection = _db.FlashcardCollection.FirstOrDefault(flashcardCollection => flashcardCollection.Id == cardCollection.Id);
 
-            if (flashcardFile == null || flashcardFile.Length > 0)
+            if (collection == null || flashcardFile == null || flashcardFile.Length > 0)
             {
                 return View(collection);
             }
 
-			using var reader = new StreamReader(flashcardFile.OpenReadStream());
-			string content = reader.ReadToEnd();
-			var flashcards = content.Split(new[] { "\r\n\r\n", "\n\n" }, StringSplitOptions.RemoveEmptyEntries);
+            using var reader = new StreamReader(flashcardFile.OpenReadStream());
+            string content = reader.ReadToEnd();
+            var flashcards = content.Split(new[] { "\r\n\r\n", "\n\n" }, StringSplitOptions.RemoveEmptyEntries);
 
-			foreach (var item in flashcards)
-			{
-				var parts = item.Split(new[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries);
-				if (parts.Length == 2)
-				{
-					var newFlashcard = new Flashcards
-					{
-						Question = parts[0],
-						Answer = parts[1],
-						FlashcardCollection = collection,
-						FlashcardCollectionId = collection.Id
-					};
-					_db.Flashcards.Add(newFlashcard);
-				}
-			}
+            foreach (var item in flashcards)
+            {
+                var parts = item.Split(new[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries);
+                if (parts.Length == 2)
+                {
+                    var newFlashcard = new Flashcards
+                    {
+                        Question = parts[0],
+                        Answer = parts[1],
+                        FlashcardCollection = collection,
+                        FlashcardCollectionId = collection.Id
+                    };
+                    _db.Flashcards.Add(newFlashcard);
+                }
+            }
 
-			_db.SaveChanges();
-
+            _db.SaveChanges();
             return View(collection);
         }
 
