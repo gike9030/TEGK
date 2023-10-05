@@ -43,10 +43,16 @@
 
             <div class="card-content text-center">
                 <h2>@collection.CollectionName</h2>
-                <span>Category: @collection.Category</span>
+                <span> @collection.Category</span>
             </div>
 
             <form id="deleteForm-@collection.Id" asp-action="Delete" asp-route-id="@collection.Id" method="post" style="display:none;"></form>
+            <div class="play-button">
+                <a href="@Url.Action("PlayCollection", "FlashcardCollection", new { id = collection.Id })" class="btn btn-primary">
+                    <i class="fas fa-play"></i> Play
+                </a>
+            </div>
+        
         </div>
     }
 </div>
@@ -70,7 +76,27 @@
         padding: 10px;
         box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         position: relative;
+        overflow: hidden;
+        transition: all 0.3s ease;
     }
+
+        .collection-card:hover {
+            box-shadow: 0 8px 15px rgba(0,0,0,0.3);
+            transform: scale(1.03);
+        }
+
+        .collection-card .play-button {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .collection-card:hover .play-button {
+            opacity: 1;
+        }
 
     .dropdown {
         position: absolute;
@@ -85,7 +111,7 @@
 
     .card-content span {
         display: block;
-        margin-top: 60px; 
+        margin-top: 20px; 
     }
 
 </style>
