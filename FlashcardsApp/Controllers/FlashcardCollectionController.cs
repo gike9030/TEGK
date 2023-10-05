@@ -227,8 +227,27 @@ namespace FlashcardsApp.Controllers
         {
             return RedirectToAction("Index");
         }
+        [HttpGet]
+        public IActionResult PlayCollection(int id, int? cardIndex)
+        {
+            var collection = _db.FlashcardCollection
+                .Include(flashcardCollection => flashcardCollection.Flashcards)
+                .FirstOrDefault(flashcardCollection => flashcardCollection.Id == id);
 
+            if (collection == null || !collection.Flashcards.Any())
+            {
+                return NotFound();  
+            }
+
+            cardIndex = cardIndex ?? 0; 
+            if (cardIndex < 0) cardIndex = 0;  
+            if (cardIndex >= collection.Flashcards.Count) cardIndex = collection.Flashcards.Count - 1;  // handle upper boundary
+
+            var cardToShow = collection.Flashcards.ElementAt((int)cardIndex);
+            ViewBag.CardIndex = cardIndex;  
+
+            return View(cardToShow);  
+        }
     }
-
 
 }

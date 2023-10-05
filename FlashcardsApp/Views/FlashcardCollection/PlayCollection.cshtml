@@ -1,0 +1,111 @@
+﻿@model Flashcards
+
+<style>
+    .flashcard {
+        width: 70%;
+        height: 400px;
+        margin: 50px auto;
+        border: 1px solid #ddd;
+        cursor: pointer;
+        perspective: 1000px;
+    }
+
+    .card-inner {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        text-align: center;
+        transition: transform 0.6s;
+        transform-style: preserve-3d;
+    }
+
+    .flashcard.flipped .card-inner {
+        transform: rotateY(180deg);
+    }
+
+
+    .card-front, .card-back {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        -webkit-backface-visibility: hidden;
+        backface-visibility: hidden;
+    }
+
+    .card-front {
+        background: #fff;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .card-back {
+        background: #eee;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transform: rotateY(180deg);
+    }
+
+    .flashcard-container {
+        position: relative;
+    }
+
+    .flashcard-navigation {
+        position: absolute;
+        top: 50%;
+        width: 100%;
+        transform: translateY(-50%);
+    }
+
+    .prev-btn, .next-btn {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 2rem;
+        background-color: rgba(255,255,255,0.7);
+        padding: 10px 15px;
+        border: none;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+        .prev-btn:hover, .next-btn:hover {
+            background-color: rgba(255,255,255,1);
+        }
+
+    .prev-btn {
+        left: 10px;
+    }
+
+    .next-btn {
+        right: 10px;
+    }
+
+
+</style>
+
+<div class="flashcard-container">
+    <div class="flashcard" onclick="flipCard()">
+        <div class="card-inner">
+            <div class="card-front">
+                @Model.Question
+            </div>
+            <div class="card-back">
+                @Model.Answer
+            </div>
+        </div>
+    </div>
+    <div class="flashcard-navigation">
+        <a href="@Url.Action("PlayCollection", new { id = Model.FlashcardCollectionId, cardIndex = ViewBag.CardIndex - 1 })" class="prev-btn"><</a>
+        <a href="@Url.Action("PlayCollection", new { id = Model.FlashcardCollectionId, cardIndex = ViewBag.CardIndex + 1 })" class="next-btn">></a>
+    </div>
+</div>
+
+<script>
+    function flipCard() {
+        var card = document.querySelector(".flashcard");
+        card.classList.toggle("flipped");
+    }
+</script>
+}
