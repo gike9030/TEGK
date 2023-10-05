@@ -146,7 +146,6 @@ namespace FlashcardsApp.Controllers
                 return NotFound("Collection not found");
             }
 
-            // Remove all associated flashcards first
             foreach (var flashcard in collection.Flashcards)
             {
                 _db.Flashcards.Remove(flashcard);
