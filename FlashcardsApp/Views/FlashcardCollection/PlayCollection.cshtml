@@ -39,6 +39,24 @@
         align-items: center;
     }
 
+    .exit-btn {
+        position: fixed;
+        bottom: 180px;
+        right: 300px;
+        background-color: #f44336;
+        color: #ffffff;
+        padding: 10px 15px;
+        border: none;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        border-radius: 25px; 
+    }
+
+
+        .exit-btn:hover {
+            background-color: #d32f2f; 
+        }
+
     .card-back {
         background: #eee;
         display: flex;
@@ -84,7 +102,7 @@
 
 
 </style>
-
+<button onclick="exitPlayMode()" class="exit-btn">Exit</button>
 <div class="flashcard-container">
     <div class="flashcard" onclick="flipCard()">
         <div class="card-inner">
@@ -107,5 +125,13 @@
         var card = document.querySelector(".flashcard");
         card.classList.toggle("flipped");
     }
+    function flipCard() {
+        var card = document.querySelector(".flashcard");
+        card.classList.toggle("flipped");
+    }
+
+    function exitPlayMode() {
+        window.location.href = "@Url.Action("Index", "FlashcardCollection")";
+    }
 </script>
-}
+
