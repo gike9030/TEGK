@@ -5,8 +5,8 @@
     var categories = Enum.GetNames(typeof(FlashcardsApp.Models.Category));
 }
 
-<form asp-action="Index" method="get" class="mb-3 text-center">
-    <label for="sortByCategory">Sort by Category:</label>
+ <form asp-action="Index" method="get" class="mb-3 text-center">
+    <label for="sortByCategory">Sort by category:</label>
     <select id="sortByCategory" name="sortByCategory" onchange="this.form.submit();" class="mx-auto">
         <option value="">--View All Categories--</option>
         @foreach (var category in categories)
@@ -21,7 +21,7 @@
             }
         }
     </select>
-</form>
+</form> 
 
 <h1 class="text-center">@ViewData["Title"]</h1>
 
@@ -29,7 +29,6 @@
     @foreach (var collection in Model)
     {
         <div class="collection-card">
-            <!-- Dropdown button at top-right -->
             <div class="dropdown">
                 <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     <i class="fas fa-ellipsis-v"></i>
@@ -63,10 +62,13 @@
 </div>
 
 <style>
+
     .collection-grid {
         display: flex;
         flex-wrap: wrap;
         gap: 20px;
+        justify-content: center;
+        align-items: flex-start;
     }
 
     .collection-card {
@@ -79,6 +81,7 @@
         position: relative;
         overflow: hidden;
         transition: all 0.3s ease;
+        margin-top: 60px;
     }
 
         .collection-card:hover {

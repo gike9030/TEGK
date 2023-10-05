@@ -227,7 +227,6 @@ namespace FlashcardsApp.Controllers
         {
             return RedirectToAction("Index");
         }
-        [HttpGet]
         public IActionResult PlayCollection(int id, int? cardIndex)
         {
             var collection = _db.FlashcardCollection
@@ -236,18 +235,21 @@ namespace FlashcardsApp.Controllers
 
             if (collection == null || !collection.Flashcards.Any())
             {
-                return NotFound();  
+                return NotFound();
             }
 
-            cardIndex = cardIndex ?? 0; 
-            if (cardIndex < 0) cardIndex = 0;  
+            cardIndex = cardIndex ?? 0;
+            if (cardIndex < 0) cardIndex = 0;
             if (cardIndex >= collection.Flashcards.Count) cardIndex = collection.Flashcards.Count - 1;  // handle upper boundary
 
             var cardToShow = collection.Flashcards.ElementAt((int)cardIndex);
-            ViewBag.CardIndex = cardIndex;  
+            ViewBag.CardIndex = cardIndex;
+            ViewBag.IsFirstCard = cardIndex == 0;
+            ViewBag.IsLastCard = cardIndex == collection.Flashcards.Count - 1;
 
-            return View(cardToShow);  
+            return View(cardToShow);
         }
+
     }
 
 }

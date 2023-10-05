@@ -116,10 +116,22 @@
         </div>
     </div>
     <div class="flashcard-navigation">
-        <a href="@Url.Action("PlayCollection", new { id = Model.FlashcardCollectionId, cardIndex = ViewBag.CardIndex - 1 })" class="prev-btn"><</a>
-        <a href="@Url.Action("PlayCollection", new { id = Model.FlashcardCollectionId, cardIndex = ViewBag.CardIndex + 1 })" class="next-btn">></a>
+    @if (Model.FlashcardCollection != null)
+    {
+        @if (ViewBag.CardIndex > 0)
+        {
+            <a href="@Url.Action("PlayCollection", new { id = Model.FlashcardCollectionId, cardIndex = ViewBag.CardIndex - 1 })" class="prev-btn"> &lt; </a>
+        }
+
+        @if (ViewBag.CardIndex < (Model.FlashcardCollection.Flashcards.Count - 1))
+        {
+            <a href="@Url.Action("PlayCollection", new { id = Model.FlashcardCollectionId, cardIndex = ViewBag.CardIndex + 1 })" class="next-btn">></a>
+        }
+    }
     </div>
+
 </div>
+
 
 <script>
     function flipCard() {
