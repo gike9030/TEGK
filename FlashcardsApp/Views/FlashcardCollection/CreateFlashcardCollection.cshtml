@@ -31,11 +31,15 @@
                             <span asp-validation-for="Category" class="text-danger"></span>
                         </div>
 
+                        <div class="form-group mt-3">
+                            <button type="submit" class="btn btn-success btn-block">Create Collection</button>
+                        </div>
+                        <div class="form-group mt-3">
+                            <a href="@Url.Action("ViewCollections", "FlashcardCollection")" class="btn btn-success btn-block">View Collections</a>
+                        </div>
 
 
-                        <!-- Add Collection button next to Add Flashcard button -->
-                        <button type="submit" class="btn btn-success btn-block ml-2">Create Collection</button>
-                        <a href="@Url.Action("ViewCollections", "FlashcardCollection")" class="btn btn-info ml-2">View Collections</a>
+                       
                     </form>
                 </div>
             </div>
