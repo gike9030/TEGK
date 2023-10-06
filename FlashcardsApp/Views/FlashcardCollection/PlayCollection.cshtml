@@ -23,7 +23,6 @@
         transform: rotateY(180deg);
     }
 
-
     .card-front, .card-back {
         position: absolute;
         width: 100%;
@@ -53,7 +52,6 @@
         z-index: 1000;
     }
 
-
         .exit-btn:hover {
             background-color: #d32f2f;
         }
@@ -68,6 +66,7 @@
 
     .flashcard-container {
         position: relative;
+        top: 50px;
     }
 
     .flashcard-navigation {
@@ -101,19 +100,31 @@
         right: 10px;
     }
 
+    #timerDisplay {
+        position: absolute;
+        bottom: -195px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: #2196F3;
+        color: #ffffff;
+        padding: 10px 15px;
+        border-radius: 25px;
+        font-size: 1.5rem;
+        z-index: 1000;
+    }
 </style>
-<button onclick="exitPlayMode()" class="exit-btn">Exit</button>
+
 <div class="flashcard-container">
-    <div class="flashcard" onclick="flipCard()">
-        <div class="card-inner">
-            <div class="card-front">
-                @Model.Question
-            </div>
-            <div class="card-back">
-                @Model.Answer
+        <div class="flashcard" onclick="flipCard()">
+            <div class="card-inner">
+                <div class="card-front">
+                    @Model.Question
+                </div>
+                <div class="card-back">
+                    @Model.Answer
+                </div>
             </div>
         </div>
-    </div>
     <div class="flashcard-navigation">
         @if (Model.FlashcardCollection != null)
         {
@@ -128,6 +139,7 @@
             }
         }
     </div>
+    <button onclick="exitPlayMode()" class="exit-btn">Exit</button>
     <div id="timerDisplay">0h 0m 0s</div>
 </div>
 
@@ -136,15 +148,13 @@
         var card = document.querySelector(".flashcard");
         card.classList.toggle("flipped");
     }
-    function flipCard() {
-        var card = document.querySelector(".flashcard");
-        card.classList.toggle("flipped");
-    }
 
     function exitPlayMode() {
         window.location.href = "@Url.Action("Index", "FlashcardCollection")";
     }
+
     var elapsedSeconds = 0;
+
     window.onload = startTimer;
 
     function startTimer() {
@@ -174,4 +184,3 @@
         });
     }
 </script>
-
