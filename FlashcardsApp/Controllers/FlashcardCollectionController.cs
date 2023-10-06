@@ -73,9 +73,9 @@ namespace FlashcardsApp.Controllers
             if (collection != null)
             {
                 collection.CollectionName = cardCollection.CollectionName;
-                
+
                 _db.Update(collection);
-                _db.SaveChanges();           
+                _db.SaveChanges();
             }
             return RedirectToAction("Edit", collection);
         }
@@ -227,7 +227,8 @@ namespace FlashcardsApp.Controllers
         {
             return RedirectToAction("Index");
         }
-        public IActionResult PlayCollection(int id, int? cardIndex)
+        [HttpGet]
+        public IActionResult PlayCollection(int id, int? cardIndex, int hours = 0, int minutes = 0, int seconds = 0)
         {
             var collection = _db.FlashcardCollection
                 .Include(flashcardCollection => flashcardCollection.Flashcards)
@@ -240,16 +241,27 @@ namespace FlashcardsApp.Controllers
 
             cardIndex = cardIndex ?? 0;
             if (cardIndex < 0) cardIndex = 0;
-            if (cardIndex >= collection.Flashcards.Count) cardIndex = collection.Flashcards.Count - 1;  // handle upper boundary
+            if (cardIndex >= collection.Flashcards.Count) cardIndex = collection.Flashcards.Count - 1;
 
             var cardToShow = collection.Flashcards.ElementAt((int)cardIndex);
             ViewBag.CardIndex = cardIndex;
-            ViewBag.IsFirstCard = cardIndex == 0;
-            ViewBag.IsLastCard = cardIndex == collection.Flashcards.Count - 1;
+
+            var elapsedTime = new ElapsedTime
+            {
+                Hours = hours,
+                Minutes = minutes,
+                Seconds = seconds
+            };
+            ViewBag.ElapsedTime = elapsedTime;
 
             return View(cardToShow);
         }
 
+        [HttpPost]
+        public IActionResult UpdateElapsedTime([FromBody] ElapsedTime elapsedTime)
+        {
+            return Ok();
+        }
     }
 
 }

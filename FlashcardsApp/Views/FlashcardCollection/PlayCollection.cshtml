@@ -55,7 +55,7 @@
 
 
         .exit-btn:hover {
-            background-color: #d32f2f; 
+            background-color: #d32f2f;
         }
 
     .card-back {
@@ -101,7 +101,6 @@
         right: 10px;
     }
 
-
 </style>
 <button onclick="exitPlayMode()" class="exit-btn">Exit</button>
 <div class="flashcard-container">
@@ -116,22 +115,11 @@
         </div>
     </div>
     <div class="flashcard-navigation">
-    @if (Model.FlashcardCollection != null)
-    {
-        @if (ViewBag.CardIndex > 0)
-        {
-            <a href="@Url.Action("PlayCollection", new { id = Model.FlashcardCollectionId, cardIndex = ViewBag.CardIndex - 1 })" class="prev-btn"> &lt; </a>
-        }
-
-        @if (ViewBag.CardIndex < (Model.FlashcardCollection.Flashcards.Count - 1))
-        {
-            <a href="@Url.Action("PlayCollection", new { id = Model.FlashcardCollectionId, cardIndex = ViewBag.CardIndex + 1 })" class="next-btn">></a>
-        }
-    }
+        <a href="@Url.Action("PlayCollection", new { id = Model.FlashcardCollectionId, cardIndex = ViewBag.CardIndex - 1 })" class="prev-btn"><</a>
+        <a href="@Url.Action("PlayCollection", new { id = Model.FlashcardCollectionId, cardIndex = ViewBag.CardIndex + 1 })" class="next-btn">></a>
     </div>
-
+    <div id="timerDisplay">0h 0m 0s</div>
 </div>
-
 
 <script>
     function flipCard() {
@@ -145,6 +133,35 @@
 
     function exitPlayMode() {
         window.location.href = "@Url.Action("Index", "FlashcardCollection")";
+    }
+    var elapsedSeconds = 0;
+    window.onload = startTimer;
+
+    function startTimer() {
+        setInterval(function () {
+            elapsedSeconds++;
+            var hours = Math.floor(elapsedSeconds / 3600);
+            var minutes = Math.floor((elapsedSeconds % 3600) / 60);
+            var seconds = elapsedSeconds % 60;
+            document.getElementById("timerDisplay").innerText = hours + "h " + minutes + "m " + seconds + "s";
+            if (elapsedSeconds % 10 === 0) {
+                updateServerTime(hours, minutes, seconds);
+            }
+        }, 1000);
+    }
+
+    function updateServerTime(hours, minutes, seconds) {
+        fetch('/FlashcardCollection/UpdateElapsedTime', {
+            method: 'POST',
+            body: JSON.stringify({
+                Hours: hours,
+                Minutes: minutes,
+                Seconds: seconds
+            }),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
     }
 </script>
 
