@@ -245,7 +245,8 @@ namespace FlashcardsApp.Controllers
 
             var cardToShow = collection.Flashcards.ElementAt((int)cardIndex);
             ViewBag.CardIndex = cardIndex;
-
+            ViewBag.IsFirstCard = cardIndex == 0;
+            ViewBag.IsLastCard = cardIndex == collection.Flashcards.Count - 1;
             var elapsedTime = new ElapsedTime
             {
                 Hours = hours,
