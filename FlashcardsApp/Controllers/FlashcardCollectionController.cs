@@ -20,19 +20,22 @@ namespace FlashcardsApp.Controllers
 
         public IActionResult Index(string? sortByCategory = null)
         {
-            IQueryable<FlashcardCollection<Flashcards>> flashcardCollections = _db.FlashcardCollection.Include(f => f.Flashcards);
+            List<FlashcardCollection<Flashcards>> flashcardCollections = _db.FlashcardCollection.Include(f => f.Flashcards).ToList();
+
+            flashcardCollections.Sort();
 
             if (!string.IsNullOrEmpty(sortByCategory))
             {
                 if (Enum.TryParse(sortByCategory, out Category categoryValue))
                 {
-                    flashcardCollections = flashcardCollections.Where(f => f.Category == categoryValue);
+                    flashcardCollections = flashcardCollections.Where(f => f.Category == categoryValue).ToList();
                 }
             }
             ViewBag.CurrentSort = sortByCategory;
 
-            return View(flashcardCollections.ToList());
+            return View(flashcardCollections);
         }
+
 
         public IActionResult CreateFlashcardCollection()
         {
