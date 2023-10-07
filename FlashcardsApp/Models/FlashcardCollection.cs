@@ -20,8 +20,12 @@ namespace FlashcardsApp.Models
 
         [Required(ErrorMessage = "Please select a category.")]
         public Category? Category { get; set; }
-        public int CompareTo(FlashcardCollection<FlashcardType> other)
+        public int CompareTo(FlashcardCollection<FlashcardType>? other)
         {
+            if (other == null)
+            {
+                return 1; 
+            }
             return other.CreatedDateTime.CompareTo(this.CreatedDateTime);
         }
 
