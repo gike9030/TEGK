@@ -105,9 +105,9 @@ namespace FlashcardsApp.Controllers
         {
             var collection = _db.FlashcardCollection.FirstOrDefault(flashcardCollection => flashcardCollection.Id == cardCollection.Id);
 
-            if (collection == null || flashcardFile == null || flashcardFile.Length > 0)
+            if (collection == null || flashcardFile == null || flashcardFile.Length < 1)
             {
-                return View(collection);
+                return RedirectToAction("Edit", collection);
             }
 
             using var reader = new StreamReader(flashcardFile.OpenReadStream());
@@ -131,7 +131,7 @@ namespace FlashcardsApp.Controllers
             }
 
             _db.SaveChanges();
-            return View(collection);
+            return RedirectToAction("Edit", collection);
         }
 
         [HttpPost]
