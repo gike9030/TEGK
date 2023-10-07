@@ -5,6 +5,11 @@
     var categories = Enum.GetNames(typeof(FlashcardsApp.Models.Category));
 }
 
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
  <form asp-action="Index" method="get" class="mb-3 text-center">
     <label for="sortByCategory">Sort by category:</label>
     <select id="sortByCategory" name="sortByCategory" onchange="this.form.submit();" class="mx-auto">

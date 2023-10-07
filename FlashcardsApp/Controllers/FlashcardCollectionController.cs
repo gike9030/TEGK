@@ -236,7 +236,8 @@ namespace FlashcardsApp.Controllers
 
             if (collection == null || !collection.Flashcards.Any())
             {
-                return NotFound();
+                TempData["Error"] = "The collection is empty or not found.";
+                return RedirectToAction("Index");
             }
 
             cardIndex = cardIndex ?? 0;
