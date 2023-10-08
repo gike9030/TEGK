@@ -20,19 +20,22 @@ namespace FlashcardsApp.Controllers
 
         public IActionResult Index(string? sortByCategory = null)
         {
-            IQueryable<FlashcardCollection<Flashcards>> flashcardCollections = _db.FlashcardCollection.Include(f => f.Flashcards);
+            List<FlashcardCollection<Flashcards>> flashcardCollections = _db.FlashcardCollection.Include(f => f.Flashcards).ToList();
+
+            flashcardCollections.Sort();
 
             if (!string.IsNullOrEmpty(sortByCategory))
             {
                 if (Enum.TryParse(sortByCategory, out Category categoryValue))
                 {
-                    flashcardCollections = flashcardCollections.Where(f => f.Category == categoryValue);
+                    flashcardCollections = flashcardCollections.Where(f => f.Category == categoryValue).ToList();
                 }
             }
             ViewBag.CurrentSort = sortByCategory;
 
-            return View(flashcardCollections.ToList());
+            return View(flashcardCollections);
         }
+
 
         public IActionResult CreateFlashcardCollection()
         {
@@ -73,9 +76,9 @@ namespace FlashcardsApp.Controllers
             if (collection != null)
             {
                 collection.CollectionName = cardCollection.CollectionName;
-                
+
                 _db.Update(collection);
-                _db.SaveChanges();           
+                _db.SaveChanges();
             }
             return RedirectToAction("Edit", collection);
         }
@@ -146,7 +149,6 @@ namespace FlashcardsApp.Controllers
                 return NotFound("Collection not found");
             }
 
-            // Remove all associated flashcards first
             foreach (var flashcard in collection.Flashcards)
             {
                 _db.Flashcards.Remove(flashcard);
@@ -228,8 +230,36 @@ namespace FlashcardsApp.Controllers
         {
             return RedirectToAction("Index");
         }
+        [HttpGet]
+        public IActionResult PlayCollection(int id, int? cardIndex)
+        {
+            var collection = _db.FlashcardCollection
+                .Include(flashcardCollection => flashcardCollection.Flashcards)
+                .FirstOrDefault(flashcardCollection => flashcardCollection.Id == id);
 
+            if (collection == null || !collection.Flashcards.Any())
+            {
+                TempData["Error"] = "The collection is empty or not found.";
+                return RedirectToAction("Index");
+            }
+
+            cardIndex = cardIndex ?? 0;
+            if (cardIndex < 0) cardIndex = 0;
+            if (cardIndex >= collection.Flashcards.Count) cardIndex = collection.Flashcards.Count - 1;
+
+            var cardToShow = collection.Flashcards.ElementAt((int)cardIndex);
+            ViewBag.CardIndex = cardIndex;
+            ViewBag.IsFirstCard = cardIndex == 0;
+            ViewBag.IsLastCard = cardIndex == collection.Flashcards.Count - 1;
+
+            return View(cardToShow);
+        }
+
+        [HttpPost]
+        public IActionResult UpdateElapsedTime([FromBody] ElapsedTime elapsedTime)
+        {
+            return Ok();
+        }
     }
-
 
 }

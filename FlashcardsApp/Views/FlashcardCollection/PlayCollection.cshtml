@@ -1,0 +1,250 @@
+﻿@model Flashcards
+
+<style>
+    .flashcard {
+        width: 70%;
+        height: 400px;
+        margin: 50px auto;
+        border: 1px solid #ddd;
+        cursor: pointer;
+        perspective: 1000px;
+    }
+
+    .card-inner {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        text-align: center;
+        transition: transform 0.6s;
+        transform-style: preserve-3d;
+    }
+
+    .flashcard.flipped .card-inner {
+        transform: rotateY(180deg);
+    }
+
+    .card-front, .card-back {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        -webkit-backface-visibility: hidden;
+        backface-visibility: hidden;
+    }
+
+    .card-front {
+        background: #fff;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .timer-exit-block {
+        position: absolute;
+        bottom: -70px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        z-index: 1000;
+        width: 200px; 
+    }
+
+    #timerDisplay {
+        background-color: #2196F3;
+        color: #ffffff;
+        height: 50px;
+        line-height: 50px;
+        padding-left: 15px;
+        padding-right: 15px;
+        border-radius: 25px;
+        font-size: 1.5rem;
+    }
+
+    .exit-btn {
+        background-color: #f44336;
+        color: #ffffff;
+        padding: 10px 15px;
+        border: none;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        border-radius: 25px;
+    }
+
+    .card-back {
+        background: #eee;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transform: rotateY(180deg);
+    }
+
+    .flashcard-container {
+        position: relative;
+        top: 50px;
+    }
+
+    .flashcard-navigation {
+        position: absolute;
+        top: 50%;
+        width: 100%;
+        transform: translateY(-50%);
+    }
+
+    .prev-btn, .next-btn {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 2rem;
+        background-color: rgba(255,255,255,0.7);
+        padding: 10px 15px;
+        border: none;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+        .prev-btn:hover, .next-btn:hover {
+            background-color: rgba(255,255,255,1);
+        }
+
+    .prev-btn {
+        left: 10px;
+    }
+
+    .next-btn {
+        right: 10px;
+    }
+
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.5);
+        z-index: 2000;
+    }
+
+    .modal-content {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 300px;
+        padding: 20px;
+        background-color: #fff;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        text-align: center;
+    }
+
+    .modal-button {
+        margin-top: 20px;
+        padding: 10px 20px;
+        background-color: #2196F3;
+        color: #fff;
+        border: none;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+        .modal-button:hover {
+            background-color: #187CBD;
+        }
+
+</style>
+
+<div class="flashcard-container">
+        <div class="flashcard" onclick="flipCard()">
+            <div class="card-inner">
+                <div class="card-front">
+                    @Model.Question
+                </div>
+                <div class="card-back">
+                    @Model.Answer
+                </div>
+            </div>
+        </div>
+
+    <div class="modal" id="timeSpentModal">
+        <div class="modal-content">
+            <h3>Total Time Spent</h3>
+            <p id="timeSpentDisplay">0h 0m 0s</p>
+            <button class="modal-button" onclick="closeModal()">Close</button>
+        </div>
+    </div>
+
+    <div class="flashcard-navigation">
+        @if (Model.FlashcardCollection != null)
+        {
+            @if (ViewBag.CardIndex > 0)
+            {
+                <a href="@Url.Action("PlayCollection", new { id = Model.FlashcardCollectionId, cardIndex = ViewBag.CardIndex - 1 })" class="prev-btn"> &lt; </a>
+            }
+
+            @if (ViewBag.CardIndex < (Model.FlashcardCollection.Flashcards.Count - 1))
+            {
+                <a href="@Url.Action("PlayCollection", new { id = Model.FlashcardCollectionId, cardIndex = ViewBag.CardIndex + 1 })" class="next-btn">></a>
+            }
+        }
+    </div>
+    <div class="timer-exit-block">
+        <div id="timerDisplay">0h 0m 0s</div>
+        <button onclick="exitPlayMode()" class="exit-btn">Exit</button>
+    </div>
+</div>
+
+<script>
+    function flipCard() {
+        var card = document.querySelector(".flashcard");
+        card.classList.toggle("flipped");
+    }
+
+    function exitPlayMode() {
+        window.location.href = "@Url.Action("Index", "FlashcardCollection")";
+    }
+
+    var elapsedSeconds = 0;
+
+    function displayElapsedTime(elapsedSeconds) {
+        let hours = Math.floor(elapsedSeconds / 3600);
+        let minutes = Math.floor((elapsedSeconds % 3600) / 60);
+        let seconds = elapsedSeconds % 60;
+        document.getElementById("timerDisplay").innerText = hours + "h " + minutes + "m " + seconds + "s";
+    }
+
+    function startTimer() {
+        let startTime = parseInt(sessionStorage.getItem("startTime"));
+
+        if (!startTime) {
+            startTime = Date.now();
+            sessionStorage.setItem("startTime", startTime.toString());
+        }
+
+        let initialElapsedSeconds = Math.floor((Date.now() - startTime) / 1000);
+        displayElapsedTime(initialElapsedSeconds);
+
+        setInterval(function () {
+            let elapsedSeconds = Math.floor((Date.now() - startTime) / 1000);
+            displayElapsedTime(elapsedSeconds);
+        }, 1000);
+    }
+
+    function exitPlayMode() {
+        let elapsedSeconds = Math.floor((Date.now() - parseInt(sessionStorage.getItem("startTime"))) / 1000);
+        let hours = Math.floor(elapsedSeconds / 3600);
+        let minutes = Math.floor((elapsedSeconds % 3600) / 60);
+        let seconds = elapsedSeconds % 60;
+
+        document.getElementById("timeSpentDisplay").innerText = hours + "h " + minutes + "m " + seconds + "s";
+
+        document.getElementById("timeSpentModal").style.display = "block";
+
+        sessionStorage.removeItem("startTime");
+    }
+
+    function closeModal() {
+        document.getElementById("timeSpentModal").style.display = "none";
+        window.location.href = "@Url.Action("Index", "FlashcardCollection")";
+    }
+
+</script>

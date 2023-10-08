@@ -6,7 +6,7 @@ using static System.Collections.Specialized.BitVector32;
 
 namespace FlashcardsApp.Models
 {
-    public class FlashcardCollection<FlashcardType>
+    public class FlashcardCollection<FlashcardType> : IComparable<FlashcardCollection<FlashcardType>>
     {
         [Key]
         public int Id { get; set; }
@@ -20,7 +20,14 @@ namespace FlashcardsApp.Models
 
         [Required(ErrorMessage = "Please select a category.")]
         public Category? Category { get; set; }
-
+        public int CompareTo(FlashcardCollection<FlashcardType>? other)
+        {
+            if (other == null)
+            {
+                return 1; 
+            }
+            return other.CreatedDateTime.CompareTo(this.CreatedDateTime);
+        }
 
         public string? FlashcardsAppUserId { get; set; }
         public FlashcardsAppUser? FlashcardsAppUser { get; set; }
