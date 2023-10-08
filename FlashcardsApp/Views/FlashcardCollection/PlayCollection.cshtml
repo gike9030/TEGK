@@ -155,19 +155,28 @@
 
     var elapsedSeconds = 0;
 
-    window.onload = startTimer;
-
     function startTimer() {
+        elapsedSeconds = parseInt(sessionStorage.getItem("elapsedSeconds")) || 0; 
+
         setInterval(function () {
             elapsedSeconds++;
             var hours = Math.floor(elapsedSeconds / 3600);
             var minutes = Math.floor((elapsedSeconds % 3600) / 60);
             var seconds = elapsedSeconds % 60;
             document.getElementById("timerDisplay").innerText = hours + "h " + minutes + "m " + seconds + "s";
+
+            sessionStorage.setItem("elapsedSeconds", elapsedSeconds.toString()); 
+
             if (elapsedSeconds % 10 === 0) {
                 updateServerTime(hours, minutes, seconds);
             }
         }, 1000);
+    }
+
+    function exitPlayMode() {
+        alert("You spent " + document.getElementById("timerDisplay").innerText + " on this collection.");
+        sessionStorage.removeItem("elapsedSeconds"); 
+        window.location.href = "@Url.Action("Index", "FlashcardCollection")";
     }
 
     function updateServerTime(hours, minutes, seconds) {

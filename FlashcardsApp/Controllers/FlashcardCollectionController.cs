@@ -231,7 +231,7 @@ namespace FlashcardsApp.Controllers
             return RedirectToAction("Index");
         }
         [HttpGet]
-        public IActionResult PlayCollection(int id, int? cardIndex, int hours = 0, int minutes = 0, int seconds = 0)
+        public IActionResult PlayCollection(int id, int? cardIndex)
         {
             var collection = _db.FlashcardCollection
                 .Include(flashcardCollection => flashcardCollection.Flashcards)
@@ -251,13 +251,6 @@ namespace FlashcardsApp.Controllers
             ViewBag.CardIndex = cardIndex;
             ViewBag.IsFirstCard = cardIndex == 0;
             ViewBag.IsLastCard = cardIndex == collection.Flashcards.Count - 1;
-            var elapsedTime = new ElapsedTime
-            {
-                Hours = hours,
-                Minutes = minutes,
-                Seconds = seconds
-            };
-            ViewBag.ElapsedTime = elapsedTime;
 
             return View(cardToShow);
         }
