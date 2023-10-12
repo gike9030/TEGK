@@ -114,24 +114,14 @@ namespace FlashcardsApp.Controllers
                 return RedirectToAction("Edit", collection);
             }
 
-            using var reader = new StreamReader(flashcardFile.OpenReadStream());
-            string content = reader.ReadToEnd();
-            var flashcards = content.Split(new[] { "\r\n\r\n", "\n\n" }, StringSplitOptions.RemoveEmptyEntries);
+            var fileController = new FileController();
+            var flashcardsList = fileController.ReadFlashcardsFromFile(flashcardFile);
 
-            foreach (var item in flashcards)
+            foreach (var flashcard in flashcardsList)
             {
-                var parts = item.Split(new[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries);
-                if (parts.Length == 2)
-                {
-                    var newFlashcard = new Flashcards
-                    {
-                        Question = parts[0],
-                        Answer = parts[1],
-                        FlashcardCollection = collection,
-                        FlashcardCollectionId = collection.Id
-                    };
-                    _db.Flashcards.Add(newFlashcard);
-                }
+                flashcard.FlashcardCollection = collection;
+                flashcard.FlashcardCollectionId = collection.Id;
+                _db.Flashcards.Add(flashcard);
             }
 
             _db.SaveChanges();
