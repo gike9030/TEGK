@@ -4,11 +4,11 @@ using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.IO;
 
-namespace FlashcardsApp.Controllers
+namespace FlashcardsApp.Services
 {
-    public class FileController : Controller
+    public class FlashcardFileReader
     {
-        public List<Flashcards> ReadFlashcardsFromFile(IFormFile flashcardFile)
+        public List<Flashcards> ReadFromFile(IFormFile flashcardFile)
         {
             var flashcardList = new List<Flashcards>();
 

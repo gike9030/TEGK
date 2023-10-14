@@ -1,5 +1,6 @@
 using FlashcardsApp.Data;
 using FlashcardsApp.Models;
+using FlashcardsApp.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -114,8 +115,8 @@ namespace FlashcardsApp.Controllers
                 return RedirectToAction("Edit", collection);
             }
 
-            var fileController = new FileController();
-            var flashcardsList = fileController.ReadFlashcardsFromFile(flashcardFile);
+            var fileReader = new FlashcardFileReader();
+            var flashcardsList = fileReader.ReadFromFile(flashcardFile);
 
             foreach (var flashcard in flashcardsList)
             {
