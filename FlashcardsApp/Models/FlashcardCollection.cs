@@ -20,32 +20,16 @@ namespace FlashcardsApp.Models
 
         [Required(ErrorMessage = "Please select a category.")]
         public Category? Category { get; set; }
+        public string? FlashcardsAppUserId { get; set; }
+        public FlashcardsAppUser? FlashcardsAppUser { get; set; }
+
         public int CompareTo(FlashcardCollection<FlashcardType>? other)
         {
             if (other == null)
             {
-                return 1; 
+                return 1;
             }
             return other.CreatedDateTime.CompareTo(this.CreatedDateTime);
         }
-
-        public string? FlashcardsAppUserId { get; set; }
-        public FlashcardsAppUser? FlashcardsAppUser { get; set; }
-    }
-
-    public enum ReactionType
-    {
-        Hearts,
-        Haha,
-        Like,
-        Angry
-    }
-    public enum Category
-    {
-        ComputerScience,
-        Mathematics,
-        Physics,
-        Medicine,
-        History
     }
 }
