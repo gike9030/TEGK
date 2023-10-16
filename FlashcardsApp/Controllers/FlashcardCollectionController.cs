@@ -1,5 +1,6 @@
 using FlashcardsApp.Data;
 using FlashcardsApp.Models;
+using FlashcardsApp.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -36,7 +37,6 @@ namespace FlashcardsApp.Controllers
             return View(flashcardCollections);
         }
 
-
         public IActionResult CreateFlashcardCollection()
         {
             return View();
@@ -49,7 +49,7 @@ namespace FlashcardsApp.Controllers
             {
                 _db.FlashcardCollection.Add(collection);
                 _db.SaveChanges();
-                return RedirectToAction("Index");
+                return RedirectToAction(actionName:"Index");
             }
             return View(collection);
         }
@@ -62,7 +62,7 @@ namespace FlashcardsApp.Controllers
                 .FirstOrDefault(flashcardCollection => flashcardCollection.Id == id);
             if (collection == null)
             {
-                return RedirectToAction("Index");
+                return RedirectToAction(actionName: "Index");
             }
 
             return View(collection);
@@ -79,8 +79,9 @@ namespace FlashcardsApp.Controllers
 
                 _db.Update(collection);
                 _db.SaveChanges();
+                return RedirectToAction(actionName: "Edit", routeValues: new { id = collection.Id });
             }
-            return RedirectToAction("Edit", collection);
+            return RedirectToAction(actionName: "Index");
         }
 
         [HttpPost]
@@ -99,8 +100,9 @@ namespace FlashcardsApp.Controllers
 
                 _db.Flashcards.Add(newFlashcard);
                 _db.SaveChanges();
+                return RedirectToAction(actionName: "Edit", routeValues: new { id = collection.Id });
             }
-            return RedirectToAction("Edit", collection);
+            return RedirectToAction(actionName: "Index");
         }
 
         [HttpPost]
@@ -113,24 +115,14 @@ namespace FlashcardsApp.Controllers
                 return RedirectToAction("Edit", collection);
             }
 
-            using var reader = new StreamReader(flashcardFile.OpenReadStream());
-            string content = reader.ReadToEnd();
-            var flashcards = content.Split(new[] { "\r\n\r\n", "\n\n" }, StringSplitOptions.RemoveEmptyEntries);
+            var fileReader = new FlashcardFileReader();
+            var flashcardsList = fileReader.ReadFromFile(flashcardFile);
 
-            foreach (var item in flashcards)
+            foreach (var flashcard in flashcardsList)
             {
-                var parts = item.Split(new[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries);
-                if (parts.Length == 2)
-                {
-                    var newFlashcard = new Flashcards
-                    {
-                        Question = parts[0],
-                        Answer = parts[1],
-                        FlashcardCollection = collection,
-                        FlashcardCollectionId = collection.Id
-                    };
-                    _db.Flashcards.Add(newFlashcard);
-                }
+                flashcard.FlashcardCollection = collection;
+                flashcard.FlashcardCollectionId = collection.Id;
+                _db.Flashcards.Add(flashcard);
             }
 
             _db.SaveChanges();
@@ -157,7 +149,7 @@ namespace FlashcardsApp.Controllers
             _db.FlashcardCollection.Remove(collection);
             _db.SaveChanges();
 
-            return RedirectToAction("Index");
+            return RedirectToAction(actionName: "Index");
         }
 
         [HttpGet]
@@ -176,7 +168,7 @@ namespace FlashcardsApp.Controllers
         }
 
         [HttpGet]
-        public IActionResult EditFlashcard(int id) // id is the Flashcards Model's Id
+        public IActionResult EditFlashcard(int id) 
         {
             var flashcard = _db.Flashcards.FirstOrDefault(f => f.Id == id);
             if (flashcard == null)
@@ -203,7 +195,7 @@ namespace FlashcardsApp.Controllers
                 _db.Entry(flashcard).State = EntityState.Modified;
                 _db.SaveChanges();
 
-                return RedirectToAction("Edit", new { id = flashcard.FlashcardCollectionId }); // Redirect back to the collection edit page
+                return RedirectToAction(actionName: "Edit", routeValues: new { id = flashcard.FlashcardCollectionId }); 
             }
             return View(editedFlashcard);
         }
@@ -228,7 +220,7 @@ namespace FlashcardsApp.Controllers
         [HttpGet]
         public IActionResult ViewCollections()
         {
-            return RedirectToAction("Index");
+            return RedirectToAction(actionName: "Index");
         }
         [HttpGet]
         public IActionResult PlayCollection(int id, int? cardIndex)
@@ -240,7 +232,7 @@ namespace FlashcardsApp.Controllers
             if (collection == null || !collection.Flashcards.Any())
             {
                 TempData["Error"] = "The collection is empty or not found.";
-                return RedirectToAction("Index");
+                return RedirectToAction(actionName:"Index");
             }
 
             cardIndex = cardIndex ?? 0;
