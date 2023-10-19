@@ -1,173 +1,113 @@
-﻿using FlashcardsAPI.Models;
-using JWTAuthentication.NET6._0.Auth;
-using Microsoft.AspNetCore.Authorization;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using FlashcardsAPI.Models;
+using JWTAuthentication.NET6._0.Auth;
 
 namespace FlashcardsAPI.Controllers
 {
-    [Route("api/[controller]/[action]")]
+    [Route("api/[controller]")]
     [ApiController]
     public class FlashcardsController : ControllerBase
     {
-        private readonly ApplicationDbContext _db;
+        private readonly ApplicationDbContext _context;
 
-        public FlashcardsController(ApplicationDbContext db)
+        public FlashcardsController(ApplicationDbContext context)
         {
-            _db = db;
+            _context = context;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetFlashcardCollectionById(int? id)
+        // GET: api/Flashcards/5
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Flashcards>> GetFlashcards(int id)
         {
-            FlashcardCollection<Flashcards>? collection = await _db.FlashcardCollection.FirstAsync(collection => collection.Id == id);
+          if (_context.Flashcards == null)
+          {
+              return NotFound();
+          }
+            var flashcards = await _context.Flashcards.FindAsync(id);
 
-            if (collection == null)
+            if (flashcards == null)
             {
                 return NotFound();
             }
-            return Ok(collection);
+
+            return flashcards;
         }
 
-        [HttpPost]
-        public async Task<IActionResult> GetFlashcardCollections(FlashcardCollectionFilterModel filter)
+        // PUT: api/Flashcards/5
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutFlashcards(int id, Flashcards flashcards)
         {
-            List<FlashcardCollection<Flashcards>> collections = _db.FlashcardCollection.ToList().Where(collection => collection.Category == filter.Category).ToList();
-
-            return Ok(collections);
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> GetFlashcardsInCollectionById(int? id)
-        {
-            FlashcardCollection<Flashcards>? collection = await _db.FlashcardCollection.Include(collection => collection.Flashcards).FirstAsync(flashcardCollection =>  flashcardCollection.Id == id);
-
-            foreach (Flashcards flashcard in collection.Flashcards) 
+            if (id != flashcards.Id)
             {
-                flashcard.FlashcardCollection = null;
+                return BadRequest();
             }
-            if (collection == null)
-            {
-                return NotFound();
-            }
-            
-            return Ok(collection.Flashcards);
-        }
 
-        [HttpPost]
-        public async Task<IActionResult> CreateFlashcardCollection(AddFlashcardCollectionModel collection)
-        {
-            try
-            {
-                _db.FlashcardCollection.Add(new FlashcardCollection<Flashcards> { CollectionName = collection.CollectionName, CreatedDateTime = collection.CreatedDateTime, Category = collection.Category, FlashcardsAppUserId = collection.FlashcardsAppUserId });
-                _db.SaveChanges();
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-
-        [HttpDelete]
-        public async Task<IActionResult> DeleteFlashcardCollection(int? id)
-        {
-            FlashcardCollection<Flashcards>? collection = await _db.FlashcardCollection.Include(collection => collection.Flashcards).FirstAsync(_ => _.Id == id);
+            _context.Entry(flashcards).State = EntityState.Modified;
 
             try
             {
-                foreach(Flashcards flashcard in collection.Flashcards)
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!FlashcardsExists(id))
                 {
-                    _db.Remove(flashcard);
+                    return NotFound();
                 }
-                _db.Remove(collection);
-                _db.SaveChanges();
-            } catch (Exception ex) 
-            {
-                return BadRequest(ex.Message);
+                else
+                {
+                    throw;
+                }
             }
 
-            return Ok();
+            return NoContent();
         }
 
-        [HttpPut]
-        public async Task<IActionResult> RenameFlashcardCollectionById(int id, string name)
-        {
-            FlashcardCollection<Flashcards> collection = await _db.FlashcardCollection.FirstAsync(collection => collection.Id == id);
-
-            try
-            {
-                collection.CollectionName = name;
-                _db.FlashcardCollection.Update(collection);
-                _db.SaveChanges();
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.ToString());
-            }
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> GetFlashcardById(int id)
-        {
-            Flashcards flashcard = await _db.Flashcards.FirstAsync(fc => fc.Id == id);
-
-            if (flashcard == null)
-            {
-                return BadRequest();
-            }
-
-            return Ok(flashcard);
-        }
-        
-        [HttpPut]
-        public async Task<IActionResult> EditFlashcard(EditFlashcardModel newFlashcard)
-        {
-            Flashcards flashcard = await _db.Flashcards.FirstAsync(_ => _.Id == newFlashcard.Id);
-
-            try
-            {
-                flashcard.Question = newFlashcard.NewQuestion;
-                flashcard.Answer = newFlashcard.NewAnswer;
-                _db.Flashcards.Update(flashcard);
-                _db.SaveChanges();
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.ToString());
-            }
-        }
-
+        // POST: api/Flashcards
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<IActionResult> CreateFlashcard(AddFlashcardModel? flashcard)
+        public async Task<ActionResult<Flashcards>> PostFlashcards(Flashcards flashcards)
         {
-            try
-            {
-                _db.Flashcards.Add(new Flashcards { Question = flashcard.Question, Answer = flashcard.Answer, FlashcardCollectionId = flashcard.FlashcardCollectionId });
-                _db.SaveChanges();
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+          if (_context.Flashcards == null)
+          {
+              return Problem("Entity set 'ApplicationDbContext.Flashcards'  is null.");
+          }
+            _context.Flashcards.Add(flashcards);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction("GetFlashcards", new { id = flashcards.Id }, flashcards);
         }
 
-        [HttpDelete]
-        public async Task<IActionResult> DeleteFlashcardById(int? id)
+        // DELETE: api/Flashcards/5
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteFlashcards(int id)
         {
-            Flashcards? flashcard = await _db.Flashcards.FirstAsync(flashcard => flashcard.Id == id);
-
-            if (flashcard == null)
+            if (_context.Flashcards == null)
             {
-                return BadRequest();
+                return NotFound();
+            }
+            var flashcards = await _context.Flashcards.FindAsync(id);
+            if (flashcards == null)
+            {
+                return NotFound();
             }
 
-            _db.Remove(flashcard);
-            _db.SaveChanges();
-            return Ok();
+            _context.Flashcards.Remove(flashcards);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+        private bool FlashcardsExists(int id)
+        {
+            return (_context.Flashcards?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

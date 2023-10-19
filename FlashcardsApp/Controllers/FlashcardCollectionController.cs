@@ -1,27 +1,34 @@
+using System.Collections.Generic;
+using System.Net.Http;
+using System.Text;
 using FlashcardsApp.Data;
 using FlashcardsApp.Models;
 using FlashcardsApp.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Linq;
+using Newtonsoft.Json;
 
 namespace FlashcardsApp.Controllers
 {
     [Authorize]
     public class FlashcardCollectionController : Controller
     {
-        private readonly FlashcardsAppContext _db;
+        private readonly Uri _baseAddress = new("https://localhost:7296/api");
+        private readonly HttpClient _httpClient;
 
-        public FlashcardCollectionController(FlashcardsAppContext db)
+        public FlashcardCollectionController()
         {
-            _db = db;
+            _httpClient = new HttpClient
+            {
+                BaseAddress = _baseAddress
+            };
         }
 
         public IActionResult Index(string? sortByCategory = null)
         {
-            List<FlashcardCollection<Flashcards>> flashcardCollections = _db.FlashcardCollection.Include(f => f.Flashcards).ToList();
+
+            List<FlashcardCollection<Flashcards>>? flashcardCollections = HttpApiService.GetFromAPI<List<FlashcardCollection<Flashcards>>>(_httpClient, "/FlashcardCollections/GetFlashcardCollections");
 
             flashcardCollections.Sort();
 
@@ -45,24 +52,31 @@ namespace FlashcardsApp.Controllers
         [HttpPost]
         public IActionResult CreateFlashcardCollection(FlashcardCollection<Flashcards> collection)
         {
+
             if (ModelState.IsValid)
             {
-                _db.FlashcardCollection.Add(collection);
-                _db.SaveChanges();
-                return RedirectToAction(actionName:"Index");
+                HttpResponseMessage resp = HttpApiService.PostToAPI(_httpClient, "/FlashcardCollections/PostFlashcardCollections", collection);
+                
+                if (resp.IsSuccessStatusCode)
+                {
+                    return RedirectToAction("Index");
+                }
+
+                return View(collection);
             }
             return View(collection);
+            
+
         }
 
         [HttpGet]
         public IActionResult Edit(int id)
         {
-            var collection = _db.FlashcardCollection
-                .Include(flashcardCollection => flashcardCollection.Flashcards)
-                .FirstOrDefault(flashcardCollection => flashcardCollection.Id == id);
+            FlashcardCollection<Flashcards>? collection = HttpApiService.GetFromAPI<FlashcardCollection<Flashcards>>(_httpClient, "/FlashcardCollections/GetFlashcardCollections/", id);
+            
             if (collection == null)
             {
-                return RedirectToAction(actionName: "Index");
+                return RedirectToAction("Index");
             }
 
             return View(collection);
@@ -71,23 +85,23 @@ namespace FlashcardsApp.Controllers
         [HttpPost]
         public IActionResult RenameCollection(FlashcardCollection<Flashcards> cardCollection)
         {
-            var collection = _db.FlashcardCollection.FirstOrDefault(flashcardCollection => flashcardCollection.Id == cardCollection.Id);
+            FlashcardCollection<Flashcards>? collection = HttpApiService.GetFromAPI<FlashcardCollection<Flashcards>>(_httpClient, "/FlashcardCollections/GetFlashcardCollections/" + cardCollection.Id);
 
-            if (collection != null)
+            collection.CollectionName = cardCollection.CollectionName;
+
+            HttpResponseMessage response = HttpApiService.PutToAPI(_httpClient, "/FlashcardCollections/PutFlashcardCollection", collection);
+            if (response.IsSuccessStatusCode)
             {
-                collection.CollectionName = cardCollection.CollectionName;
-
-                _db.Update(collection);
-                _db.SaveChanges();
-                return RedirectToAction(actionName: "Edit", routeValues: new { id = collection.Id });
+                return RedirectToAction("Edit", new { id = cardCollection.Id });
             }
-            return RedirectToAction(actionName: "Index");
+
+            return RedirectToAction("Index");
         }
 
         [HttpPost]
         public IActionResult AddFlashcard(FlashcardCollection<Flashcards> cardCollection, string NewFlashcardFrontSide, string NewFlashcardBackSide)
         {
-            var collection = _db.FlashcardCollection.FirstOrDefault(flashcardCollection => flashcardCollection.Id == cardCollection.Id);
+            FlashcardCollection<Flashcards>? collection = HttpApiService.GetFromAPI<FlashcardCollection<Flashcards>>(_httpClient, "/FlashcardCollections/GetFlashcardCollections/", cardCollection.Id);
 
             if (collection != null)
             {
@@ -98,66 +112,55 @@ namespace FlashcardsApp.Controllers
                     FlashcardCollectionId = collection.Id
                 };
 
-                _db.Flashcards.Add(newFlashcard);
-                _db.SaveChanges();
-                return RedirectToAction(actionName: "Edit", routeValues: new { id = collection.Id });
+                HttpResponseMessage response = HttpApiService.PostToAPI(_httpClient, "/Flashcards", newFlashcard);
+
+                if (response.IsSuccessStatusCode)
+                    return RedirectToAction("Edit", new { id = collection.Id });
             }
-            return RedirectToAction(actionName: "Index");
+            return RedirectToAction("Index");
         }
 
         [HttpPost]
         public IActionResult AddFlashcardsFromFile(FlashcardCollection<Flashcards> cardCollection, IFormFile? flashcardFile)
         {
-            var collection = _db.FlashcardCollection.FirstOrDefault(flashcardCollection => flashcardCollection.Id == cardCollection.Id);
+            FlashcardCollection<Flashcards>? collection = HttpApiService.GetFromAPI<FlashcardCollection<Flashcards>>(_httpClient, "/FlashcardCollections/GetFlashcardCollections/", cardCollection.Id);
 
             if (collection == null || flashcardFile == null || flashcardFile.Length < 1)
             {
                 return RedirectToAction("Edit", collection);
             }
 
-            var fileReader = new FlashcardFileReader();
-            var flashcardsList = fileReader.ReadFromFile(flashcardFile);
+            FlashcardFileReader fileReader = new();
+            List<Flashcards> flashcardsList = fileReader.ReadFromFile(flashcardFile);
 
-            foreach (var flashcard in flashcardsList)
+            foreach (Flashcards flashcard in flashcardsList)
             {
-                flashcard.FlashcardCollection = collection;
                 flashcard.FlashcardCollectionId = collection.Id;
-                _db.Flashcards.Add(flashcard);
+                HttpApiService.PostToAPI(_httpClient, "/Flashcards", flashcard);
             }
 
-            _db.SaveChanges();
             return RedirectToAction("Edit", collection);
         }
 
         [HttpPost]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            var collection = _db.FlashcardCollection
-                .Include(flashcardCollection => flashcardCollection.Flashcards)
-                .FirstOrDefault(flashcardCollection => flashcardCollection.Id == id);
+            FlashcardCollection<Flashcards>? collection = HttpApiService.GetFromAPI<FlashcardCollection<Flashcards>>(_httpClient, "/FlashcardCollections/GetFlashcardCollections/", id);
 
             if (collection == null)
             {
                 return NotFound("Collection not found");
             }
 
-            foreach (var flashcard in collection.Flashcards)
-            {
-                _db.Flashcards.Remove(flashcard);
-            }
+            await HttpApiService.DeleteFromAPI(_httpClient, "/FlashcardCollections/DeleteFlashcardCollections/", id);
 
-            _db.FlashcardCollection.Remove(collection);
-            _db.SaveChanges();
-
-            return RedirectToAction(actionName: "Index");
+            return RedirectToAction("Index");
         }
 
         [HttpGet]
         public IActionResult ViewCollection(int id)
         {
-            var collection = _db.FlashcardCollection
-                .Include(flashcardCollection => flashcardCollection.Flashcards)
-                .FirstOrDefault(flashcardCollection => flashcardCollection.Id == id);
+            var collection = HttpApiService.GetFromAPI<FlashcardCollection<Flashcards>>(_httpClient, "/FlashcardCollections/GetFlashcardCollections/", id);
 
             if (collection == null)
             {
@@ -170,7 +173,7 @@ namespace FlashcardsApp.Controllers
         [HttpGet]
         public IActionResult EditFlashcard(int id) 
         {
-            var flashcard = _db.Flashcards.FirstOrDefault(f => f.Id == id);
+            Flashcards? flashcard = HttpApiService.GetFromAPI<Flashcards>(_httpClient, "/Flashcards/", id);
             if (flashcard == null)
             {
                 return NotFound();
@@ -183,7 +186,8 @@ namespace FlashcardsApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                var flashcard = _db.Flashcards.FirstOrDefault(f => f.Id == editedFlashcard.Id);
+                Flashcards? flashcard = HttpApiService.GetFromAPI<Flashcards>(_httpClient, "/Flashcards/", editedFlashcard.Id);
+
                 if (flashcard == null)
                 {
                     return NotFound();
@@ -192,54 +196,51 @@ namespace FlashcardsApp.Controllers
                 flashcard.Question = editedFlashcard.Question;
                 flashcard.Answer = editedFlashcard.Answer;
 
-                _db.Entry(flashcard).State = EntityState.Modified;
-                _db.SaveChanges();
+                HttpApiService.PutToAPI(_httpClient, "/Flashcards/" + flashcard.Id, flashcard);
 
-                return RedirectToAction(actionName: "Edit", routeValues: new { id = flashcard.FlashcardCollectionId }); 
+
+                return RedirectToAction("Edit", new { id = flashcard.FlashcardCollectionId }); 
             }
             return View(editedFlashcard);
         }
 
         [HttpPost]
-        public IActionResult DeleteFlashcard(int id)
+        public async Task<IActionResult> DeleteFlashcard(int id)
         {
-            var flashcard = _db.Flashcards.Find(id);
+            var flashcard = HttpApiService.GetFromAPI<Flashcards>(_httpClient, "/Flashcards/", id);
+
             if (flashcard == null)
             {
                 return NotFound();
             }
 
-            int collectionId = flashcard.FlashcardCollectionId;
+            await HttpApiService.DeleteFromAPI(_httpClient, "/Flashcards/", id);
 
-            _db.Flashcards.Remove(flashcard);
-            _db.SaveChanges();
-
-            return RedirectToAction("Edit", new { id = collectionId });
+            return RedirectToAction("Edit", new { id = flashcard.FlashcardCollectionId });
         }
 
         [HttpGet]
         public IActionResult ViewCollections()
         {
-            return RedirectToAction(actionName: "Index");
+            return RedirectToAction("Index");
         }
         [HttpGet]
         public IActionResult PlayCollection(int id, int? cardIndex)
         {
-            var collection = _db.FlashcardCollection
-                .Include(flashcardCollection => flashcardCollection.Flashcards)
-                .FirstOrDefault(flashcardCollection => flashcardCollection.Id == id);
+            FlashcardCollection<Flashcards>? collection = HttpApiService.GetFromAPI<FlashcardCollection<Flashcards>>(_httpClient, "/FlashcardCollections/GetFlashcardCollections/", id);
 
             if (collection == null || !collection.Flashcards.Any())
             {
                 TempData["Error"] = "The collection is empty or not found.";
-                return RedirectToAction(actionName:"Index");
+                return RedirectToAction("Index");
             }
 
-            cardIndex = cardIndex ?? 0;
+            cardIndex ??= 0;
             if (cardIndex < 0) cardIndex = 0;
             if (cardIndex >= collection.Flashcards.Count) cardIndex = collection.Flashcards.Count - 1;
 
-            var cardToShow = collection.Flashcards.ElementAt((int)cardIndex);
+            Flashcards cardToShow = collection.Flashcards.ElementAt((int)cardIndex);
+            cardToShow.FlashcardCollection = collection;
             ViewBag.CardIndex = cardIndex;
             ViewBag.IsFirstCard = cardIndex == 0;
             ViewBag.IsLastCard = cardIndex == collection.Flashcards.Count - 1;
