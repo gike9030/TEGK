@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
+using System.Text.RegularExpressions;
 using FlashcardsApp.Data;
 using FlashcardsApp.Models;
 using FlashcardsApp.Services;
@@ -25,14 +26,14 @@ namespace FlashcardsApp.Controllers
             };
         }
 
-        public IActionResult Index(string? sortByCategory = null)
+        public IActionResult Index(string? sortByCategory = null, string? search = null)
         {
 
             List<FlashcardCollection<Flashcards>>? flashcardCollections = HttpApiService.GetFromAPI<List<FlashcardCollection<Flashcards>>>(_httpClient, "/FlashcardCollections/GetFlashcardCollections");
 
             flashcardCollections.Sort();
 
-            if (!string.IsNullOrEmpty(sortByCategory))
+                if (!string.IsNullOrEmpty(sortByCategory))
             {
                 if (Enum.TryParse(sortByCategory, out Category categoryValue))
                 {
@@ -253,5 +254,44 @@ namespace FlashcardsApp.Controllers
         {
             return Ok();
         }
+
+[HttpGet]
+public IActionResult Search(string? search)
+{
+    var allCollections = HttpApiService.GetFromAPI<List<FlashcardCollection<Flashcards>>?>(_httpClient, "/FlashcardCollections/GetFlashcardCollections");
+
+    if (allCollections == null || !allCollections.Any())
+    {
+        return View("ErrorView");
+    }
+
+    TempData["LastSearchQuery"] = search;
+
+    if (!string.IsNullOrEmpty(search))
+    {
+        var pattern = Regex.Escape(search);
+        var regex = new Regex(pattern, RegexOptions.IgnoreCase);
+
+        var matchingCollections = allCollections.Where(collection => regex.IsMatch(collection.CollectionName)).ToList();
+
+        return View("SearchView", matchingCollections);
+    }
+
+    return View("SearchView", allCollections);
+}
+
+
+        [HttpGet]
+        public IActionResult Back()
+        {
+            if (TempData["LastSearchQuery"] != null)
+            {
+                string lastSearchQuery = TempData["LastSearchQuery"].ToString();
+                return RedirectToAction("Search", new { search = lastSearchQuery });
+            }
+
+            return RedirectToAction("Index");
+        }
+
     }
 }

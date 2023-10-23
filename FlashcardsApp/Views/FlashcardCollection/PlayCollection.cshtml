@@ -240,7 +240,12 @@
 
     function closeModal() {
         document.getElementById("timeSpentModal").style.display = "none";
-        window.location.href = "@Url.Action("Index", "FlashcardCollection")";
+        let lastSearchQuery = "@TempData["LastSearchQuery"]";
+        if (lastSearchQuery) {
+            window.location.href = "@Url.Action("Search", "FlashcardCollection", new { search = TempData["LastSearchQuery"] })"; 
+        } else {
+            window.location.href = "@Url.Action("Index", "FlashcardCollection")";
+        }
     }
 
 </script>
