@@ -225,6 +225,7 @@ namespace FlashcardsApp.Controllers
         {
             return RedirectToAction("Index");
         }
+
         [HttpGet]
         public IActionResult PlayCollection(int id, int? cardIndex)
         {
@@ -232,7 +233,13 @@ namespace FlashcardsApp.Controllers
 
             if (collection == null || !collection.Flashcards.Any())
             {
-                TempData["Error"] = "The collection is empty or not found.";
+                TempData["ErrorMessage"] = "The selected collection is empty!";
+                if (TempData["LastSearchQuery"] != null)
+                {
+                    string lastSearchQuery = TempData["LastSearchQuery"].ToString();
+                    return RedirectToAction("Search", new { search = lastSearchQuery });
+                }
+
                 return RedirectToAction("Index");
             }
 
@@ -255,31 +262,35 @@ namespace FlashcardsApp.Controllers
             return Ok();
         }
 
-[HttpGet]
-public IActionResult Search(string? search)
-{
-    var allCollections = HttpApiService.GetFromAPI<List<FlashcardCollection<Flashcards>>?>(_httpClient, "/FlashcardCollections/GetFlashcardCollections");
+        [HttpGet]
+        public IActionResult Search(string? search)
+        {
+            var allCollections = HttpApiService.GetFromAPI<List<FlashcardCollection<Flashcards>>?>(_httpClient, "/FlashcardCollections/GetFlashcardCollections");
 
-    if (allCollections == null || !allCollections.Any())
-    {
-        return View("ErrorView");
-    }
+            if (TempData["ErrorMessage"] is string errorMessage)
+            {
+                ViewBag.ErrorMessage = errorMessage;
+            }
 
-    TempData["LastSearchQuery"] = search;
+            if (allCollections == null || !allCollections.Any())
+            {
+                return View("ErrorView");
+            }
 
-    if (!string.IsNullOrEmpty(search))
-    {
-        var pattern = Regex.Escape(search);
-        var regex = new Regex(pattern, RegexOptions.IgnoreCase);
+            TempData["LastSearchQuery"] = search;
 
-        var matchingCollections = allCollections.Where(collection => regex.IsMatch(collection.CollectionName)).ToList();
+            if (!string.IsNullOrEmpty(search))
+            {
+                var pattern = Regex.Escape(search);
+                var regex = new Regex(pattern, RegexOptions.IgnoreCase);
 
-        return View("SearchView", matchingCollections);
-    }
+                var matchingCollections = allCollections.Where(collection => regex.IsMatch(collection.CollectionName)).ToList();
 
-    return View("SearchView", allCollections);
-}
+                return View("SearchView", matchingCollections);
+            }
 
+            return View("SearchView", allCollections);
+        }
 
         [HttpGet]
         public IActionResult Back()
