@@ -226,6 +226,14 @@
     }
 
     function exitPlayMode() {
+        showTimeSpentModal();
+    }
+
+    window.addEventListener('beforeunload', function (event) {
+        showTimeSpentModal();
+    });
+
+    function showTimeSpentModal() {
         let elapsedSeconds = Math.floor((Date.now() - parseInt(sessionStorage.getItem("startTime"))) / 1000);
         let hours = Math.floor(elapsedSeconds / 3600);
         let minutes = Math.floor((elapsedSeconds % 3600) / 60);
