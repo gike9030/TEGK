@@ -21,6 +21,13 @@
 
 <h1 class="text-center">@ViewData["Title"]</h1>
 
+@if (!string.IsNullOrEmpty(ViewBag.SearchErrorMessage))
+{
+    <div class="alert alert-warning">
+        @ViewBag.SearchErrorMessage
+    </div>
+}
+
 <div class="collection-grid">
     @foreach (var collection in Model)
     {

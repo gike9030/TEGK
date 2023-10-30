@@ -33,7 +33,10 @@ namespace FlashcardsApp.Controllers
 
             flashcardCollections.Sort();
 
-                if (!string.IsNullOrEmpty(sortByCategory))
+            TempData.Clear();
+
+
+            if (!string.IsNullOrEmpty(sortByCategory))
             {
                 if (Enum.TryParse(sortByCategory, out Category categoryValue))
                 {
@@ -285,6 +288,11 @@ namespace FlashcardsApp.Controllers
                 var regex = new Regex(pattern, RegexOptions.IgnoreCase);
 
                 var matchingCollections = allCollections.Where(collection => regex.IsMatch(collection.CollectionName)).ToList();
+
+                if (!matchingCollections.Any())
+                {
+                    ViewBag.SearchErrorMessage = "No results found for the search query.";
+                }
 
                 return View("SearchView", matchingCollections);
             }
