@@ -40,4 +40,11 @@ public class FlashcardsAppContext : IdentityDbContext<FlashcardsAppUser>
     public DbSet<FlashcardCollection<Flashcards>> FlashcardCollection { get; set; }
     public DbSet<Flashcards> Flashcards { get; set; }
     public DbSet<Reaction<Flashcards>> Reactions { get; set; }
+    public class ProfileViewModel
+    {
+        public string? FirstName { get; set; }
+        public string? LastName { get; set; }
+        public string? Bio { get; set; }
+    }
+
 }

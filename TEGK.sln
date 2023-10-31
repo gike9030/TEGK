@@ -5,7 +5,7 @@ VisualStudioVersion = 17.7.34024.191
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FlashcardsApp", "FlashcardsApp\FlashcardsApp.csproj", "{91F1064B-E0E1-439D-BD6C-6B5F17A2520B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlashcardsAPI", "FlashcardsAPI\FlashcardsAPI.csproj", "{43AFBC83-5407-4F89-89E2-3D42E512869B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FlashcardsAPI", "FlashcardsAPI\FlashcardsAPI.csproj", "{43AFBC83-5407-4F89-89E2-3D42E512869B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
