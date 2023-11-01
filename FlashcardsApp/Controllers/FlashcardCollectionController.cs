@@ -33,7 +33,7 @@ namespace FlashcardsApp.Controllers
 
             flashcardCollections.Sort();
 
-            TempData.Clear();
+            TempData["LastSearchQuery"] = null;
 
 
             if (!string.IsNullOrEmpty(sortByCategory))
@@ -240,7 +240,7 @@ namespace FlashcardsApp.Controllers
                 if (TempData["LastSearchQuery"] != null)
                 {
                     string lastSearchQuery = TempData["LastSearchQuery"].ToString();
-                    return RedirectToAction("Search", new { search = lastSearchQuery });
+                    return RedirectToAction("Search", "Home", new { search = lastSearchQuery });
                 }
 
                 return RedirectToAction("Index");
@@ -265,40 +265,6 @@ namespace FlashcardsApp.Controllers
             return Ok();
         }
 
-        [HttpGet]
-        public IActionResult Search(string? search)
-        {
-            var allCollections = HttpApiService.GetFromAPI<List<FlashcardCollection<Flashcards>>?>(_httpClient, "/FlashcardCollections/GetFlashcardCollections");
-
-            if (TempData["ErrorMessage"] is string errorMessage)
-            {
-                ViewBag.ErrorMessage = errorMessage;
-            }
-
-            if (allCollections == null || !allCollections.Any())
-            {
-                return View("ErrorView");
-            }
-
-            TempData["LastSearchQuery"] = search;
-
-            if (!string.IsNullOrEmpty(search))
-            {
-                var pattern = Regex.Escape(search);
-                var regex = new Regex(pattern, RegexOptions.IgnoreCase);
-
-                var matchingCollections = allCollections.Where(collection => regex.IsMatch(collection.CollectionName)).ToList();
-
-                if (!matchingCollections.Any())
-                {
-                    ViewBag.SearchErrorMessage = "No results found for the search query.";
-                }
-
-                return View("SearchView", matchingCollections);
-            }
-
-            return View("SearchView", allCollections);
-        }
 
         [HttpGet]
         public IActionResult Back()
@@ -306,7 +272,7 @@ namespace FlashcardsApp.Controllers
             if (TempData["LastSearchQuery"] != null)
             {
                 string lastSearchQuery = TempData["LastSearchQuery"].ToString();
-                return RedirectToAction("Search", new { search = lastSearchQuery });
+                return RedirectToAction("Search","Home", new { search = lastSearchQuery });
             }
 
             return RedirectToAction("Index");
