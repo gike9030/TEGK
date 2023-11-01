@@ -29,7 +29,7 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
-                    <ul class="navbar-nav">
+                    <ul class="navbar-nav" mr-auto>
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
@@ -40,11 +40,12 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="FlashcardCollection" asp-action="Index">Collections</a>
                         </li>
                     </ul>
-
-                    <form class="form-inline my-2 my-lg-0 ml-auto mr-auto" asp-controller="Home" asp-action="Search" method="get">
-                        <input class="form-control mr-sm-2 rounded-pill" type="text" name="search" placeholder="Search collections" aria-label="Search" style="width: 700px;">
+                    <div class="d-flex flex-grow-1 align-items-center justify-content-start mr-3">
+                        <form class="form-inline my-2 my-lg-0 flex-grow-1" style="margin-left: 20%; margin-right: 35%;" asp-controller="Home" asp-action="Search" method="get">
+                            <input class="form-control rounded-pill flex-grow-1" type="text" name="search" placeholder="Search collections" aria-label="Search">
                     </form>
 
+                    
                     @if (User.Identity.IsAuthenticated && user != null)
                     {
                         <div class="dropdown">
@@ -66,6 +67,7 @@
                             <partial name="_LoginPartial.cshtml" />
                         </div>
                     }
+                    </div>
                 </div>
             </div>
         </nav>
