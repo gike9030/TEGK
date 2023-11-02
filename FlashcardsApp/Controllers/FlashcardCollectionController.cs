@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
+using System.Text.RegularExpressions;
 using FlashcardsApp.Data;
 using FlashcardsApp.Models;
 using FlashcardsApp.Services;
@@ -25,12 +26,15 @@ namespace FlashcardsApp.Controllers
             };
         }
 
-        public IActionResult Index(string? sortByCategory = null)
+        public IActionResult Index(string? sortByCategory = null, string? search = null)
         {
 
             List<FlashcardCollection<Flashcards>>? flashcardCollections = HttpApiService.GetFromAPI<List<FlashcardCollection<Flashcards>>>(_httpClient, "/FlashcardCollections/GetFlashcardCollections");
 
             flashcardCollections.Sort();
+
+            TempData["LastSearchQuery"] = null;
+
 
             if (!string.IsNullOrEmpty(sortByCategory))
             {
@@ -224,6 +228,7 @@ namespace FlashcardsApp.Controllers
         {
             return RedirectToAction("Index");
         }
+
         [HttpGet]
         public IActionResult PlayCollection(int id, int? cardIndex)
         {
@@ -231,7 +236,13 @@ namespace FlashcardsApp.Controllers
 
             if (collection == null || !collection.Flashcards.Any())
             {
-                TempData["Error"] = "The collection is empty or not found.";
+                TempData["ErrorMessage"] = "The selected collection is empty!";
+                if (TempData["LastSearchQuery"] != null)
+                {
+                    string lastSearchQuery = TempData["LastSearchQuery"].ToString();
+                    return RedirectToAction("Search", "Home", new { search = lastSearchQuery });
+                }
+
                 return RedirectToAction("Index");
             }
 
@@ -253,5 +264,19 @@ namespace FlashcardsApp.Controllers
         {
             return Ok();
         }
+
+
+        [HttpGet]
+        public IActionResult Back()
+        {
+            if (TempData["LastSearchQuery"] != null)
+            {
+                string lastSearchQuery = TempData["LastSearchQuery"].ToString();
+                return RedirectToAction("Search","Home", new { search = lastSearchQuery });
+            }
+
+            return RedirectToAction("Index");
+        }
+
     }
 }
