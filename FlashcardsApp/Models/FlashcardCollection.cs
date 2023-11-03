@@ -20,6 +20,7 @@ namespace FlashcardsApp.Models
 
         [Required(ErrorMessage = "Please select a category.")]
         public Category? Category { get; set; }
+        public ICollection<Comment> Comments { get; set; } = new List<Comment>();
         public string? FlashcardsAppUserId { get; set; }
         public FlashcardsAppUser? FlashcardsAppUser { get; set; }
 

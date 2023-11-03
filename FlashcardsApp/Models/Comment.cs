@@ -1,8 +1,7 @@
-﻿using System;
+﻿using FlashcardsApp.Areas.Identity.Data;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
-namespace FlashcardsAPI.Models
+namespace FlashcardsApp.Models
 {
     public class Comment
     {
@@ -15,9 +14,8 @@ namespace FlashcardsAPI.Models
         public int FlashcardCollectionId { get; set; }
 
         public FlashcardCollection<Flashcards>? FlashcardCollection { get; set; }
-     
         public string? UserId { get; set; }
         public FlashcardsAppUser? User { get; set; }
     }
-
 }
+

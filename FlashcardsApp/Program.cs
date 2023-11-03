@@ -15,6 +15,8 @@ builder.Services.AddRazorPages();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddLogging();
+
 builder.Services.AddScoped<SearchService>();
 
 var app = builder.Build();
