@@ -12,6 +12,7 @@ namespace FlashcardsAPI.Models
         public DateTime CreatedDateTime { get; set; } = DateTime.Now;
         public int ViewCount { get; set; }
         public ICollection<Reaction<FlashcardType>> Reactions { get; set; } = new List<Reaction<FlashcardType>>();
+        public ICollection<Comment> Comments { get; set; } = new List<Comment>();
 
         [Required(ErrorMessage = "Please select a category.")]
         public Category? Category { get; set; }
