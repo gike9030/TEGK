@@ -14,7 +14,7 @@
     <div class="alert alert-danger">@TempData["Error"]</div>
 }
 
- <form asp-action="Index" method="get" class="mb-3 text-center">
+<form asp-action="Index" method="get" class="mb-3 text-center">
     <label for="sortByCategory">Sort by category:</label>
     <select id="sortByCategory" name="sortByCategory" onchange="this.form.submit();" class="mx-auto">
         <option value="">--View All Categories--</option>
@@ -30,7 +30,7 @@
             }
         }
     </select>
-</form> 
+</form>
 
 <h1 class="text-center">@ViewData["Title"]</h1>
 
@@ -41,39 +41,64 @@
     </div>
 }
 
-
-<div class="collection-grid">
+<div class="flashcard-feed">
     @foreach (var collection in Model)
     {
-        <div class="collection-card">
-            <div class="dropdown">
-                <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <i class="fas fa-ellipsis-v"></i>
-                </button>
-                <div class="dropdown-menu dropdown-menu-right">
-                    @if  (collection.FlashcardsAppUserId == UserManager.GetUserId(User))
-                    {
-                        <a asp-action="Edit" asp-route-id="@collection.Id" class="dropdown-item">Edit</a>
+        <div class="flashcard-item">
+            <div class="collection-card">
+                <div class="dropdown">
+                    <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fas fa-ellipsis-v"></i>
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-right">
+                        @if (collection.FlashcardsAppUserId == UserManager.GetUserId(User))
+                        {
+                            <a asp-action="Edit" asp-route-id="@collection.Id" class="dropdown-item">Edit</a>
+                            <a asp-action="ViewCollection" asp-route-id="@collection.Id" class="dropdown-item">View</a>
+                            <a class="dropdown-item" href="#" onclick="event.preventDefault(); if(confirm('Are you sure you want to delete this collection?')) { document.getElementById('deleteForm-@collection.Id').submit(); }">Delete</a>
+                        }
                         <a asp-action="ViewCollection" asp-route-id="@collection.Id" class="dropdown-item">View</a>
-                        <a class="dropdown-item" href="#" onclick="event.preventDefault(); if(confirm('Are you sure you want to delete this collection?')) { document.getElementById('deleteForm-@collection.Id').submit(); }">Delete</a>
-                    }
-                    <a asp-action="ViewCollection" asp-route-id="@collection.Id" class="dropdown-item">View</a>
+                    </div>
+                </div>
+
+                <div class="card-content text-center">
+                    <h2>@collection.CollectionName</h2>
+                    <span>@collection.Category</span>
+                </div>
+
+                <form id="deleteForm-@collection.Id" asp-action="Delete" asp-route-id="@collection.Id" method="post" style="display:none;"></form>
+                <div class="play-button">
+                    <a href="@Url.Action("PlayCollection", "FlashcardCollection", new { id = collection.Id })" class="btn btn-primary">
+                        <i class="fas fa-play"></i> Play
+                    </a>
                 </div>
             </div>
+            <div class="comment-section">
+                <h3>Comments</h3>
+                <div class="comments-container">
+                    @foreach (var comment in collection.Comments)
+                    {
+                        <div class="comment">
+                            <strong>@comment.FirstName:</strong> @comment.Content
+                        </div>
+                    }
+                </div>
+                <div class="add-comment-section">
+                    <form asp-controller="Comments" asp-action="Create" method="post" class="comment-form">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="FlashcardCollectionId" value="@collection.Id" />
+                        <div class="input-group">
+                            <input type="text" name="Content" placeholder="Write a comment..." required class="form-control" />
+                            <div class="input-group-append">
+                                <button type="submit" class="btn btn-primary">Post</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
 
-            <div class="card-content text-center">
-                <h2>@collection.CollectionName</h2>
-                <span> @collection.Category</span>
             </div>
+            
 
-            <form id="deleteForm-@collection.Id" asp-action="Delete" asp-route-id="@collection.Id" method="post" style="display:none;"></form>
-            <div class="play-button">
-                <a href="@Url.Action("PlayCollection", "FlashcardCollection", new { id = collection.Id })" class="btn btn-primary">
-                    <i class="fas fa-play"></i> Play
-                </a>
-
-            </div>
-        
         </div>
     }
 </div>
@@ -83,16 +108,127 @@
 </div>
 
 <style>
-
-    .collection-grid {
+    .add-comment-section .comment-form {
         display: flex;
-        flex-wrap: wrap;
-        gap: 20px;
+        align-items: center;
+        margin-top: 15px;
+    }
+
+    .add-comment-section .input-group {
+        width: 100%;
+        display: flex;
+    }
+
+    .add-comment-section .form-control {
+        flex-grow: 1; 
+        margin-right: 8px; 
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        padding: 10px;
+    }
+
+    .add-comment-section .btn-primary {
+        padding: 10px 16px;
+        border: none;
+        border-radius: 8px;
+        background-color: #007bff;
+        color: white;
+        cursor: pointer;
+    }
+
+        .add-comment-section .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+    .add-comment-section form {
+        display: flex;
+        flex-direction: column;
+        margin-top: 15px;
+    }
+
+    .add-comment-section textarea {
+        width: 100%;
+        height: 70px;
+        padding: 10px;
+        margin-bottom: 10px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        resize: none; 
+    }
+
+    .add-comment-section button {
+        width: auto;
+        padding: 8px 16px;
+        border: none;
+        border-radius: 8px;
+        background-color: #007bff;
+        color: white;
+        cursor: pointer;
+        align-self: flex-end;
+    }
+
+        .add-comment-section button:hover {
+            background-color: #0056b3;
+        }
+
+    .flashcard-feed {
+        margin-top: 20px;
+    }
+
+    .flashcard-item {
+        display: flex;
+        flex-direction: row;
         justify-content: center;
         align-items: flex-start;
+        width: 100%;
+        margin-bottom: 20px;
+    }
+
+ 
+    .card-content {
+        flex-grow: 1; 
+    }
+
+    .collection-card, .comment-section {
+        flex: 1; 
+        margin: 10px; 
+    }
+    .comment-section {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between; 
+        height: 300px; 
+            flex: 1;
+        max-width: 500px;
+        min-width: 200px; 
+        width: 50%; 
+        height: 290px;
+        background-color: #f8f9fa;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        padding: 15px;
+        position: relative;
+        margin-top: 65px;
+        margin-right: 10px;
+    }
+
+    .comments-container {
+        max-height: 300px; 
+        overflow-y: auto;
+    }
+
+    .comment {
+        background-color: #ffffff;
+        border: 1px solid #ccc;
+        border-radius: 15px;
+        padding: 8px 15px;
+        margin-bottom: 10px;
+        word-wrap: break-word;
     }
 
     .collection-card {
+        flex: 0 0 30%; 
+        margin-right: 20px;
         width: 300px;
         height: 300px;
         border: 1px solid #ccc;
@@ -133,10 +269,4 @@
         padding: 0.125rem 0.3rem;
         font-size: 0.675rem;
     }
-
-    .card-content span {
-        display: block;
-        margin-top: 20px; 
-    }
-
 </style>

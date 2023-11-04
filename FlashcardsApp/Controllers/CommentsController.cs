@@ -8,8 +8,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using FlashcardsApp.Models;
-
-
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.AspNetCore.Identity;
+using FlashcardsApp.Areas.Identity.Data;
 
 namespace FlashcardsApp.Controllers
 {
@@ -17,13 +18,15 @@ namespace FlashcardsApp.Controllers
     {
         private readonly Uri _baseAddress = new("https://localhost:7296/api");
         private readonly HttpClient _httpClient;
+        private readonly UserManager<FlashcardsAppUser> _userManager;
 
-        public CommentsController()
+        public CommentsController(UserManager<FlashcardsAppUser> userManager)
         {
             _httpClient = new HttpClient
             {
                 BaseAddress = _baseAddress
             };
+            _userManager = userManager;
         }
 
 
@@ -74,35 +77,47 @@ namespace FlashcardsApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Comment comment)
+        public async Task<IActionResult> Create(int FlashcardCollectionId, string Content)
         {
-                if (ModelState.IsValid)
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return View("Error");
+            }
+            Comment comment = new Comment
+            {
+                FlashcardCollectionId = FlashcardCollectionId,
+                Content = Content,
+                UserId = _userManager.GetUserId(User),
+                FirstName = user.FirstName
+            };
+
+            if (ModelState.IsValid)
+            {
+                var json = JsonConvert.SerializeObject(comment);
+                var stringContent = new StringContent(json, Encoding.UTF8, "application/json");
+
+                var response = await _httpClient.PostAsync("api/comments", stringContent);
+
+                if (response.IsSuccessStatusCode)
                 {
-                    var json = JsonConvert.SerializeObject(comment);
-                    var content = new StringContent(json, Encoding.UTF8, "application/json");
-
-                    var response = await _httpClient.PostAsync("api/comments", content); 
-
-                    if (response.IsSuccessStatusCode)
+                    return RedirectToAction("Index", "FlashcardCollection");
+                }
+                else
+                {
+                    if (response.StatusCode == HttpStatusCode.BadRequest)
                     {
-                        return RedirectToAction(nameof(Index));
+                        ModelState.AddModelError(string.Empty, "Invalid input. Please check the data.");
                     }
                     else
                     {
-                        if (response.StatusCode == HttpStatusCode.BadRequest)
-                        {
-                            ModelState.AddModelError(string.Empty, "Invalid input. Please check the data.");
-                        }
-                        else
-                        {
-                            return View("Error");
-                        }
+                        return View("Error", comment); 
                     }
                 }
-                return View(comment);
-            
-        }
+            }
 
+            return View(comment);
+        }
 
 
         // GET: Comments/Details/5
@@ -158,7 +173,6 @@ namespace FlashcardsApp.Controllers
 
             if (ModelState.IsValid)
             {
-                // Serialize the comment object to JSON
                 var commentJson = JsonConvert.SerializeObject(comment);
                 var content = new StringContent(commentJson, Encoding.UTF8, "application/json");
 

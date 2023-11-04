@@ -15,7 +15,7 @@ namespace FlashcardsAPI.Models
         public int FlashcardCollectionId { get; set; }
 
         public FlashcardCollection<Flashcards>? FlashcardCollection { get; set; }
-     
+        public string? FirstName { get; set; }
         public string? UserId { get; set; }
         public FlashcardsAppUser? User { get; set; }
     }
