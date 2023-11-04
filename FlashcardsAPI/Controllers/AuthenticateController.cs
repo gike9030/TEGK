@@ -1,4 +1,5 @@
-﻿using JWTAuthentication.NET6._0.Auth;
+﻿using FlashcardsAPI.Models;
+using JWTAuthentication.NET6._0.Auth;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -12,12 +13,12 @@ namespace JWTAuthentication.NET6._0.Controllers
     [ApiController]
     public class AuthenticateController : ControllerBase
     {
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<FlashcardsAppUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IConfiguration _configuration;
 
         public AuthenticateController(
-            UserManager<IdentityUser> userManager,
+            UserManager<FlashcardsAppUser> userManager,
             RoleManager<IdentityRole> roleManager,
             IConfiguration configuration)
         {
@@ -50,8 +51,9 @@ namespace JWTAuthentication.NET6._0.Controllers
 
                 return Ok(new
                 {
-                    token = new JwtSecurityTokenHandler().WriteToken(token),
-                    expiration = token.ValidTo
+                    Token = new JwtSecurityTokenHandler().WriteToken(token),
+                    Expiration = token.ValidTo,
+                    user.Id
                 });
             }
             return Unauthorized();
@@ -65,17 +67,25 @@ namespace JWTAuthentication.NET6._0.Controllers
             if (userExists != null)
                 return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User already exists!" });
 
-            IdentityUser user = new()
+            FlashcardsAppUser user = new()
             {
                 Email = model.Email,
                 SecurityStamp = Guid.NewGuid().ToString(),
-                UserName = model.Username
+                UserName = model.Username,
+                FirstName = model.FirstName,
+                LastName = model.LastName,
             };
+
             var result = await _userManager.CreateAsync(user, model.Password);
             if (!result.Succeeded)
-                return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User creation failed! Please check user details and try again." });
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "error", Message = "User creation failed! Please check user details and try again." });
+            }
 
-            return Ok(new Response { Status = "Success", Message = "User created successfully!" });
+            await _userManager.AddClaimAsync(user, new Claim("FirstName", user.FirstName));
+            await _userManager.AddClaimAsync(user, new Claim("LastName", user.LastName));
+
+            return Ok(new Response { Status = "success", Message = "User created successfully!" });
         }
 
         [HttpPost]
@@ -86,11 +96,13 @@ namespace JWTAuthentication.NET6._0.Controllers
             if (userExists != null)
                 return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User already exists!" });
 
-            IdentityUser user = new()
+            FlashcardsAppUser user = new()
             {
                 Email = model.Email,
                 SecurityStamp = Guid.NewGuid().ToString(),
-                UserName = model.Username
+                UserName = model.Username,
+                FirstName = model.FirstName,
+                LastName = model.LastName,
             };
             var result = await _userManager.CreateAsync(user, model.Password);
             if (!result.Succeeded)

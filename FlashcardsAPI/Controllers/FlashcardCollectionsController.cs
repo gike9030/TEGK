@@ -1,5 +1,6 @@
 ﻿using FlashcardsAPI.Models;
 using JWTAuthentication.NET6._0.Auth;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -8,6 +9,7 @@ namespace FlashcardsAPI.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    //[Authorize]
     public class FlashcardCollectionsController : ControllerBase
     {
         private readonly ApplicationDbContext _context;

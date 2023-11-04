@@ -1,16 +1,13 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace JWTAuthentication.NET6._0.Auth
+namespace FlashcardsApp.Models
 {
-    public class RegisterModel
+    public class RegisterViewModel
     {
         [Required]
         public string? FirstName { get; set; }
         [Required]
         public string? LastName { get; set; }
-
-        [Required(ErrorMessage = "User Name is required")]
-        public string? Username { get; set; }
 
         [EmailAddress]
         [Required(ErrorMessage = "Email is required")]
@@ -18,5 +15,8 @@ namespace JWTAuthentication.NET6._0.Auth
 
         [Required(ErrorMessage = "Password is required")]
         public string? Password { get; set; }
+
+        [Required(ErrorMessage = "Confirm Password is required")]
+        public string? ConfirmPassword { get; set; }
     }
 }

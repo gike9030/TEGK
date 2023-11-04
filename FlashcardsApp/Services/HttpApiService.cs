@@ -10,7 +10,6 @@ namespace FlashcardsApp.Services
         {
             StringContent? content = ObjectSerialiser.Serialise(model);
             return httpClient.PostAsync(httpClient.BaseAddress + dirrection, content).Result;
-
         }
 
         public static HttpResponseMessage PutToAPI<T>(HttpClient httpClient, string dirrection, T model)

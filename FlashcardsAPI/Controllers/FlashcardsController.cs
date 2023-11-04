@@ -7,11 +7,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using FlashcardsAPI.Models;
 using JWTAuthentication.NET6._0.Auth;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FlashcardsAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    //[Authorize]
     public class FlashcardsController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
@@ -21,7 +23,6 @@ namespace FlashcardsAPI.Controllers
             _context = context;
         }
 
-        // GET: api/Flashcards/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Flashcards>> GetFlashcards(int id)
         {
@@ -39,8 +40,6 @@ namespace FlashcardsAPI.Controllers
             return flashcards;
         }
 
-        // PUT: api/Flashcards/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         public async Task<IActionResult> PutFlashcards(int id, Flashcards flashcards)
         {
@@ -70,8 +69,6 @@ namespace FlashcardsAPI.Controllers
             return NoContent();
         }
 
-        // POST: api/Flashcards
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<Flashcards>> PostFlashcards(Flashcards flashcards)
         {
@@ -85,7 +82,6 @@ namespace FlashcardsAPI.Controllers
             return CreatedAtAction("GetFlashcards", new { id = flashcards.Id }, flashcards);
         }
 
-        // DELETE: api/Flashcards/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteFlashcards(int id)
         {

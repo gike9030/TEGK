@@ -1,4 +1,5 @@
-﻿using JWTAuthentication.NET6._0.Auth;
+﻿using FlashcardsAPI.Models;
+using JWTAuthentication.NET6._0.Auth;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -16,7 +17,7 @@ var connectionString = builder.Configuration.GetConnectionString("FlashcardsAppC
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
 
 // For Identity
-builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+builder.Services.AddIdentity<FlashcardsAppUser, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
 
