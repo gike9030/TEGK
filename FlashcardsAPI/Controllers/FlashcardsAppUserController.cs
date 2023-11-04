@@ -10,7 +10,7 @@ namespace FlashcardsAPI.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    //[Authorize]
+    [Authorize]
     public class FlashcardsAppUserController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
@@ -34,7 +34,7 @@ namespace FlashcardsAPI.Controllers
                 return NotFound();
             }
 
-            return user.FirstName;
+            return Ok(new Response{ Status = "200", Message = user.FirstName });
         }
 
         [HttpGet("{id}")]
@@ -51,7 +51,7 @@ namespace FlashcardsAPI.Controllers
                 return NotFound();
             }
 
-            return user.LastName;
+            return Ok(new Response{ Status = "200", Message = user.LastName });
         }
 
         [HttpGet("{id}")]
@@ -68,7 +68,7 @@ namespace FlashcardsAPI.Controllers
                 return NotFound();
             }
 
-            return user.Email;
+            return Ok(new Response { Status = "200", Message = user.Email });
         }
 
         [HttpGet("{id}")]
@@ -85,7 +85,7 @@ namespace FlashcardsAPI.Controllers
                 return NotFound();
             }
 
-            return user.FlashcardCollections.ToList();
+            return Ok(user.FlashcardCollections.ToList());
         }
     }
 }

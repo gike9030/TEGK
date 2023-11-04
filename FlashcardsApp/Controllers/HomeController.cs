@@ -1,11 +1,12 @@
 using System.Diagnostics;
+using FlashcardsApp.Authorization;
 using FlashcardsApp.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FlashcardsApp.Controllers
 {
-    [Authorize]
+    [AppUserAuthorize]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;

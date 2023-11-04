@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace FlashcardsApp.Services
 {
-    public class ObjectSerialiser
+    public static class ObjectSerialiser
     {
         public static T? Deserialise<T>(HttpResponseMessage response)
         {

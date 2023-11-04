@@ -9,7 +9,7 @@ namespace FlashcardsAPI.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    //[Authorize]
+    [Authorize]
     public class FlashcardCollectionsController : ControllerBase
     {
         private readonly ApplicationDbContext _context;

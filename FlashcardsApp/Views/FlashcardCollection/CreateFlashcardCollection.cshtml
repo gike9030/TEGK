@@ -2,10 +2,11 @@
 @using Microsoft.AspNetCore.Identity;
 @model FlashcardsApp.Models.FlashcardCollection<Flashcards>
 
-@inject UserManager<FlashcardsAppUser> UserManager
+@inject IHttpContextAccessor ContextAccessor
 
 @{
     ViewData["Title"] = "Create Flashcard Collection";
+    string? userId = ContextAccessor.HttpContext.Request.Cookies["id"];
 }
 
 <div class="container mt-5">
@@ -18,7 +19,7 @@
                 <div class="card-body">
                     <form asp-action="CreateFlashcardCollection" method="post">
                         <div class="form-group">
-                            <input type="hidden" asp-for="FlashcardsAppUserId" value="@UserManager.GetUserId(User)" />
+                            <input type="hidden" asp-for="FlashcardsAppUserId" value="@userId" />
                             <label asp-for="CollectionName" class="control-label">Collection Name</label>
                             <input asp-for="CollectionName" class="form-control" />
                             <span asp-validation-for="CollectionName" class="text-danger"></span>

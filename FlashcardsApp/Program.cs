@@ -10,6 +10,8 @@ builder.Services.AddDbContext<FlashcardsAppContext>(options => options.UseSqlSer
 
 builder.Services.AddDefaultIdentity<FlashcardsAppUser>(options => options.SignIn.RequireConfirmedAccount = false).AddEntityFrameworkStores<FlashcardsAppContext>();
 
+builder.Services.AddHttpContextAccessor();
+
 builder.Services.AddRazorPages();
 
 // Add services to the container.

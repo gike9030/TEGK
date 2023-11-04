@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
+using FlashcardsApp.Authorization;
 using FlashcardsApp.Data;
 using FlashcardsApp.Models;
 using FlashcardsApp.Services;
@@ -11,7 +12,7 @@ using Newtonsoft.Json;
 
 namespace FlashcardsApp.Controllers
 {
-    [Authorize]
+    [AppUserAuthorize]
     public class FlashcardCollectionController : Controller
     {
         private readonly Uri _baseAddress = new("https://localhost:7296/api");
@@ -28,7 +29,7 @@ namespace FlashcardsApp.Controllers
         public IActionResult Index(string? sortByCategory = null)
         {
 
-            List<FlashcardCollection<Flashcards>>? flashcardCollections = HttpApiService.GetFromAPI<List<FlashcardCollection<Flashcards>>>(_httpClient, "/FlashcardCollections/GetFlashcardCollections");
+            List<FlashcardCollection<Flashcards>>? flashcardCollections = HttpApiService.GetFromAPI<List<FlashcardCollection<Flashcards>>>(_httpClient, "/FlashcardCollections/GetFlashcardCollections", token: Request.Cookies["token"]);
 
             flashcardCollections.Sort();
 
@@ -52,10 +53,10 @@ namespace FlashcardsApp.Controllers
         [HttpPost]
         public IActionResult CreateFlashcardCollection(FlashcardCollection<Flashcards> collection)
         {
-
+            collection.FlashcardsAppUserId = Request.Cookies["id"];
             if (ModelState.IsValid)
             {
-                HttpResponseMessage resp = HttpApiService.PostToAPI(_httpClient, "/FlashcardCollections/PostFlashcardCollections", collection);
+                HttpResponseMessage resp = HttpApiService.PostToAPI(_httpClient, "/FlashcardCollections/PostFlashcardCollections", collection, token: Request.Cookies["token"]);
                 
                 if (resp.IsSuccessStatusCode)
                 {
@@ -72,8 +73,8 @@ namespace FlashcardsApp.Controllers
         [HttpGet]
         public IActionResult Edit(int id)
         {
-            FlashcardCollection<Flashcards>? collection = HttpApiService.GetFromAPI<FlashcardCollection<Flashcards>>(_httpClient, "/FlashcardCollections/GetFlashcardCollections/", id);
-            
+            FlashcardCollection<Flashcards>? collection = HttpApiService.GetFromAPI<FlashcardCollection<Flashcards>>(_httpClient, "/FlashcardCollections/GetFlashcardCollections/", id, token: Request.Cookies["token"]);
+
             if (collection == null)
             {
                 return RedirectToAction("Index");
@@ -85,11 +86,11 @@ namespace FlashcardsApp.Controllers
         [HttpPost]
         public IActionResult RenameCollection(FlashcardCollection<Flashcards> cardCollection)
         {
-            FlashcardCollection<Flashcards>? collection = HttpApiService.GetFromAPI<FlashcardCollection<Flashcards>>(_httpClient, "/FlashcardCollections/GetFlashcardCollections/" + cardCollection.Id);
+            FlashcardCollection<Flashcards>? collection = HttpApiService.GetFromAPI<FlashcardCollection<Flashcards>>(_httpClient, "/FlashcardCollections/GetFlashcardCollections/" + cardCollection.Id, token: Request.Cookies["token"]);
 
             collection.CollectionName = cardCollection.CollectionName;
 
-            HttpResponseMessage response = HttpApiService.PutToAPI(_httpClient, "/FlashcardCollections/PutFlashcardCollection", collection);
+            HttpResponseMessage response = HttpApiService.PutToAPI(_httpClient, "/FlashcardCollections/PutFlashcardCollection", collection, token: Request.Cookies["token"]);
             if (response.IsSuccessStatusCode)
             {
                 return RedirectToAction("Edit", new { id = cardCollection.Id });
@@ -101,7 +102,7 @@ namespace FlashcardsApp.Controllers
         [HttpPost]
         public IActionResult AddFlashcard(FlashcardCollection<Flashcards> cardCollection, string NewFlashcardFrontSide, string NewFlashcardBackSide)
         {
-            FlashcardCollection<Flashcards>? collection = HttpApiService.GetFromAPI<FlashcardCollection<Flashcards>>(_httpClient, "/FlashcardCollections/GetFlashcardCollections/", cardCollection.Id);
+            FlashcardCollection<Flashcards>? collection = HttpApiService.GetFromAPI<FlashcardCollection<Flashcards>>(_httpClient, "/FlashcardCollections/GetFlashcardCollections/", cardCollection.Id, token: Request.Cookies["token"]);
 
             if (collection != null)
             {
@@ -112,7 +113,7 @@ namespace FlashcardsApp.Controllers
                     FlashcardCollectionId = collection.Id
                 };
 
-                HttpResponseMessage response = HttpApiService.PostToAPI(_httpClient, "/Flashcards", newFlashcard);
+                HttpResponseMessage response = HttpApiService.PostToAPI(_httpClient, "/Flashcards", newFlashcard, token: Request.Cookies["token"]);
 
                 if (response.IsSuccessStatusCode)
                     return RedirectToAction("Edit", new { id = collection.Id });
@@ -123,7 +124,7 @@ namespace FlashcardsApp.Controllers
         [HttpPost]
         public IActionResult AddFlashcardsFromFile(FlashcardCollection<Flashcards> cardCollection, IFormFile? flashcardFile)
         {
-            FlashcardCollection<Flashcards>? collection = HttpApiService.GetFromAPI<FlashcardCollection<Flashcards>>(_httpClient, "/FlashcardCollections/GetFlashcardCollections/", cardCollection.Id);
+            FlashcardCollection<Flashcards>? collection = HttpApiService.GetFromAPI<FlashcardCollection<Flashcards>>(_httpClient, "/FlashcardCollections/GetFlashcardCollections/", cardCollection.Id, token: Request.Cookies["token"]);
 
             if (collection == null || flashcardFile == null || flashcardFile.Length < 1)
             {
@@ -136,7 +137,7 @@ namespace FlashcardsApp.Controllers
             foreach (Flashcards flashcard in flashcardsList)
             {
                 flashcard.FlashcardCollectionId = collection.Id;
-                HttpApiService.PostToAPI(_httpClient, "/Flashcards", flashcard);
+                HttpApiService.PostToAPI(_httpClient, "/Flashcards", flashcard, token: Request.Cookies["token"]);
             }
 
             return RedirectToAction("Edit", collection);
@@ -145,14 +146,14 @@ namespace FlashcardsApp.Controllers
         [HttpPost]
         public async Task<IActionResult> Delete(int id)
         {
-            FlashcardCollection<Flashcards>? collection = HttpApiService.GetFromAPI<FlashcardCollection<Flashcards>>(_httpClient, "/FlashcardCollections/GetFlashcardCollections/", id);
+            FlashcardCollection<Flashcards>? collection = HttpApiService.GetFromAPI<FlashcardCollection<Flashcards>>(_httpClient, "/FlashcardCollections/GetFlashcardCollections/", id, token: Request.Cookies["token"]);
 
             if (collection == null)
             {
                 return NotFound("Collection not found");
             }
 
-            await HttpApiService.DeleteFromAPI(_httpClient, "/FlashcardCollections/DeleteFlashcardCollections/", id);
+            await HttpApiService.DeleteFromAPI(_httpClient, "/FlashcardCollections/DeleteFlashcardCollections/", id, token: Request.Cookies["token"]);
 
             return RedirectToAction("Index");
         }
@@ -160,7 +161,7 @@ namespace FlashcardsApp.Controllers
         [HttpGet]
         public IActionResult ViewCollection(int id)
         {
-            var collection = HttpApiService.GetFromAPI<FlashcardCollection<Flashcards>>(_httpClient, "/FlashcardCollections/GetFlashcardCollections/", id);
+            var collection = HttpApiService.GetFromAPI<FlashcardCollection<Flashcards>>(_httpClient, "/FlashcardCollections/GetFlashcardCollections/", id, token: Request.Cookies["token"]);
 
             if (collection == null)
             {
@@ -173,7 +174,7 @@ namespace FlashcardsApp.Controllers
         [HttpGet]
         public IActionResult EditFlashcard(int id) 
         {
-            Flashcards? flashcard = HttpApiService.GetFromAPI<Flashcards>(_httpClient, "/Flashcards/", id);
+            Flashcards? flashcard = HttpApiService.GetFromAPI<Flashcards>(_httpClient, "/Flashcards/", id, token: Request.Cookies["token"]);
             if (flashcard == null)
             {
                 return NotFound();
@@ -186,7 +187,7 @@ namespace FlashcardsApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                Flashcards? flashcard = HttpApiService.GetFromAPI<Flashcards>(_httpClient, "/Flashcards/", editedFlashcard.Id);
+                Flashcards? flashcard = HttpApiService.GetFromAPI<Flashcards>(_httpClient, "/Flashcards/", editedFlashcard.Id, token: Request.Cookies["token"]);
 
                 if (flashcard == null)
                 {
@@ -196,7 +197,7 @@ namespace FlashcardsApp.Controllers
                 flashcard.Question = editedFlashcard.Question;
                 flashcard.Answer = editedFlashcard.Answer;
 
-                HttpApiService.PutToAPI(_httpClient, "/Flashcards/" + flashcard.Id, flashcard);
+                HttpApiService.PutToAPI(_httpClient, "/Flashcards/" + flashcard.Id, flashcard, token: Request.Cookies["token"]);
 
 
                 return RedirectToAction("Edit", new { id = flashcard.FlashcardCollectionId }); 
@@ -207,14 +208,14 @@ namespace FlashcardsApp.Controllers
         [HttpPost]
         public async Task<IActionResult> DeleteFlashcard(int id)
         {
-            var flashcard = HttpApiService.GetFromAPI<Flashcards>(_httpClient, "/Flashcards/", id);
+            var flashcard = HttpApiService.GetFromAPI<Flashcards>(_httpClient, "/Flashcards/", id, token: Request.Cookies["token"]);
 
             if (flashcard == null)
             {
                 return NotFound();
             }
 
-            await HttpApiService.DeleteFromAPI(_httpClient, "/Flashcards/", id);
+            await HttpApiService.DeleteFromAPI(_httpClient, "/Flashcards/", id, token: Request.Cookies["token"]);
 
             return RedirectToAction("Edit", new { id = flashcard.FlashcardCollectionId });
         }
@@ -227,7 +228,7 @@ namespace FlashcardsApp.Controllers
         [HttpGet]
         public IActionResult PlayCollection(int id, int? cardIndex)
         {
-            FlashcardCollection<Flashcards>? collection = HttpApiService.GetFromAPI<FlashcardCollection<Flashcards>>(_httpClient, "/FlashcardCollections/GetFlashcardCollections/", id);
+            FlashcardCollection<Flashcards>? collection = HttpApiService.GetFromAPI<FlashcardCollection<Flashcards>>(_httpClient, "/FlashcardCollections/GetFlashcardCollections/", id, token: Request.Cookies["token"] );
 
             if (collection == null || !collection.Flashcards.Any())
             {

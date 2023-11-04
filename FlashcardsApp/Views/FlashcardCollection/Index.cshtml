@@ -1,12 +1,13 @@
 ﻿@using FlashcardsApp.Areas.Identity.Data;
 @using Microsoft.AspNetCore.Identity;
-@inject UserManager<FlashcardsAppUser> UserManager
+@inject IHttpContextAccessor ContextAccessor
 
 @model IEnumerable<FlashcardsApp.Models.FlashcardCollection<Flashcards>>
 
 @{
     ViewData["Title"] = "Flashcard Collections";
     var categories = Enum.GetNames(typeof(FlashcardsApp.Models.Category));
+    string? userId = ContextAccessor.HttpContext.Request.Cookies["id"];
 }
 
 @if (TempData["Error"] != null)
@@ -43,7 +44,7 @@
                     <i class="fas fa-ellipsis-v"></i>
                 </button>
                 <div class="dropdown-menu dropdown-menu-right">
-                    @if  (collection.FlashcardsAppUserId == UserManager.GetUserId(User))
+                    @if  (collection.FlashcardsAppUserId == userId)
                     {
                         <a asp-action="Edit" asp-route-id="@collection.Id" class="dropdown-item">Edit</a>
                         <a asp-action="ViewCollection" asp-route-id="@collection.Id" class="dropdown-item">View</a>
