@@ -1,18 +1,7 @@
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Text;
-<<<<<<< HEAD
 using FlashcardsApp.Authorization;
-=======
-using System.Text.RegularExpressions;
->>>>>>> main
-using FlashcardsApp.Data;
 using FlashcardsApp.Models;
 using FlashcardsApp.Services;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
 
 namespace FlashcardsApp.Controllers
 {

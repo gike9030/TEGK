@@ -1,10 +1,7 @@
 using System.Diagnostics;
-<<<<<<< HEAD
 using FlashcardsApp.Authorization;
-=======
 using System.Net.Http;
 using System.Text.RegularExpressions;
->>>>>>> main
 using FlashcardsApp.Models;
 using FlashcardsApp.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -66,8 +63,3 @@ namespace FlashcardsApp.Controllers
         }
     }
 }
-
-
-   
-
-    

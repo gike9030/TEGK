@@ -2,10 +2,11 @@
 @using FlashcardsApp.Areas.Identity.Data
 @using FlashcardsApp.Extension
 
-@inject SignInManager<FlashcardsAppUser> SignInManager
-@inject UserManager<FlashcardsAppUser> UserManager
+@inject IHttpContextAccessor ContextAccessor
+
 @{
-    var user = await UserManager.GetUserAsync(User);
+    bool userLogedIn = ContextAccessor.HttpContext.Request.Cookies["id"] != null && ContextAccessor.HttpContext.Request.Cookies["token"] != null;
+
 }
 
 <!DOCTYPE html>
@@ -46,11 +47,11 @@
                     </form>
 
                     
-                    @if (User.Identity.IsAuthenticated && user != null)
+                    @if (userLogedIn)
                     {
                         <div class="dropdown">
                             <button class="btn btn-secondary dropdown-toggle" type="button" id="userMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                Hello, @user.FirstName!
+                                Hello!
                             </button>
                             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userMenu">
                                 <a class="dropdown-item" asp-area="Identity" asp-page="/Account/UserProfile">My Profile</a>
