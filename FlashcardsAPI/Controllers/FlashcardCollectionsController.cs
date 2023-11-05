@@ -80,7 +80,7 @@ namespace FlashcardsAPI.Controllers
                 return NotFound();
             }
 
-            return collection; // Return the specified collection with associated Comments
+            return collection;
         }
 
 
