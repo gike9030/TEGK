@@ -226,6 +226,14 @@
     }
 
     function exitPlayMode() {
+        showTimeSpentModal();
+    }
+
+    window.addEventListener('beforeunload', function (event) {
+        showTimeSpentModal();
+    });
+
+    function showTimeSpentModal() {
         let elapsedSeconds = Math.floor((Date.now() - parseInt(sessionStorage.getItem("startTime"))) / 1000);
         let hours = Math.floor(elapsedSeconds / 3600);
         let minutes = Math.floor((elapsedSeconds % 3600) / 60);
@@ -240,7 +248,12 @@
 
     function closeModal() {
         document.getElementById("timeSpentModal").style.display = "none";
-        window.location.href = "@Url.Action("Index", "FlashcardCollection")";
+        let lastSearchQuery = "@TempData["LastSearchQuery"]";
+        if (lastSearchQuery) {
+            window.location.href = "@Url.Action("Search", "Home", new { search = TempData["LastSearchQuery"] })"; 
+        } else {
+            window.location.href = "@Url.Action("Index", "FlashcardCollection")";
+        }
     }
 
 </script>

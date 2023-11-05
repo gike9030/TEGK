@@ -7,14 +7,16 @@ using FlashcardsApp.Models;
 using Microsoft.AspNetCore.Identity;
 
 namespace FlashcardsApp.Areas.Identity.Data;
-
-// Add profile data for application users by adding properties to the FlashcardsAppUser class
 public class FlashcardsAppUser : IdentityUser
 {
 
     [PersonalData]
-    [Column(TypeName = "nvarchar(100)")]
-    public string? FirstName { get; set; }
+    [Column(TypeName = "nvarchar(500)")]
+     public string? FirstName { get; set; }
+
+   // public byte[] ProfilePhoto { get; set; }
+
+    //public string Description { get; set; }
 
     [PersonalData]
     [Column(TypeName = "nvarchar(100)")]
