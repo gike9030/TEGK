@@ -35,7 +35,7 @@ namespace FlashcardsAPI.Controllers
             return Ok(collection.Flashcards);
         }
 
-        // GET: api/Flashcards
+        // GET: api/FlashcardCollections
         [HttpGet]
         public async Task<ActionResult<IEnumerable<FlashcardCollection<Flashcards>>>> GetFlashcardCollections()
         {
@@ -43,8 +43,14 @@ namespace FlashcardsAPI.Controllers
             {
                 return NotFound();
             }
-            return await _context.FlashcardCollection.ToListAsync();
+
+            var collectionsWithComments = await _context.FlashcardCollection
+                .Include(collection => collection.Comments) 
+                .ToListAsync();
+
+            return collectionsWithComments;
         }
+
 
         [HttpPost]
         public IActionResult GetFlashcardCollections(Category category)
@@ -64,22 +70,19 @@ namespace FlashcardsAPI.Controllers
                 return NotFound();
             }
 
-            var collection = await _context.FlashcardCollection.Include(c => c.Flashcards).FirstOrDefaultAsync(c => c.Id == id);
-
-
+            var collection = await _context.FlashcardCollection
+                .Include(c => c.Comments)
+                .Include (c => c.Flashcards)
+                .FirstOrDefaultAsync(c => c.Id == id);
 
             if (collection == null)
             {
                 return NotFound();
             }
 
-            foreach(var flashcard in collection.Flashcards) 
-            {
-                flashcard.FlashcardCollection = null;
-            }
-
             return collection;
         }
+
 
         // PUT: api/Flashcards/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754

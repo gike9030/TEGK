@@ -25,11 +25,19 @@ namespace JWTAuthentication.NET6._0.Auth
             .WithMany(e => e.FlashcardCollections)
             .HasForeignKey(e => e.FlashcardsAppUserId)
             .IsRequired();
+
+            builder.Entity<Comment>()
+            .HasOne(e => e.FlashcardCollection)
+            .WithMany(c => c.Comments)
+            .HasForeignKey(e => e.FlashcardCollectionId)
+            .IsRequired();
+
         }
 
         public DbSet<FlashcardCollection<Flashcards>> FlashcardCollection { get; set; }
         public DbSet<Flashcards> Flashcards { get; set; }
         public DbSet<Reaction<Flashcards>> Reactions { get; set; }
+        public DbSet<FlashcardsAPI.Models.Comment> Comments { get; set; } = default!;
 
     }
 }
