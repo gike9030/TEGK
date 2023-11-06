@@ -6,7 +6,7 @@ using static System.Collections.Specialized.BitVector32;
 
 namespace FlashcardsApp.Models
 {
-    public class FlashcardCollection<FlashcardType> : IComparable<FlashcardCollection<FlashcardType>>
+    public class FlashcardCollection<FlashcardType> : IComparable<FlashcardCollection<FlashcardType>> where FlashcardType : FlashcardBase
     {
         [Key]
         public int Id { get; set; }
