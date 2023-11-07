@@ -1,10 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Collections.Generic;
 using System;
-using FlashcardsApp.Areas.Identity.Data;
 using static System.Collections.Specialized.BitVector32;
 
-namespace FlashcardsApp.Models
+namespace FlashcardsAPI.Models
 {
     public class FlashcardCollection<FlashcardType> : IComparable<FlashcardCollection<FlashcardType>> where FlashcardType : FlashcardBase
     {
