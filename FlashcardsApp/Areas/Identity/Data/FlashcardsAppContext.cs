@@ -46,6 +46,6 @@ public class FlashcardsAppContext : IdentityDbContext<FlashcardsAppUser>
     public DbSet<FlashcardCollection<Flashcards>> FlashcardCollection { get; set; }
     public DbSet<Flashcards> Flashcards { get; set; }
     public DbSet<Reaction<Flashcards>> Reactions { get; set; }
-    public DbSet<FlashcardsApp.Models.Comment> Comment { get; set; } = default!;
+    public DbSet<Comment> Comment { get; set; }
 
 }

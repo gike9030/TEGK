@@ -1,6 +1,6 @@
 ﻿namespace FlashcardsApp.Models
 {
-    public class Reaction<CollectionType>
+    public class Reaction<T> where T : FlashcardBase
     {
         public int ReactionId { get; set; }
         
@@ -8,6 +8,6 @@
         public int Count { get; set; }
 
         public int? FlashcardCollectionId { get; set; }
-        public FlashcardCollection<CollectionType>? FlashcardCollection { get; set; }
+		public FlashcardCollection<T>? FlashcardCollection { get; set; }
     }
 }
