@@ -3,10 +3,10 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace FlashcardsApp.Migrations
+namespace FlashcardsAPI.Migrations
 {
     /// <inheritdoc />
-    public partial class Kajus : Migration
+    public partial class basemigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -98,8 +98,8 @@ namespace FlashcardsApp.Migrations
                 name: "AspNetUserLogins",
                 columns: table => new
                 {
-                    LoginProvider = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
-                    ProviderKey = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
+                    LoginProvider = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ProviderKey = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     ProviderDisplayName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
@@ -143,8 +143,8 @@ namespace FlashcardsApp.Migrations
                 columns: table => new
                 {
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    LoginProvider = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
+                    LoginProvider = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Value = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
@@ -182,7 +182,34 @@ namespace FlashcardsApp.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "FlashcardViewModel",
+                name: "Comments",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    FlashcardCollectionId = table.Column<int>(type: "int", nullable: false),
+                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Comments", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Comments_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Comments_FlashcardCollection_FlashcardCollectionId",
+                        column: x => x.FlashcardCollectionId,
+                        principalTable: "FlashcardCollection",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Flashcards",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -193,9 +220,9 @@ namespace FlashcardsApp.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_FlashcardViewModel", x => x.Id);
+                    table.PrimaryKey("PK_Flashcards", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_FlashcardViewModel_FlashcardCollection_FlashcardCollectionId",
+                        name: "FK_Flashcards_FlashcardCollection_FlashcardCollectionId",
                         column: x => x.FlashcardCollectionId,
                         principalTable: "FlashcardCollection",
                         principalColumn: "Id",
@@ -262,13 +289,23 @@ namespace FlashcardsApp.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Comments_FlashcardCollectionId",
+                table: "Comments",
+                column: "FlashcardCollectionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Comments_UserId",
+                table: "Comments",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_FlashcardCollection_FlashcardsAppUserId",
                 table: "FlashcardCollection",
                 column: "FlashcardsAppUserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_FlashcardViewModel_FlashcardCollectionId",
-                table: "FlashcardViewModel",
+                name: "IX_Flashcards_FlashcardCollectionId",
+                table: "Flashcards",
                 column: "FlashcardCollectionId");
 
             migrationBuilder.CreateIndex(
@@ -296,7 +333,10 @@ namespace FlashcardsApp.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "FlashcardViewModel");
+                name: "Comments");
+
+            migrationBuilder.DropTable(
+                name: "Flashcards");
 
             migrationBuilder.DropTable(
                 name: "Reactions");

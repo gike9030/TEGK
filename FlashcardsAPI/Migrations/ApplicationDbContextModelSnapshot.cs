@@ -4,28 +4,113 @@ using JWTAuthentication.NET6._0.Auth;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace FlashcardsApp.Migrations
+namespace FlashcardsAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230929174715_Kajus")]
-    partial class Kajus
+    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.10")
+                .HasAnnotation("ProductVersion", "7.0.12")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("FlashcardsApp.Areas.Identity.Data.FlashcardsAppUser", b =>
+            modelBuilder.Entity("FlashcardsAPI.Models.Comment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FirstName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("FlashcardCollectionId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FlashcardCollectionId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Comments");
+                });
+
+            modelBuilder.Entity("FlashcardsAPI.Models.FlashcardCollection<FlashcardsAPI.Models.Flashcards>", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Category")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CollectionName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedDateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("FlashcardsAppUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("ViewCount")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FlashcardsAppUserId");
+
+                    b.ToTable("FlashcardCollection");
+                });
+
+            modelBuilder.Entity("FlashcardsAPI.Models.Flashcards", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Answer")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("FlashcardCollectionId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Question")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FlashcardCollectionId");
+
+                    b.ToTable("Flashcards");
+                });
+
+            modelBuilder.Entity("FlashcardsAPI.Models.FlashcardsAppUser", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -96,65 +181,7 @@ namespace FlashcardsApp.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("FlashcardsApp.Models.FlashcardCollection", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("Category")
-                        .HasColumnType("int");
-
-                    b.Property<string>("CollectionName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreatedDateTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("FlashcardsAppUserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("ViewCount")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("FlashcardsAppUserId");
-
-                    b.ToTable("FlashcardCollection");
-                });
-
-            modelBuilder.Entity("FlashcardsApp.Models.Flashcards", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Answer")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("FlashcardCollectionId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Question")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("FlashcardCollectionId");
-
-                    b.ToTable("FlashcardViewModel");
-                });
-
-            modelBuilder.Entity("FlashcardsApp.Models.Reaction", b =>
+            modelBuilder.Entity("FlashcardsAPI.Models.Reaction<FlashcardsAPI.Models.Flashcards>", b =>
                 {
                     b.Property<int>("ReactionId")
                         .ValueGeneratedOnAdd()
@@ -258,12 +285,10 @@ namespace FlashcardsApp.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
                     b.Property<string>("LoginProvider")
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ProviderKey")
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ProviderDisplayName")
                         .HasColumnType("nvarchar(max)");
@@ -300,12 +325,10 @@ namespace FlashcardsApp.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("LoginProvider")
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Name")
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Value")
                         .HasColumnType("nvarchar(max)");
@@ -315,9 +338,26 @@ namespace FlashcardsApp.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("FlashcardsApp.Models.FlashcardCollection", b =>
+            modelBuilder.Entity("FlashcardsAPI.Models.Comment", b =>
                 {
-                    b.HasOne("FlashcardsApp.Areas.Identity.Data.FlashcardsAppUser", "FlashcardsAppUser")
+                    b.HasOne("FlashcardsAPI.Models.FlashcardCollection<FlashcardsAPI.Models.Flashcards>", "FlashcardCollection")
+                        .WithMany("Comments")
+                        .HasForeignKey("FlashcardCollectionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("FlashcardsAPI.Models.FlashcardsAppUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("FlashcardCollection");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("FlashcardsAPI.Models.FlashcardCollection<FlashcardsAPI.Models.Flashcards>", b =>
+                {
+                    b.HasOne("FlashcardsAPI.Models.FlashcardsAppUser", "FlashcardsAppUser")
                         .WithMany("FlashcardCollections")
                         .HasForeignKey("FlashcardsAppUserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -326,9 +366,9 @@ namespace FlashcardsApp.Migrations
                     b.Navigation("FlashcardsAppUser");
                 });
 
-            modelBuilder.Entity("FlashcardsApp.Models.Flashcards", b =>
+            modelBuilder.Entity("FlashcardsAPI.Models.Flashcards", b =>
                 {
-                    b.HasOne("FlashcardsApp.Models.FlashcardCollection", "FlashcardCollection")
+                    b.HasOne("FlashcardsAPI.Models.FlashcardCollection<FlashcardsAPI.Models.Flashcards>", "FlashcardCollection")
                         .WithMany("Flashcards")
                         .HasForeignKey("FlashcardCollectionId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -337,9 +377,9 @@ namespace FlashcardsApp.Migrations
                     b.Navigation("FlashcardCollection");
                 });
 
-            modelBuilder.Entity("FlashcardsApp.Models.Reaction", b =>
+            modelBuilder.Entity("FlashcardsAPI.Models.Reaction<FlashcardsAPI.Models.Flashcards>", b =>
                 {
-                    b.HasOne("FlashcardsApp.Models.FlashcardCollection", "FlashcardCollection")
+                    b.HasOne("FlashcardsAPI.Models.FlashcardCollection<FlashcardsAPI.Models.Flashcards>", "FlashcardCollection")
                         .WithMany("Reactions")
                         .HasForeignKey("FlashcardCollectionId");
 
@@ -357,7 +397,7 @@ namespace FlashcardsApp.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("FlashcardsApp.Areas.Identity.Data.FlashcardsAppUser", null)
+                    b.HasOne("FlashcardsAPI.Models.FlashcardsAppUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -366,7 +406,7 @@ namespace FlashcardsApp.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("FlashcardsApp.Areas.Identity.Data.FlashcardsAppUser", null)
+                    b.HasOne("FlashcardsAPI.Models.FlashcardsAppUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -381,7 +421,7 @@ namespace FlashcardsApp.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("FlashcardsApp.Areas.Identity.Data.FlashcardsAppUser", null)
+                    b.HasOne("FlashcardsAPI.Models.FlashcardsAppUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -390,23 +430,25 @@ namespace FlashcardsApp.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("FlashcardsApp.Areas.Identity.Data.FlashcardsAppUser", null)
+                    b.HasOne("FlashcardsAPI.Models.FlashcardsAppUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("FlashcardsApp.Areas.Identity.Data.FlashcardsAppUser", b =>
+            modelBuilder.Entity("FlashcardsAPI.Models.FlashcardCollection<FlashcardsAPI.Models.Flashcards>", b =>
                 {
-                    b.Navigation("FlashcardCollections");
-                });
+                    b.Navigation("Comments");
 
-            modelBuilder.Entity("FlashcardsApp.Models.FlashcardCollection", b =>
-                {
                     b.Navigation("Flashcards");
 
                     b.Navigation("Reactions");
+                });
+
+            modelBuilder.Entity("FlashcardsAPI.Models.FlashcardsAppUser", b =>
+                {
+                    b.Navigation("FlashcardCollections");
                 });
 #pragma warning restore 612, 618
         }
