@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Text.RegularExpressions;
+using FlashcardsApp.CustomExceptions;
 using FlashcardsApp.Data;
 using FlashcardsApp.Models;
 using FlashcardsApp.Services;
@@ -56,22 +57,31 @@ namespace FlashcardsApp.Controllers
         [HttpPost]
         public IActionResult CreateFlashcardCollection(FlashcardCollection<Flashcards> collection)
         {
-
-            if (ModelState.IsValid)
+            try
             {
-                HttpResponseMessage resp = HttpApiService.PostToAPI(_httpClient, "/FlashcardCollections/PostFlashcardCollections", collection);
-                
-                if (resp.IsSuccessStatusCode)
+                if (ModelState.IsValid)
                 {
-                    return RedirectToAction("Index");
+                    HttpResponseMessage resp = HttpApiService.PostToAPI(_httpClient, "/FlashcardCollections/PostFlashcardCollections", collection);
+
+                    if (resp.IsSuccessStatusCode)
+                    {
+                        return RedirectToAction("Index");
+                    }
+
+                    throw new FlashcardsControllerException("Failed to create a flashcard collection.");
                 }
 
                 return View(collection);
             }
-            return View(collection);
-            
+            catch (FlashcardsControllerException ex)
+            {
+                ExceptionLogger.LogException(ex);
 
+                ModelState.AddModelError(string.Empty, ex.Message);
+                return View(collection);
+            }
         }
+
 
         [HttpGet]
         public IActionResult Edit(int id)
