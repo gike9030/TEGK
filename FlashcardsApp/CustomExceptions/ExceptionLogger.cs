@@ -9,12 +9,15 @@
 
         public static void LogException(Exception ex)
         {
-            // Create or append to the log file
             using (StreamWriter writer = new StreamWriter(LogFilePath, true))
             {
                 writer.WriteLine($"[DateTime: {DateTime.Now}]");
                 writer.WriteLine($"[Exception Type: {ex.GetType().FullName}]");
                 writer.WriteLine($"[Message: {ex.Message}]");
+                if (ex is FlashcardsControllerException flashEx)
+                {
+                    writer.WriteLine($"[Status Code: {flashEx.StatusCode}]");
+                }
                 writer.WriteLine($"[StackTrace: {ex.StackTrace}]");
                 writer.WriteLine(new string('-', 50));
                 writer.WriteLine();

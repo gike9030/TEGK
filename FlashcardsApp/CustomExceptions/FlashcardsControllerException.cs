@@ -1,11 +1,32 @@
-﻿namespace FlashcardsApp.CustomExceptions
+﻿using System;
+using System.Net;
+
+namespace FlashcardsApp.CustomExceptions
 {
     public class FlashcardsControllerException : Exception
     {
-        public FlashcardsControllerException() { }
+        public HttpStatusCode StatusCode { get; }
 
-        public FlashcardsControllerException(string message) : base(message) { }
+        public FlashcardsControllerException(HttpStatusCode statusCode)
+        {
+            StatusCode = statusCode;
+        }
 
-        public FlashcardsControllerException(string message, Exception innerException) : base(message, innerException) { }
+        public FlashcardsControllerException(string message, HttpStatusCode statusCode)
+            : base(message)
+        {
+            StatusCode = statusCode;
+        }
+
+        public FlashcardsControllerException(string message, Exception innerException, HttpStatusCode statusCode)
+            : base(message, innerException)
+        {
+            StatusCode = statusCode;
+        }
+
+        public override string ToString()
+        {
+            return $"HTTP Status Code: {StatusCode}\n{base.ToString()}";
+        }
     }
 }

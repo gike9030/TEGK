@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -29,24 +30,44 @@ namespace FlashcardsApp.Controllers
 
         public IActionResult Index(string? sortByCategory = null, string? search = null)
         {
-
-            List<FlashcardCollection<Flashcards>>? flashcardCollections = HttpApiService.GetFromAPI<List<FlashcardCollection<Flashcards>>>(_httpClient, "/FlashcardCollections/GetFlashcardCollections");
-
-            flashcardCollections.Sort();
-
-            TempData["LastSearchQuery"] = null;
-
-
-            if (!string.IsNullOrEmpty(sortByCategory))
+            try
             {
-                if (Enum.TryParse(sortByCategory, out Category categoryValue))
-                {
-                    flashcardCollections = flashcardCollections.Where(f => f.Category == categoryValue).ToList();
+                List<FlashcardCollection<Flashcards>>? flashcardCollections = HttpApiService.GetFromAPI<List<FlashcardCollection<Flashcards>>>(_httpClient, "/FlashcardCollections/GetFlashcardCollections");
+               
+                if (flashcardCollections == null)
+                { 
+                    throw new FlashcardsControllerException("Failed to fetch a flashcard collection.", HttpStatusCode.BadRequest); 
                 }
-            }
-            ViewBag.CurrentSort = sortByCategory;
 
-            return View(flashcardCollections);
+                flashcardCollections.Sort();
+
+                TempData["LastSearchQuery"] = null;
+
+
+                if (!string.IsNullOrEmpty(sortByCategory))
+                {
+                    if (Enum.TryParse(sortByCategory, out Category categoryValue))
+                    {
+                        flashcardCollections = flashcardCollections.Where(f => f.Category == categoryValue).ToList();
+                    }
+                }
+                ViewBag.CurrentSort = sortByCategory;
+
+                return View(flashcardCollections);
+            }
+            catch (FlashcardsControllerException ex)
+            {
+                ExceptionLogger.LogException(ex);
+                TempData["ErrorMessage"] = ex.Message;
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                ExceptionLogger.LogException(ex);
+                TempData["ErrorMessage"] = "An unexpected error occurred.";
+                return RedirectToAction("Index");
+            }
+
         }
 
         public IActionResult CreateFlashcardCollection()
@@ -67,8 +88,10 @@ namespace FlashcardsApp.Controllers
                     {
                         return RedirectToAction("Index");
                     }
-
-                    throw new FlashcardsControllerException("Failed to create a flashcard collection.");
+                    else
+                    {
+                        throw new FlashcardsControllerException("Failed to create a flashcard collection.", HttpStatusCode.BadRequest);
+                    }
                 }
 
                 return View(collection);
@@ -76,8 +99,13 @@ namespace FlashcardsApp.Controllers
             catch (FlashcardsControllerException ex)
             {
                 ExceptionLogger.LogException(ex);
-
                 ModelState.AddModelError(string.Empty, ex.Message);
+                return View(collection);
+            }
+            catch (Exception ex)
+            {
+                ExceptionLogger.LogException(ex);
+                ModelState.AddModelError(string.Empty, "An unexpected error occurred.");
                 return View(collection);
             }
         }
@@ -87,7 +115,7 @@ namespace FlashcardsApp.Controllers
         public IActionResult Edit(int id)
         {
             FlashcardCollection<Flashcards>? collection = HttpApiService.GetFromAPI<FlashcardCollection<Flashcards>>(_httpClient, "/FlashcardCollections/GetFlashcardCollections/", id);
-            
+
             if (collection == null)
             {
                 return RedirectToAction("Index");
