@@ -75,6 +75,17 @@ namespace FlashcardsAPI.Controllers
                 .Include (c => c.Flashcards)
                 .FirstOrDefaultAsync(c => c.Id == id);
 
+            foreach (var comment in collection.Comments) 
+            {
+                comment.FlashcardCollection = null;
+            }
+
+            foreach (var flashcard in collection.Flashcards)
+            {
+                flashcard.FlashcardCollection = null;
+            }
+
+            
             if (collection == null)
             {
                 return NotFound();
