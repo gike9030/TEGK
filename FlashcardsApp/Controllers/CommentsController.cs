@@ -16,16 +16,12 @@ namespace FlashcardsApp.Controllers
 {
     public class CommentsController : Controller
     {
-        private readonly Uri _baseAddress = new("https://localhost:7296/api");
         private readonly HttpClient _httpClient;
         private readonly UserManager<FlashcardsAppUser> _userManager;
 
-        public CommentsController(UserManager<FlashcardsAppUser> userManager)
+        public CommentsController(IHttpClientFactory httpClientFactory, UserManager<FlashcardsAppUser> userManager)
         {
-            _httpClient = new HttpClient
-            {
-                BaseAddress = _baseAddress
-            };
+            _httpClient = httpClientFactory.CreateClient("FlashcardsAPI");
             _userManager = userManager;
         }
 

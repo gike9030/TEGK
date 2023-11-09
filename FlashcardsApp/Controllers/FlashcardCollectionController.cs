@@ -17,16 +17,13 @@ namespace FlashcardsApp.Controllers
     [Authorize]
     public class FlashcardCollectionController : Controller
     {
-        private readonly Uri _baseAddress = new("https://localhost:7296/api");
         private readonly HttpClient _httpClient;
 
-        public FlashcardCollectionController()
+        public FlashcardCollectionController(IHttpClientFactory httpClientFactory)
         {
-            _httpClient = new HttpClient
-            {
-                BaseAddress = _baseAddress
-            };
+            _httpClient = httpClientFactory.CreateClient("FlashcardsAPI");
         }
+
         private IActionResult HandleException(Exception ex)
         {
             ExceptionLogger.LogException(ex);
