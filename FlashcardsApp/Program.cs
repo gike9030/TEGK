@@ -17,6 +17,11 @@ builder.Services.AddRazorPages();
 builder.Services.AddControllersWithViews();
 builder.Services.AddLogging();
 
+builder.Services.AddHttpClient("FlashcardsAPI", httpClient =>
+{
+    httpClient.BaseAddress = new Uri("https://localhost:7296/api");
+});
+
 builder.Services.AddScoped<SearchService>();
 
 var app = builder.Build();

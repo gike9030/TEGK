@@ -1,7 +1,9 @@
 using System.Collections.Generic;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Text.RegularExpressions;
+using FlashcardsApp.CustomExceptions;
 using FlashcardsApp.Data;
 using FlashcardsApp.Models;
 using FlashcardsApp.Services;
@@ -15,22 +17,46 @@ namespace FlashcardsApp.Controllers
     [Authorize]
     public class FlashcardCollectionController : Controller
     {
-        private readonly Uri _baseAddress = new("https://localhost:7296/api");
         private readonly HttpClient _httpClient;
 
-        public FlashcardCollectionController()
+        public FlashcardCollectionController(IHttpClientFactory httpClientFactory)
         {
-            _httpClient = new HttpClient
+            _httpClient = httpClientFactory.CreateClient("FlashcardsAPI");
+        }
+
+        private IActionResult HandleException(Exception ex)
+        {
+            ExceptionLogger.LogException(ex);
+
+            if (ex is FlashcardsControllerException controllerEx)
             {
-                BaseAddress = _baseAddress
-            };
+                TempData["ErrorMessage"] = controllerEx.Message;
+                return View("Error");
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "An unexpected error occurred.";
+                return RedirectToAction("Index");
+            }
         }
 
         public IActionResult Index(string? sortByCategory = null, string? search = null)
         {
-
-            List<FlashcardCollection<Flashcards>>? flashcardCollections = HttpApiService.GetFromAPI<List<FlashcardCollection<Flashcards>>>(_httpClient, "/FlashcardCollections/GetFlashcardCollections");
-
+            List<FlashcardCollection<Flashcards>>? flashcardCollections;
+            try
+            {
+                flashcardCollections = HttpApiService.GetFromAPI<List<FlashcardCollection<Flashcards>>>(_httpClient, "/FlashcardCollections/GetFlashcardCollections");
+               
+                if (flashcardCollections == null)
+                { 
+                    throw new FlashcardsControllerException("Failed to fetch a flashcard collection.", HttpStatusCode.BadRequest); 
+                }
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+           
             flashcardCollections.Sort();
 
             TempData["LastSearchQuery"] = null;
@@ -46,6 +72,7 @@ namespace FlashcardsApp.Controllers
             ViewBag.CurrentSort = sortByCategory;
 
             return View(flashcardCollections);
+
         }
 
         public IActionResult CreateFlashcardCollection()
@@ -56,28 +83,34 @@ namespace FlashcardsApp.Controllers
         [HttpPost]
         public IActionResult CreateFlashcardCollection(FlashcardCollection<Flashcards> collection)
         {
-
-            if (ModelState.IsValid)
+            try
             {
-                HttpResponseMessage resp = HttpApiService.PostToAPI(_httpClient, "/FlashcardCollections/PostFlashcardCollections", collection);
-                
-                if (resp.IsSuccessStatusCode)
+                if (ModelState.IsValid)
                 {
-                    return RedirectToAction("Index");
+                    HttpResponseMessage resp = HttpApiService.PostToAPI(_httpClient, "/FlashcardCollections/PostFlashcardCollections", collection);
+
+                    if (resp.IsSuccessStatusCode)
+                    {
+                        return RedirectToAction("Index");
+                    }
+                   
+                    throw new FlashcardsControllerException("Failed to create a flashcard collection.", HttpStatusCode.BadRequest);
                 }
 
                 return View(collection);
             }
-            return View(collection);
-            
-
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
         }
+
 
         [HttpGet]
         public IActionResult Edit(int id)
         {
             FlashcardCollection<Flashcards>? collection = HttpApiService.GetFromAPI<FlashcardCollection<Flashcards>>(_httpClient, "/FlashcardCollections/GetFlashcardCollections/", id);
-            
+
             if (collection == null)
             {
                 return RedirectToAction("Index");
