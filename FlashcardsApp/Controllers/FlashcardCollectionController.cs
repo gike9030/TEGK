@@ -27,46 +27,54 @@ namespace FlashcardsApp.Controllers
                 BaseAddress = _baseAddress
             };
         }
+        private IActionResult HandleException(Exception ex)
+        {
+            ExceptionLogger.LogException(ex);
+
+            if (ex is FlashcardsControllerException controllerEx)
+            {
+                TempData["ErrorMessage"] = controllerEx.Message;
+                return View("Error");
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "An unexpected error occurred.";
+                return RedirectToAction("Index");
+            }
+        }
 
         public IActionResult Index(string? sortByCategory = null, string? search = null)
         {
+            List<FlashcardCollection<Flashcards>>? flashcardCollections;
             try
             {
-                List<FlashcardCollection<Flashcards>>? flashcardCollections = HttpApiService.GetFromAPI<List<FlashcardCollection<Flashcards>>>(_httpClient, "/FlashcardCollections/GetFlashcardCollections");
+                flashcardCollections = HttpApiService.GetFromAPI<List<FlashcardCollection<Flashcards>>>(_httpClient, "/FlashcardCollections/GetFlashcardCollections");
                
                 if (flashcardCollections == null)
                 { 
                     throw new FlashcardsControllerException("Failed to fetch a flashcard collection.", HttpStatusCode.BadRequest); 
                 }
-
-                flashcardCollections.Sort();
-
-                TempData["LastSearchQuery"] = null;
-
-
-                if (!string.IsNullOrEmpty(sortByCategory))
-                {
-                    if (Enum.TryParse(sortByCategory, out Category categoryValue))
-                    {
-                        flashcardCollections = flashcardCollections.Where(f => f.Category == categoryValue).ToList();
-                    }
-                }
-                ViewBag.CurrentSort = sortByCategory;
-
-                return View(flashcardCollections);
-            }
-            catch (FlashcardsControllerException ex)
-            {
-                ExceptionLogger.LogException(ex);
-                TempData["ErrorMessage"] = ex.Message;
-                return RedirectToAction("Index");
             }
             catch (Exception ex)
             {
-                ExceptionLogger.LogException(ex);
-                TempData["ErrorMessage"] = "An unexpected error occurred.";
-                return RedirectToAction("Index");
+                return HandleException(ex);
             }
+           
+            flashcardCollections.Sort();
+
+            TempData["LastSearchQuery"] = null;
+
+
+            if (!string.IsNullOrEmpty(sortByCategory))
+            {
+                if (Enum.TryParse(sortByCategory, out Category categoryValue))
+                {
+                    flashcardCollections = flashcardCollections.Where(f => f.Category == categoryValue).ToList();
+                }
+            }
+            ViewBag.CurrentSort = sortByCategory;
+
+            return View(flashcardCollections);
 
         }
 
@@ -88,25 +96,15 @@ namespace FlashcardsApp.Controllers
                     {
                         return RedirectToAction("Index");
                     }
-                    else
-                    {
-                        throw new FlashcardsControllerException("Failed to create a flashcard collection.", HttpStatusCode.BadRequest);
-                    }
+                   
+                    throw new FlashcardsControllerException("Failed to create a flashcard collection.", HttpStatusCode.BadRequest);
                 }
 
                 return View(collection);
             }
-            catch (FlashcardsControllerException ex)
-            {
-                ExceptionLogger.LogException(ex);
-                ModelState.AddModelError(string.Empty, ex.Message);
-                return View(collection);
-            }
             catch (Exception ex)
             {
-                ExceptionLogger.LogException(ex);
-                ModelState.AddModelError(string.Empty, "An unexpected error occurred.");
-                return View(collection);
+                return HandleException(ex);
             }
         }
 

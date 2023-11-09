@@ -1392,3 +1392,30 @@
 [StackTrace:    at FlashcardsApp.Controllers.FlashcardCollectionController.Index(String sortByCategory, String search)]
 --------------------------------------------------
 
+[DateTime: 08/11/2023 13:49:55]
+[Exception Type: System.AggregateException]
+[Message: One or more errors occurred. (No connection could be made because the target machine actively refused it. (localhost:7296))]
+[StackTrace:    at System.Threading.Tasks.Task.ThrowIfExceptional(Boolean includeTaskCanceledExceptions)
+   at System.Threading.Tasks.Task`1.GetResultCore(Boolean waitCompletionNotification)
+   at FlashcardsApp.Services.HttpApiService.GetFromAPI[T](HttpClient httpClient, String dirrection, Nullable`1 id) in C:\Users\Admin\TEGK2\FlashcardsApp\Services\HttpApiService.cs:line 24
+   at FlashcardsApp.Controllers.FlashcardCollectionController.Index(String sortByCategory, String search) in C:\Users\Admin\TEGK2\FlashcardsApp\Controllers\FlashcardCollectionController.cs:line 42]
+--------------------------------------------------
+
+[DateTime: 08/11/2023 13:50:00]
+[Exception Type: System.AggregateException]
+[Message: One or more errors occurred. (No connection could be made because the target machine actively refused it. (localhost:7296))]
+[StackTrace:    at System.Threading.Tasks.Task.ThrowIfExceptional(Boolean includeTaskCanceledExceptions)
+   at System.Threading.Tasks.Task`1.GetResultCore(Boolean waitCompletionNotification)
+   at FlashcardsApp.Services.HttpApiService.GetFromAPI[T](HttpClient httpClient, String dirrection, Nullable`1 id) in C:\Users\Admin\TEGK2\FlashcardsApp\Services\HttpApiService.cs:line 24
+   at FlashcardsApp.Controllers.FlashcardCollectionController.Index(String sortByCategory, String search) in C:\Users\Admin\TEGK2\FlashcardsApp\Controllers\FlashcardCollectionController.cs:line 42]
+--------------------------------------------------
+
+[DateTime: 08/11/2023 13:50:04]
+[Exception Type: System.AggregateException]
+[Message: One or more errors occurred. (No connection could be made because the target machine actively refused it. (localhost:7296))]
+[StackTrace:    at System.Threading.Tasks.Task.ThrowIfExceptional(Boolean includeTaskCanceledExceptions)
+   at System.Threading.Tasks.Task`1.GetResultCore(Boolean waitCompletionNotification)
+   at FlashcardsApp.Services.HttpApiService.GetFromAPI[T](HttpClient httpClient, String dirrection, Nullable`1 id) in C:\Users\Admin\TEGK2\FlashcardsApp\Services\HttpApiService.cs:line 24
+   at FlashcardsApp.Controllers.FlashcardCollectionController.Index(String sortByCategory, String search) in C:\Users\Admin\TEGK2\FlashcardsApp\Controllers\FlashcardCollectionController.cs:line 42]
+--------------------------------------------------
+
