@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using FlashcardsAPI.Models;
 using JWTAuthentication.NET6._0.Auth;
+using FlashcardsAPI.Services;
 
 namespace FlashcardsAPI.Controllers
 {
@@ -15,10 +16,12 @@ namespace FlashcardsAPI.Controllers
     public class FlashcardsController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
+        private readonly FlashcardsStorageService _flashcardStorageService;
 
-        public FlashcardsController(ApplicationDbContext context)
+        public FlashcardsController(ApplicationDbContext context, FlashcardsStorageService flashcardStorage)
         {
             _context = context;
+            _flashcardStorageService = flashcardStorage;
         }
 
         // GET: api/Flashcards/5
@@ -29,7 +32,7 @@ namespace FlashcardsAPI.Controllers
           {
               return NotFound();
           }
-            var flashcards = await _context.Flashcards.FindAsync(id);
+            var flashcards = await _context.Flashcards.FindAsync(id) ?? _flashcardStorageService.GetFlashcard(id);
 
             if (flashcards == null)
             {
@@ -47,6 +50,12 @@ namespace FlashcardsAPI.Controllers
             if (id != flashcards.Id)
             {
                 return BadRequest();
+            }
+
+            if (_flashcardStorageService.GetFlashcard(id) != null)
+            {
+                _flashcardStorageService.UpdateFlashcard(id, flashcards);
+                return NoContent();
             }
 
             _context.Entry(flashcards).State = EntityState.Modified;
@@ -79,10 +88,12 @@ namespace FlashcardsAPI.Controllers
           {
               return Problem("Entity set 'ApplicationDbContext.Flashcards'  is null.");
           }
-            _context.Flashcards.Add(flashcards);
-            await _context.SaveChangesAsync();
+            
+          // May not be thread safe IDK
+          flashcards.Id = 2_000_000_000 + _flashcardStorageService.GetFlashcardCount();
+          _flashcardStorageService.AddFlashcard(flashcards);
 
-            return CreatedAtAction("GetFlashcards", new { id = flashcards.Id }, flashcards);
+          return CreatedAtAction("GetFlashcards", new { id = flashcards.Id }, flashcards);
         }
 
         // DELETE: api/Flashcards/5
@@ -93,13 +104,20 @@ namespace FlashcardsAPI.Controllers
             {
                 return NotFound();
             }
+
+            if (_flashcardStorageService.GetFlashcard(id) != null)
+            {
+                _flashcardStorageService.RemoveFlashcard(id);
+                return NoContent();
+            }
+
             var flashcards = await _context.Flashcards.FindAsync(id);
             if (flashcards == null)
             {
                 return NotFound();
             }
 
-            _context.Flashcards.Remove(flashcards);
+            _context.Flashcards.Remove(flashcards);      
             await _context.SaveChangesAsync();
 
             return NoContent();
