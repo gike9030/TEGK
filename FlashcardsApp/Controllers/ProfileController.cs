@@ -8,19 +8,20 @@ using FlashcardsApp.Data;
 
 namespace FlashcardsApp.Controllers
 {
-    public class AccountController : Controller
+    public class ProfileController : Controller
     {
         private readonly UserManager<FlashcardsAppUser> _userManager;
         private readonly FlashcardsAppContext _context;
 
-        public AccountController(UserManager<FlashcardsAppUser> userManager, FlashcardsAppContext context)
+        public ProfileController(UserManager<FlashcardsAppUser> userManager, FlashcardsAppContext context)
         {
             _userManager = userManager;
             _context = context;
         }
 
-        public async Task<IActionResult> Index(string userId)
+        public async Task<IActionResult> Index()
         {
+            var userId = _userManager.GetUserId(User);
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
             {
