@@ -4,6 +4,8 @@ using JWTAuthentication.NET6._0.Auth;
 
 namespace FlashcardsAPI.Services
 {
+	// TO ADD file to store flashcards in case of system shutdown
+
 	public class FlashcardsStorageService
 	{
 		private readonly IServiceProvider _serviceProvider;
