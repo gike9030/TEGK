@@ -1,4 +1,5 @@
 ﻿using FlashcardsAPI.Models;
+using FlashcardsAPI.Services;
 using JWTAuthentication.NET6._0.Auth;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -6,14 +7,17 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FlashcardsAPI.Controllers
 {
+    // TO ADD file to store flashcards in case of system shutdown
     [Route("api/[controller]/[action]")]
     [ApiController]
     public class FlashcardCollectionsController : ControllerBase
     {
+        private FlashcardsStorageService _flashcardsStorageService;
         private readonly ApplicationDbContext _context;
 
-        public FlashcardCollectionsController(ApplicationDbContext context)
+        public FlashcardCollectionsController(ApplicationDbContext context, FlashcardsStorageService flashcardsStorageService)
         {
+            _flashcardsStorageService = flashcardsStorageService;
             _context = context;
         }
 
@@ -26,6 +30,9 @@ namespace FlashcardsAPI.Controllers
             {
                 return NotFound();
             }
+
+            List<Flashcards> tempCollection = _flashcardsStorageService.GetFlashcardsInCollection(id);
+            collection.Flashcards = collection.Flashcards.Concat(tempCollection).ToList();
 
             foreach (Flashcards flashcard in collection.Flashcards)
             {
@@ -80,7 +87,10 @@ namespace FlashcardsAPI.Controllers
                 comment.FlashcardCollection = null;
             }
 
-            foreach (var flashcard in collection.Flashcards)
+			List<Flashcards> tempCollection = _flashcardsStorageService.GetFlashcardsInCollection(id);
+			collection.Flashcards = collection.Flashcards.Concat(tempCollection).ToList();
+
+			foreach (var flashcard in collection.Flashcards)
             {
                 flashcard.FlashcardCollection = null;
             }
@@ -155,6 +165,8 @@ namespace FlashcardsAPI.Controllers
             {
                 _context.Flashcards.Remove(flashcard);
             }
+
+            _flashcardsStorageService.RemoveFlashcardsFromCollection(id);
 
             _context.FlashcardCollection.Remove(collection);
             await _context.SaveChangesAsync();
