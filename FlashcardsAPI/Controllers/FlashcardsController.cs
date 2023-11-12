@@ -89,8 +89,7 @@ namespace FlashcardsAPI.Controllers
               return Problem("Entity set 'ApplicationDbContext.Flashcards'  is null.");
           }
             
-          // May not be thread safe IDK
-          flashcards.Id = 2_000_000_000 + _flashcardStorageService.GetFlashcardCount();
+          flashcards.Id = flashcards.GetHashCode();
           _flashcardStorageService.AddFlashcard(flashcards);
 
           return CreatedAtAction("GetFlashcards", new { id = flashcards.Id }, flashcards);

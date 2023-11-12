@@ -28,14 +28,6 @@ namespace FlashcardsAPI.Services
 			return flashcard;
 		}
 
-		public int GetFlashcardCount()
-		{
-			lock(_lock)
-			{
-				return _flashcards.Count;
-			}
-		}
-
 		public List<Flashcards> GetFlashcardsInCollection(int? id)
 		{
 			return _flashcards.Values.Where(flashcard => flashcard.FlashcardCollectionId == id).ToList();
