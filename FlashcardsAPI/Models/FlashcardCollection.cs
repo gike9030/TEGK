@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System;
 using static System.Collections.Specialized.BitVector32;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FlashcardsAPI.Models
 {
@@ -15,6 +16,8 @@ namespace FlashcardsAPI.Models
         public ICollection<FlashcardType> Flashcards { get; set; } = new List<FlashcardType>();
         public DateTime CreatedDateTime { get; set; } = DateTime.Now;
         public int ViewCount { get; set; }
+        [NotMapped]
+        public Dictionary<ReactionType, int> ReactionCounts { get; set; }
         public ICollection<Reaction<FlashcardType>> Reactions { get; set; } = new List<Reaction<FlashcardType>>();
 
         [Required(ErrorMessage = "Please select a category.")]

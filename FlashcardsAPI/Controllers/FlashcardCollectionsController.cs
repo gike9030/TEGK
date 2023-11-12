@@ -46,6 +46,7 @@ namespace FlashcardsAPI.Controllers
 
             var collectionsWithComments = await _context.FlashcardCollection
                 .Include(collection => collection.Comments) 
+                .Include(collection => collection.Reactions)
                 .ToListAsync();
 
             return collectionsWithComments;
@@ -72,6 +73,7 @@ namespace FlashcardsAPI.Controllers
 
             var collection = await _context.FlashcardCollection
                 .Include(c => c.Comments)
+                .Include(c => c.Reactions)
                 .Include (c => c.Flashcards)
                 .FirstOrDefaultAsync(c => c.Id == id);
 
