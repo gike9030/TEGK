@@ -16,17 +16,6 @@ namespace FlashcardsAPI.Controllers
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
         }
-        [HttpGet("GetReactionCounts")]
-        public async Task<ActionResult> GetReactionCounts(int collectionId)
-        {
-            var reactionCounts = await _context.Reactions
-                .Where(r => r.FlashcardCollectionId == collectionId)
-                .GroupBy(r => r.Type)
-                .Select(group => new { ReactionType = group.Key, Count = group.Count() })
-                .ToListAsync();
-
-            return Ok(reactionCounts);
-        }
 
         [HttpPost("ToggleReaction")]
         public async Task<IActionResult> ToggleReaction(int collectionId, ReactionType reactionType, string userId)
