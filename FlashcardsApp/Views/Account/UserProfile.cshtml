@@ -1,0 +1,61 @@
+﻿@using FlashcardsApp.Models
+@using FlashcardsApp.Areas.Identity.Data;
+@using Microsoft.AspNetCore.Identity;
+@inject UserManager<FlashcardsAppUser> UserManager
+@model FlashcardsApp.Models.Profile
+
+@{
+    ViewData["Title"] = "User Profile";
+}
+
+
+<div class="profile-container">
+    <div class="profile-header">
+        <img src="@Model.ProfilePhoto" alt="Profile Photo" class="profile-photo" />
+        <h1>@Model.FirstName @Model.LastName</h1>
+        <p>@Model.Description</p>
+    </div>
+
+    <div class="flashcard-collections">
+        <h2>Your Flashcard Collections</h2>
+        @if (Model.FlashcardCollections != null)
+        {
+            foreach (var collection in Model.FlashcardCollections)
+            {
+                <div class="collection">
+                    <h3>@collection.CollectionName</h3>
+                </div>
+            }
+        }
+        else
+        {
+            <p>No flashcard collections available.</p>
+        }
+    </div>
+</div>
+
+.profile-container {
+    margin: 20px;
+}
+
+.profile-header {
+    text-align: center;
+}
+
+.profile-photo {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    margin-bottom: 20px;
+}
+
+.flashcard-collections {
+    margin-top: 40px;
+}
+
+.collection {
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
