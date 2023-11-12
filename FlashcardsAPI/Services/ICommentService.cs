@@ -8,5 +8,6 @@ namespace FlashcardsAPI.Services
 		Task<Comment?> AddComment(Comment comment);
 	    Task<Comment?> UpdateComment(int id, Comment comment);
 		Task<bool> DeleteComment(int id);
+		Task<IEnumerable<Comment>?> GetAllComments();
 	}
 }

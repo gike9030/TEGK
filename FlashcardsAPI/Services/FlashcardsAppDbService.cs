@@ -139,6 +139,15 @@ namespace FlashcardsAPI.Services
 
 		}
 
+		public async Task<IEnumerable<Comment>?> GetAllComments()
+		{
+			if (_context.Comments == null)
+			{
+				return null;
+			}
+			return await _context.Comments.ToListAsync();
+		}
+
 		public async Task<Comment?> GetComment(int id)
 		{
 			if (_context.Comments == null)
@@ -176,6 +185,55 @@ namespace FlashcardsAPI.Services
 				.FirstOrDefaultAsync(c => c.Id == id);
 
 			return collection;
+		}
+
+		public async Task<IEnumerable<FlashcardCollection<Flashcards>>?> GetFlashcardCollections()
+		{
+			if (_context.FlashcardCollection == null)
+			{
+				return null;
+			}
+
+			var collectionsWithComments = await _context.FlashcardCollection
+				.Include(collection => collection.Comments)
+				.ToListAsync();
+
+			return collectionsWithComments;
+		}
+
+		public async Task<IEnumerable<FlashcardCollection<Flashcards>>?> GetFlashcardCollectionsByCategory(Category category)
+		{
+			if (_context.FlashcardCollection == null)
+			{
+				return null;
+			}
+
+			var collections = await _context.FlashcardCollection
+				.Include(collection => collection.Comments)
+				.Where(c => c.Category == category)
+				.ToListAsync();
+
+			return collections;
+
+		}
+
+		public async Task<IEnumerable<Flashcards>?> GetFlashcardsInCollection(int id)
+		{
+			if (_context.FlashcardCollection == null)
+			{
+				return null;
+			}
+
+			var collection = await _context.FlashcardCollection
+				.Include(c => c.Flashcards)
+				.FirstOrDefaultAsync(c => c.Id == id);
+
+			if (collection == null)
+			{
+				return null;
+			}
+
+			return collection.Flashcards;
 		}
 
 		public async Task<Comment?> UpdateComment(int id, Comment comment)

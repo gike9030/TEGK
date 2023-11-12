@@ -12,57 +12,58 @@ namespace FlashcardsAPI.Controllers
     public class FlashcardCollectionsController : ControllerBase
     {
         private FlashcardsStorageService _flashcardsStorageService;
-        private readonly ApplicationDbContext _context;
         private readonly IFlashcardsAppDbService _flashcardsCollectionService;
 
-        public FlashcardCollectionsController(ApplicationDbContext context, FlashcardsStorageService flashcardsStorageService, IFlashcardsAppDbService service)
+        public FlashcardCollectionsController(FlashcardsStorageService flashcardsStorageService, IFlashcardsAppDbService service)
         {
             _flashcardsCollectionService = service;
             _flashcardsStorageService = flashcardsStorageService;
-            _context = context;
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetFlashcardsInCollection(int? id)
+        public async Task<IActionResult> GetFlashcardsInCollection(int id)
         {
-            FlashcardCollection<Flashcards>? collection = await _context.FlashcardCollection.Include(collection => collection.Flashcards).FirstOrDefaultAsync(flashcardCollection => flashcardCollection.Id == id);
+            IEnumerable<Flashcards>? flashcards = await _flashcardsCollectionService.GetFlashcardsInCollection(id);
 
-            if (collection == null)
+            if (flashcards == null)
             {
                 return NotFound();
             }
 
             List<Flashcards> tempCollection = _flashcardsStorageService.GetFlashcardsInCollection(id);
-            collection.Flashcards = collection.Flashcards.Concat(tempCollection).ToList();
+            flashcards = flashcards.Concat(tempCollection).ToList();
 
-            foreach (Flashcards flashcard in collection.Flashcards)
+            foreach (Flashcards flashcard in flashcards)
             {
                 flashcard.FlashcardCollection = null;
             }
 
-            return Ok(collection.Flashcards);
+            return Ok(flashcards);
         }
 
         // GET: api/FlashcardCollections
         [HttpGet]
         public async Task<ActionResult<IEnumerable<FlashcardCollection<Flashcards>>>> GetFlashcardCollections()
         {
-            if (_context.FlashcardCollection == null)
+            var collections = await _flashcardsCollectionService.GetFlashcardCollections();
+
+            if (collections == null)
             {
-                return NotFound();
+                return BadRequest();
             }
 
-            var collectionsWithComments = await _context.FlashcardCollection
-                .Include(collection => collection.Comments) 
-                .ToListAsync();
-
-            return collectionsWithComments;
+            return Ok(collections);
         }
 
         [HttpPost]
-        public IActionResult GetFlashcardCollections(Category category)
+        public async Task<IActionResult> GetFlashcardCollections(Category category)
         {
-            List<FlashcardCollection<Flashcards>> collections = _context.FlashcardCollection.ToList().Where(collection => collection.Category == category).ToList();
+            IEnumerable<FlashcardCollection<Flashcards>>? collections = await _flashcardsCollectionService.GetFlashcardCollectionsByCategory(category);
+            
+            if(collections == null)
+            {
+                return BadRequest();
+            }
 
             return Ok(collections);
         }
@@ -138,7 +139,6 @@ namespace FlashcardsAPI.Controllers
             {
                 return BadRequest();
             }
-            await _context.SaveChangesAsync();
 
             return NoContent();
         }

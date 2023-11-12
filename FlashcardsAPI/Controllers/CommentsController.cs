@@ -15,13 +15,11 @@ namespace FlashcardsAPI.Controllers
     [ApiController]
     public class CommentsController : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
         private readonly IFlashcardsAppDbService _flashcardsAppDbService;
 
-        public CommentsController(ApplicationDbContext context, IFlashcardsAppDbService service)
+        public CommentsController(IFlashcardsAppDbService service)
         {
             _flashcardsAppDbService = service;
-            _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
         // GET: api/Comments
@@ -30,11 +28,14 @@ namespace FlashcardsAPI.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<IEnumerable<Comment>>> GetComments()
         {
-            if (_context.Comments == null)
+            IEnumerable<Comment>? comments = await _flashcardsAppDbService.GetAllComments();
+
+            if (comments == null)
             {
-                return NotFound("Comments collection is not available.");
+                return BadRequest();
             }
-            return await _context.Comments.ToListAsync();
+
+            return Ok(comments);
         }
 
         // GET: api/Comments/5
