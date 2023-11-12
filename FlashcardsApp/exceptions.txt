@@ -1426,3 +1426,21 @@
 [StackTrace:    at FlashcardsApp.Controllers.FlashcardCollectionController.Index(String sortByCategory, String search) in C:\Users\Kajus\OneDrive\Desktop\project\TEGK\FlashcardsApp\Controllers\FlashcardCollectionController.cs:line 52]
 --------------------------------------------------
 
+[DateTime: 2023-11-12 19:36:35]
+[Exception Type: System.AggregateException]
+[Message: One or more errors occurred. (No connection could be made because the target machine actively refused it. (localhost:7296))]
+[StackTrace:    at System.Threading.Tasks.Task.ThrowIfExceptional(Boolean includeTaskCanceledExceptions)
+   at System.Threading.Tasks.Task`1.GetResultCore(Boolean waitCompletionNotification)
+   at FlashcardsApp.Services.HttpApiService.GetFromAPI[T](HttpClient httpClient, String dirrection, Nullable`1 id) in C:\Users\Kajus\OneDrive\Desktop\project\TEGK\FlashcardsApp\Services\HttpApiService.cs:line 24
+   at FlashcardsApp.Controllers.FlashcardCollectionController.Index(String sortByCategory, String search) in C:\Users\Kajus\OneDrive\Desktop\project\TEGK\FlashcardsApp\Controllers\FlashcardCollectionController.cs:line 48]
+--------------------------------------------------
+
+[DateTime: 2023-11-12 19:36:39]
+[Exception Type: System.AggregateException]
+[Message: One or more errors occurred. (No connection could be made because the target machine actively refused it. (localhost:7296))]
+[StackTrace:    at System.Threading.Tasks.Task.ThrowIfExceptional(Boolean includeTaskCanceledExceptions)
+   at System.Threading.Tasks.Task`1.GetResultCore(Boolean waitCompletionNotification)
+   at FlashcardsApp.Services.HttpApiService.GetFromAPI[T](HttpClient httpClient, String dirrection, Nullable`1 id) in C:\Users\Kajus\OneDrive\Desktop\project\TEGK\FlashcardsApp\Services\HttpApiService.cs:line 24
+   at FlashcardsApp.Controllers.FlashcardCollectionController.Index(String sortByCategory, String search) in C:\Users\Kajus\OneDrive\Desktop\project\TEGK\FlashcardsApp\Controllers\FlashcardCollectionController.cs:line 48]
+--------------------------------------------------
+

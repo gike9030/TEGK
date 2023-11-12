@@ -62,18 +62,18 @@ namespace FlashcardsApp.Controllers
             TempData["LastSearchQuery"] = null;
 
 
-            if (!string.IsNullOrEmpty(sortByCategory))
+            Func<FlashcardCollection<Flashcards>, bool> categoryFilter = (fc) =>
             {
-                if (Enum.TryParse(sortByCategory, out Category categoryValue))
-                {
-                    flashcardCollections = flashcardCollections.Where(f => f.Category == categoryValue).ToList();
-                }
-            }
+                return string.IsNullOrEmpty(sortByCategory) || fc.Category.ToString() == sortByCategory;
+            };
+
+            flashcardCollections = flashcardCollections.Where(categoryFilter).ToList();
+
             ViewBag.CurrentSort = sortByCategory;
 
             return View(flashcardCollections);
 
-        }
+    }
 
         public IActionResult CreateFlashcardCollection()
         {

@@ -38,7 +38,7 @@ namespace FlashcardsApp.Controllers
                                                .ToList()
             };
 
-            return View("Account/UserProfile", model);
+            return View(model);
         }
 
     }
