@@ -13,9 +13,9 @@ namespace FlashcardsAPI.Controllers
     {
         private FlashcardsStorageService _flashcardsStorageService;
         private readonly ApplicationDbContext _context;
-        private readonly IFlashcardCollectionService _flashcardsCollectionService;
+        private readonly IFlashcardsAppDbService _flashcardsCollectionService;
 
-        public FlashcardCollectionsController(ApplicationDbContext context, FlashcardsStorageService flashcardsStorageService, IFlashcardCollectionService service)
+        public FlashcardCollectionsController(ApplicationDbContext context, FlashcardsStorageService flashcardsStorageService, IFlashcardsAppDbService service)
         {
             _flashcardsCollectionService = service;
             _flashcardsStorageService = flashcardsStorageService;

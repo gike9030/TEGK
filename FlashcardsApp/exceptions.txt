@@ -1419,3 +1419,66 @@
    at FlashcardsApp.Controllers.FlashcardCollectionController.Index(String sortByCategory, String search) in C:\Users\Admin\TEGK2\FlashcardsApp\Controllers\FlashcardCollectionController.cs:line 42]
 --------------------------------------------------
 
+[DateTime: 12/11/2023 18:25:40]
+[Exception Type: FlashcardsApp.CustomExceptions.FlashcardsControllerException]
+[Message: Failed to fetch a flashcard collection.]
+[Status Code: BadRequest]
+[StackTrace:    at FlashcardsApp.Controllers.FlashcardCollectionController.Index(String sortByCategory, String search) in C:\Users\emili\OneDrive\Desktop\Desktop\programavimas\TEGK\FlashcardsApp\Controllers\FlashcardCollectionController.cs:line 52]
+--------------------------------------------------
+
+[DateTime: 12/11/2023 18:26:16]
+[Exception Type: FlashcardsApp.CustomExceptions.FlashcardsControllerException]
+[Message: Failed to fetch a flashcard collection.]
+[Status Code: BadRequest]
+[StackTrace:    at FlashcardsApp.Controllers.FlashcardCollectionController.Index(String sortByCategory, String search) in C:\Users\emili\OneDrive\Desktop\Desktop\programavimas\TEGK\FlashcardsApp\Controllers\FlashcardCollectionController.cs:line 52]
+--------------------------------------------------
+
+[DateTime: 12/11/2023 18:26:17]
+[Exception Type: FlashcardsApp.CustomExceptions.FlashcardsControllerException]
+[Message: Failed to fetch a flashcard collection.]
+[Status Code: BadRequest]
+[StackTrace:    at FlashcardsApp.Controllers.FlashcardCollectionController.Index(String sortByCategory, String search) in C:\Users\emili\OneDrive\Desktop\Desktop\programavimas\TEGK\FlashcardsApp\Controllers\FlashcardCollectionController.cs:line 52]
+--------------------------------------------------
+
+[DateTime: 12/11/2023 18:26:18]
+[Exception Type: FlashcardsApp.CustomExceptions.FlashcardsControllerException]
+[Message: Failed to fetch a flashcard collection.]
+[Status Code: BadRequest]
+[StackTrace:    at FlashcardsApp.Controllers.FlashcardCollectionController.Index(String sortByCategory, String search) in C:\Users\emili\OneDrive\Desktop\Desktop\programavimas\TEGK\FlashcardsApp\Controllers\FlashcardCollectionController.cs:line 52]
+--------------------------------------------------
+
+[DateTime: 12/11/2023 18:26:18]
+[Exception Type: FlashcardsApp.CustomExceptions.FlashcardsControllerException]
+[Message: Failed to fetch a flashcard collection.]
+[Status Code: BadRequest]
+[StackTrace:    at FlashcardsApp.Controllers.FlashcardCollectionController.Index(String sortByCategory, String search) in C:\Users\emili\OneDrive\Desktop\Desktop\programavimas\TEGK\FlashcardsApp\Controllers\FlashcardCollectionController.cs:line 52]
+--------------------------------------------------
+
+[DateTime: 12/11/2023 18:26:19]
+[Exception Type: FlashcardsApp.CustomExceptions.FlashcardsControllerException]
+[Message: Failed to fetch a flashcard collection.]
+[Status Code: BadRequest]
+[StackTrace:    at FlashcardsApp.Controllers.FlashcardCollectionController.Index(String sortByCategory, String search) in C:\Users\emili\OneDrive\Desktop\Desktop\programavimas\TEGK\FlashcardsApp\Controllers\FlashcardCollectionController.cs:line 52]
+--------------------------------------------------
+
+[DateTime: 12/11/2023 18:27:14]
+[Exception Type: FlashcardsApp.CustomExceptions.FlashcardsControllerException]
+[Message: Failed to fetch a flashcard collection.]
+[Status Code: BadRequest]
+[StackTrace:    at FlashcardsApp.Controllers.FlashcardCollectionController.Index(String sortByCategory, String search) in C:\Users\emili\OneDrive\Desktop\Desktop\programavimas\TEGK\FlashcardsApp\Controllers\FlashcardCollectionController.cs:line 52]
+--------------------------------------------------
+
+[DateTime: 12/11/2023 18:27:15]
+[Exception Type: FlashcardsApp.CustomExceptions.FlashcardsControllerException]
+[Message: Failed to fetch a flashcard collection.]
+[Status Code: BadRequest]
+[StackTrace:    at FlashcardsApp.Controllers.FlashcardCollectionController.Index(String sortByCategory, String search) in C:\Users\emili\OneDrive\Desktop\Desktop\programavimas\TEGK\FlashcardsApp\Controllers\FlashcardCollectionController.cs:line 52]
+--------------------------------------------------
+
+[DateTime: 12/11/2023 18:29:59]
+[Exception Type: FlashcardsApp.CustomExceptions.FlashcardsControllerException]
+[Message: Failed to fetch a flashcard collection.]
+[Status Code: BadRequest]
+[StackTrace:    at FlashcardsApp.Controllers.FlashcardCollectionController.Index(String sortByCategory, String search) in C:\Users\emili\OneDrive\Desktop\Desktop\programavimas\TEGK\FlashcardsApp\Controllers\FlashcardCollectionController.cs:line 52]
+--------------------------------------------------
+

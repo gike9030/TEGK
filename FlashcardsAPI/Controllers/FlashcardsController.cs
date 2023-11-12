@@ -21,7 +21,6 @@ namespace FlashcardsAPI.Controllers
         public FlashcardsController(ApplicationDbContext context, FlashcardsStorageService flashcardStorage, IFlashcardsAppDbService service)
         {
             _flashcardsAppDbService = service;
-            _context = context;
             _flashcardStorageService = flashcardStorage;
         }
 
