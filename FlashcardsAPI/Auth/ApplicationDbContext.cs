@@ -37,7 +37,7 @@ namespace JWTAuthentication.NET6._0.Auth
         public DbSet<FlashcardCollection<Flashcards>> FlashcardCollection { get; set; }
         public DbSet<Flashcards> Flashcards { get; set; }
         public DbSet<Reaction<Flashcards>> Reactions { get; set; }
-        public DbSet<FlashcardsAPI.Models.Comment> Comments { get; set; } = default!;
+        public DbSet<Comment> Comments { get; set; } = default!;
 
     }
 }

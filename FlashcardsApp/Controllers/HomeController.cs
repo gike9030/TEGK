@@ -13,9 +13,9 @@ namespace FlashcardsApp.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly HttpClient _httpClient;
-        private readonly SearchService _searchService;  // <-- Add this
+        private readonly SearchService _searchService;
 
-        public HomeController(ILogger<HomeController> logger, SearchService searchService) // <-- Modify constructor
+        public HomeController(ILogger<HomeController> logger, SearchService searchService) 
         {
             _logger = logger;
             _searchService = searchService;
