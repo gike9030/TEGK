@@ -40,7 +40,7 @@ namespace FlashcardsApp.Controllers
             }
 
             
-            return RedirectToAction("Index", "FlashcardCollection", new { collectionId = collectionId }); 
+            return RedirectToAction("Index", "FlashcardCollection"); 
         }
     }
 }

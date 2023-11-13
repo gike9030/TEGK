@@ -39,6 +39,22 @@ namespace FlashcardsApp.Controllers
                 return RedirectToAction("Index");
             }
         }
+        private Dictionary<ReactionType, int> CalculateReactionCounts(ICollection<Reaction<Flashcards>> reactions)
+        {
+            var reactionCounts = new Dictionary<ReactionType, int>();
+            foreach (var reaction in reactions)
+            {
+                if (reactionCounts.ContainsKey(reaction.Type))
+                {
+                    reactionCounts[reaction.Type]++;
+                }
+                else
+                {
+                    reactionCounts[reaction.Type] = 1;
+                }
+            }
+            return reactionCounts;
+        }
 
         public IActionResult Index(string? sortByCategory = null, string? search = null)
         {
@@ -78,22 +94,6 @@ namespace FlashcardsApp.Controllers
 
             return View(flashcardCollections);
 
-        }
-        private Dictionary<ReactionType, int> CalculateReactionCounts(ICollection<Reaction<Flashcards>> reactions)
-        {
-            var reactionCounts = new Dictionary<ReactionType, int>();
-            foreach (var reaction in reactions)
-            {
-                if (reactionCounts.ContainsKey(reaction.Type))
-                {
-                    reactionCounts[reaction.Type]++;
-                }
-                else
-                {
-                    reactionCounts[reaction.Type] = 1;
-                }
-            }
-            return reactionCounts;
         }
 
         public IActionResult CreateFlashcardCollection()

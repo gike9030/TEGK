@@ -229,6 +229,7 @@ namespace FlashcardsAPI.Services
 
 			var collectionsWithComments = await _context.FlashcardCollection
 				.Include(collection => collection.Comments)
+				.Include (collection => collection.Reactions)
 				.ToListAsync();
 
 			return collectionsWithComments;
