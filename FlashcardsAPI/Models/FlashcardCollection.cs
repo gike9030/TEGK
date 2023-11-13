@@ -17,7 +17,7 @@ namespace FlashcardsAPI.Models
         public DateTime CreatedDateTime { get; set; } = DateTime.Now;
         public int ViewCount { get; set; }
         [NotMapped]
-        public Dictionary<ReactionType, int> ReactionCounts { get; set; }
+        public Dictionary<ReactionType, int>? ReactionCounts { get; set; }
         public ICollection<Reaction<FlashcardType>> Reactions { get; set; } = new List<Reaction<FlashcardType>>();
 
         [Required(ErrorMessage = "Please select a category.")]
