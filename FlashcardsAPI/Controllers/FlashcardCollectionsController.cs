@@ -53,6 +53,7 @@ namespace FlashcardsAPI.Controllers
             }
 
             return Ok(collections);
+
         }
 
         [HttpPost]
@@ -80,7 +81,9 @@ namespace FlashcardsAPI.Controllers
                 return NotFound();
             }
 
+
 			List<Flashcards> tempCollection = _flashcardsStorageService.GetFlashcardsInCollection(id);
+
 
 			collection.Flashcards = collection.Flashcards.Concat(tempCollection).ToList();
 
