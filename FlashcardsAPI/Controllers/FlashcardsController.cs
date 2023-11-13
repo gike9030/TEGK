@@ -15,12 +15,12 @@ namespace FlashcardsAPI.Controllers
     [ApiController]
     public class FlashcardsController : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
         private readonly FlashcardsStorageService _flashcardStorageService;
+        private readonly IFlashcardsAppDbService _flashcardsAppDbService;
 
-        public FlashcardsController(ApplicationDbContext context, FlashcardsStorageService flashcardStorage)
+        public FlashcardsController(FlashcardsStorageService flashcardStorage, IFlashcardsAppDbService service)
         {
-            _context = context;
+            _flashcardsAppDbService = service;
             _flashcardStorageService = flashcardStorage;
         }
 
@@ -28,11 +28,8 @@ namespace FlashcardsAPI.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Flashcards>> GetFlashcards(int id)
         {
-          if (_context.Flashcards == null)
-          {
-              return NotFound();
-          }
-            var flashcards = await _context.Flashcards.FindAsync(id) ?? _flashcardStorageService.GetFlashcard(id);
+
+            Flashcards? flashcards = await _flashcardsAppDbService.GetFlashcard(id) ?? _flashcardStorageService.GetFlashcard(id);
 
             if (flashcards == null)
             {
@@ -47,35 +44,18 @@ namespace FlashcardsAPI.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutFlashcards(int id, Flashcards flashcards)
         {
-            if (id != flashcards.Id)
-            {
-                return BadRequest();
-            }
-
             if (_flashcardStorageService.GetFlashcard(id) != null)
             {
                 _flashcardStorageService.UpdateFlashcard(id, flashcards);
                 return NoContent();
             }
 
-            _context.Entry(flashcards).State = EntityState.Modified;
+            Flashcards? updatedFlashcard = await _flashcardsAppDbService.UpdateFlashcard(id, flashcards);
 
-            try
+            if (updatedFlashcard == null) 
             {
-                await _context.SaveChangesAsync();
+                return BadRequest();
             }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!FlashcardsExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
             return NoContent();
         }
 
@@ -83,12 +63,7 @@ namespace FlashcardsAPI.Controllers
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<Flashcards>> PostFlashcards(Flashcards flashcards)
-        {
-          if (_context.Flashcards == null)
-          {
-              return Problem("Entity set 'ApplicationDbContext.Flashcards'  is null.");
-          }
-            
+        {       
           flashcards.Id = flashcards.GetHashCode();
           _flashcardStorageService.AddFlashcard(flashcards);
 
@@ -99,32 +74,19 @@ namespace FlashcardsAPI.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteFlashcards(int id)
         {
-            if (_context.Flashcards == null)
-            {
-                return NotFound();
-            }
-
             if (_flashcardStorageService.GetFlashcard(id) != null)
             {
                 _flashcardStorageService.RemoveFlashcard(id);
                 return NoContent();
             }
 
-            var flashcards = await _context.Flashcards.FindAsync(id);
-            if (flashcards == null)
+            bool isSuccess = await _flashcardsAppDbService.DeleteFlashcard(id);
+
+            if (isSuccess == false)
             {
-                return NotFound();
+                return BadRequest();
             }
-
-            _context.Flashcards.Remove(flashcards);      
-            await _context.SaveChangesAsync();
-
             return NoContent();
-        }
-
-        private bool FlashcardsExists(int id)
-        {
-            return (_context.Flashcards?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

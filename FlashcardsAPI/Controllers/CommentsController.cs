@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FlashcardsAPI.Services;
 
 namespace FlashcardsAPI.Controllers
 {
@@ -14,11 +15,11 @@ namespace FlashcardsAPI.Controllers
     [ApiController]
     public class CommentsController : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IFlashcardsAppDbService _flashcardsAppDbService;
 
-        public CommentsController(ApplicationDbContext context)
+        public CommentsController(IFlashcardsAppDbService service)
         {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
+            _flashcardsAppDbService = service;
         }
 
         // GET: api/Comments
@@ -27,11 +28,14 @@ namespace FlashcardsAPI.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<IEnumerable<Comment>>> GetComments()
         {
-            if (_context.Comments == null)
+            IEnumerable<Comment>? comments = await _flashcardsAppDbService.GetAllComments();
+
+            if (comments == null)
             {
-                return NotFound("Comments collection is not available.");
+                return BadRequest();
             }
-            return await _context.Comments.ToListAsync();
+
+            return Ok(comments);
         }
 
         // GET: api/Comments/5
@@ -40,12 +44,7 @@ namespace FlashcardsAPI.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<Comment>> GetComment(int id)
         {
-            if (_context.Comments == null)
-            {
-                return NotFound("Comments collection is not available.");
-            }
-
-            var comment = await _context.Comments.FindAsync(id);
+            Comment? comment = await _flashcardsAppDbService.GetComment(id);
 
             if (comment == null)
             {
@@ -61,18 +60,18 @@ namespace FlashcardsAPI.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<Comment>> PostComment([FromBody] Comment comment)
         {
-            if (_context.Comments == null)
-            {
-                return Problem("Entity set 'ApplicationDbContext.Comments' is null.");
-            }
 
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            _context.Comments.Add(comment);
-            await _context.SaveChangesAsync();
+            Comment? updated = await _flashcardsAppDbService.AddComment(comment);
+
+            if (updated == null)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
 
             return CreatedAtAction(nameof(GetComment), new { id = comment.Id }, comment);
         }
@@ -85,34 +84,18 @@ namespace FlashcardsAPI.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> PutComment(int id, [FromBody] Comment comment)
         {
-            if (_context.Comments == null)
-            {
-                return Problem("Entity set 'ApplicationDbContext.Comments' is null.");
-            }
-
             if (id != comment.Id)
             {
                 return BadRequest("Comment ID mismatch.");
             }
 
-            _context.Entry(comment).State = EntityState.Modified;
-
-            try
+            Comment? isSuccess = await _flashcardsAppDbService.UpdateComment(id, comment);
+            
+            if (isSuccess == null)
             {
-                await _context.SaveChangesAsync();
+                return NotFound();
             }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!CommentExists(id))
-                {
-                    return NotFound($"Comment with ID {id} not found.");
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
+            
             return NoContent();
         }
 
@@ -122,26 +105,14 @@ namespace FlashcardsAPI.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeleteComment(int id)
         {
-            if (_context.Comments == null)
-            {
-                return NotFound("Comments collection is not available.");
-            }
+            bool isSuccess = await _flashcardsAppDbService.DeleteComment(id);
 
-            var comment = await _context.Comments.FindAsync(id);
-            if (comment == null)
+            if (isSuccess == false)
             {
                 return NotFound($"Comment with ID {id} not found.");
             }
 
-            _context.Comments.Remove(comment);
-            await _context.SaveChangesAsync();
-
             return NoContent();
-        }
-
-        private bool CommentExists(int id)
-        {
-            return (_context.Comments?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }
