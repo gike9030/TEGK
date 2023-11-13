@@ -22,6 +22,27 @@ namespace FlashcardsAPI.Controllers
             _flashcardsAppDbService = service;
         }
 
+        // POST: api/Comments
+        [HttpPost]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<Comment>> PostComment([FromBody] Comment comment)
+        {
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            Comment? updated = await _flashcardsAppDbService.AddComment(comment);
+
+            if (updated == null)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+
+            return CreatedAtAction(nameof(GetComment), new { id = comment.Id }, comment);
+        }
 
         // GET: api/Comments/5
         [HttpGet("{id}")]

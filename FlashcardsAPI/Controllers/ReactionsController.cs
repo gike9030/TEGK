@@ -1,4 +1,5 @@
 ﻿using FlashcardsAPI.Models;
+using FlashcardsAPI.Services;
 using JWTAuthentication.NET6._0.Auth;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -10,55 +11,26 @@ namespace FlashcardsAPI.Controllers
     [ApiController]
     public class ReactionsController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IFlashcardsAppDbService _flashcardsAppDbService;
 
-        public ReactionsController(ApplicationDbContext context)
+        public ReactionsController(IFlashcardsAppDbService service)
         {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
+            _flashcardsAppDbService = service;
         }
-
         [HttpPost("ToggleReaction")]
         public async Task<IActionResult> ToggleReaction(int collectionId, ReactionType reactionType, string userId)
         {
-            
-                if (string.IsNullOrEmpty(userId) || collectionId <= 0)
-                {
-                    return BadRequest("Invalid parameters.");
-                }
-                var existingReaction = await _context.Reactions
-                    .FirstOrDefaultAsync(r => r.FlashcardCollectionId == collectionId && r.UserId == userId && r.Type == reactionType);
+            if (string.IsNullOrEmpty(userId) || collectionId <= 0)
+            {
+               return BadRequest("Invalid parameters.");
+            }
 
-                if (existingReaction != null)
-                {
-                    _context.Reactions.Remove(existingReaction);
-                }
-                else
-                {
-                    var newReaction = new Reaction<Flashcards>
-                    {
-                        Type = reactionType,
-                        FlashcardCollectionId = collectionId,
-                        UserId = userId
-                    };
-                    _context.Reactions.Add(newReaction);
-                }
+           var reaction = await _flashcardsAppDbService.ToggleReaction(collectionId, reactionType, userId);
+          
 
-                await _context.SaveChangesAsync();
-
-                var reactionCounts = await _context.Reactions
-                    .Where(r => r.FlashcardCollectionId == collectionId)
-                    .GroupBy(r => r.Type)
-                    .Select(group => new { ReactionType = group.Key, Count = group.Count() })
-                    .ToListAsync();
-
-                return Ok(new { message = "Reaction toggled successfully.", reactionCounts });
-            
-           
+            var reactionCounts = await _flashcardsAppDbService.CalculateReactionCounts(collectionId);
+            return Ok(new { message = "Reaction toggled successfully.", reactionCounts });
         }
     }
-
-
-
-
-    }
+}
 
