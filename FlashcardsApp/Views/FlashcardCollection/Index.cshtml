@@ -48,6 +48,9 @@
 <div class="flashcard-feed">
     @foreach (var collection in Model)
     {
+        var userId = UserManager.GetUserId(User);
+        var userReactionType = collection.Reactions.FirstOrDefault(r => r.UserId == userId)?.Type;
+
         <div class="flashcard-item">
             <div class="collection-card">
                 <div class="dropdown">
@@ -75,6 +78,28 @@
                     <a href="@Url.Action("PlayCollection", "FlashcardCollection", new { id = collection.Id })" class="btn btn-primary">
                         <i class="fas fa-play"></i> Play
                     </a>
+                </div>
+
+                <div class="reaction-buttons-container">
+                    <button class="reaction-toggle-btn">
+                        @GetReactionIcon(userReactionType)
+                    </button>
+                    <div class="reactions">
+                        @foreach (var reactionType in Enum.GetNames(typeof(ReactionType)))
+                        {
+                            var isUserReaction = userReactionType.ToString() == reactionType;
+                            <form asp-action="ToggleReaction" asp-controller="Reactions" method="post">
+                                <input type="hidden" name="CollectionId" value="@collection.Id" />
+                                <input type="hidden" name="ReactionType" value="@reactionType" />
+                                <button type="submit" class="reaction-btn" data-reaction-type="@reactionType" disabled="@(!isUserReaction && userReactionType.HasValue)">
+                                    @GetEmoji(reactionType)
+                                    <span class="reaction-count">
+                                        @(collection.ReactionCounts.TryGetValue(Enum.Parse<ReactionType>(reactionType), out var count) ? count.ToString() : "0")
+                                    </span>
+                                </button>
+                            </form>
+                        }
+                    </div>
                 </div>
             </div>
             <div class="comment-section">
@@ -111,7 +136,90 @@
     <a asp-action="CreateFlashcardCollection" class="btn btn-success">Create New Collection</a>
 </div>
 
+@functions {
+    private ReactionType? GetUserReactionType(IEnumerable<Reaction<Flashcards>> reactions, string userId)
+    {
+        return reactions.FirstOrDefault(r => r.UserId == userId)?.Type;
+    }
+
+    private string GetReactionIcon(ReactionType? userReactionType)
+    {
+        return userReactionType.HasValue ? GetEmoji(userReactionType.ToString()) : "+";
+    }
+
+
+    public string GetEmoji(string reactionType)
+    {
+        return reactionType switch
+        {
+            "Hearts" => "❤️",
+            "Haha" => "😆",
+            "Like" => "👍",
+            "Angry" => "😠",
+            _ => string.Empty 
+        };
+    }
+}
+
+
 <style>
+    .reaction-buttons-container {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+    }
+    .reaction-toggle-btn {
+        background: #ffffff; 
+        border: 1px solid #ccc;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        font-size: 24px;
+        transition: all 0.3s;
+        cursor: pointer;
+        z-index: 2; 
+    }
+
+    .reactions {
+        display: none;
+        position: absolute;
+        bottom: 100%; 
+        right: 0;
+        transition: all 0.3s;
+        z-index: 1;
+    }
+
+    .reaction-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%; /
+        padding: 10px; 
+        margin: 5px;
+        transition: transform 0.3s;
+        cursor: pointer;
+        border: 1px solid #ccc; 
+        font-size: 17px; 
+    }
+
+    .reaction-count {
+        margin-left: 7px; 
+        font-size: 15px;
+    }
+
+    .reaction-buttons-container:hover .reactions {
+        display: block;
+    }
+
+    .reaction-buttons-container:hover .reaction-toggle-btn {
+        transform: rotate(45deg);
+    }
+
+    .reaction-btn:active {
+        transform: scale(1.2);
+    }
+
+
     .image-container {
         display: flex;
         justify-content: center;

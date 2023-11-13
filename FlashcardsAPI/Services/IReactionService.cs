@@ -3,10 +3,8 @@
 namespace FlashcardsAPI.Services
 {
 	public interface IReactionService
-	{
-		Task<Reaction<Flashcards>?> GetReaction(int id);
-		Task<Reaction<Flashcards>?> AddReaction(Reaction<Flashcards> reaction);
-		Task<Reaction<Flashcards>?> UpdateReaction(int id, Reaction<Flashcards> reaction);
-		Task<bool> DeleteReaction(int id);
-	}
+    { 
+        Task<Reaction<Flashcards>> ToggleReaction(int collectionId, ReactionType reactionType, string userId);
+        Task<Dictionary<ReactionType, int>> CalculateReactionCounts(int collectionId);
+    }
 }

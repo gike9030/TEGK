@@ -13,7 +13,38 @@ namespace FlashcardsAPI.Services
 		{
 			_context = context;
 		}
-		public async Task<Comment?> AddComment(Comment comment)
+
+        public async Task<Reaction<Flashcards>> ToggleReaction(int collectionId, ReactionType reactionType, string userId)
+        {
+            var existingReaction = await _context.Reactions
+                .FirstOrDefaultAsync(r => r.FlashcardCollectionId == collectionId && r.UserId == userId && r.Type == reactionType);
+
+            if (existingReaction != null)
+            {
+                _context.Reactions.Remove(existingReaction);
+            }
+            else
+            {
+                var newReaction = new Reaction<Flashcards>
+                {
+                    Type = reactionType,
+                    FlashcardCollectionId = collectionId,
+                    UserId = userId
+                };
+                _context.Reactions.Add(newReaction);
+            }
+
+            await _context.SaveChangesAsync();
+            return existingReaction; 
+        }
+        public async Task<Dictionary<ReactionType, int>> CalculateReactionCounts(int collectionId)
+        {
+            return await _context.Reactions
+                .Where(r => r.FlashcardCollectionId == collectionId)
+                .GroupBy(r => r.Type)
+                .ToDictionaryAsync(g => g.Key, g => g.Count());
+        }
+        public async Task<Comment?> AddComment(Comment comment)
 		{
 			if (_context.Comments == null)
 			{
@@ -114,6 +145,7 @@ namespace FlashcardsAPI.Services
 			{
 				FlashcardCollection<Flashcards>? collection = await _context.FlashcardCollection
 				.Include(c => c.Flashcards)
+				.Include(c => c.Reactions)
 				.Include(c => c.Comments)
 				.FirstOrDefaultAsync(c => c.Id == id);
 
@@ -181,6 +213,7 @@ namespace FlashcardsAPI.Services
 
 			var collection = await _context.FlashcardCollection
 			    .Include(c => c.Comments)
+				.Include(c => c.Reactions)
 				.Include(c => c.Flashcards)
 				.FirstOrDefaultAsync(c => c.Id == id);
 
@@ -196,6 +229,7 @@ namespace FlashcardsAPI.Services
 
 			var collectionsWithComments = await _context.FlashcardCollection
 				.Include(collection => collection.Comments)
+				.Include (collection => collection.Reactions)
 				.ToListAsync();
 
 			return collectionsWithComments;
@@ -210,6 +244,7 @@ namespace FlashcardsAPI.Services
 
 			var collections = await _context.FlashcardCollection
 				.Include(collection => collection.Comments)
+				.Include(c => c.Reactions)
 				.Where(c => c.Category == category)
 				.ToListAsync();
 

@@ -22,38 +22,6 @@ namespace FlashcardsAPI.Controllers
             _flashcardsAppDbService = service;
         }
 
-        // GET: api/Comments
-        [HttpGet]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<IEnumerable<Comment>>> GetComments()
-        {
-            IEnumerable<Comment>? comments = await _flashcardsAppDbService.GetAllComments();
-
-            if (comments == null)
-            {
-                return BadRequest();
-            }
-
-            return Ok(comments);
-        }
-
-        // GET: api/Comments/5
-        [HttpGet("{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<Comment>> GetComment(int id)
-        {
-            Comment? comment = await _flashcardsAppDbService.GetComment(id);
-
-            if (comment == null)
-            {
-                return NotFound($"Comment with ID {id} not found.");
-            }
-
-            return comment;
-        }
-
         // POST: api/Comments
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
@@ -75,6 +43,24 @@ namespace FlashcardsAPI.Controllers
 
             return CreatedAtAction(nameof(GetComment), new { id = comment.Id }, comment);
         }
+
+        // GET: api/Comments/5
+        [HttpGet("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<Comment>> GetComment(int id)
+        {
+            Comment? comment = await _flashcardsAppDbService.GetComment(id);
+
+            if (comment == null)
+            {
+                return NotFound($"Comment with ID {id} not found.");
+            }
+
+            return comment;
+        }
+
+
 
         // PUT: api/Comments/5
         [HttpPut("{id}")]
