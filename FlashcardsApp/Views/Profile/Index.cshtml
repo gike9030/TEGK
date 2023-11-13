@@ -56,7 +56,7 @@
                                 <span>@collection.Category</span>
                             </div>
 
-                            <form id="deleteForm-@collection.Id" asp-action="Delete" asp-route-id="@collection.Id" method="post" style="display:none;"></form>
+                            <form id="deleteForm-@collection.Id" asp-controller="FlashcardCollection" asp-action="Delete" asp-route-id="@collection.Id" method="post" style="display:none;"></form>
                             <div class="play-button">
                                 <a href="@Url.Action("PlayCollection", "FlashcardCollection", new { id = collection.Id })" class="btn btn-primary">
                                     <i class="fas fa-play"></i> Play
