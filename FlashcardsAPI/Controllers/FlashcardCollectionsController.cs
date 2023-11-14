@@ -11,10 +11,10 @@ namespace FlashcardsAPI.Controllers
     [ApiController]
     public class FlashcardCollectionsController : ControllerBase
     {
-        private FlashcardsStorageService _flashcardsStorageService;
+        private IFlashcardsStorageService _flashcardsStorageService;
         private readonly IFlashcardsAppDbService _flashcardsCollectionService;
 
-        public FlashcardCollectionsController(FlashcardsStorageService flashcardsStorageService, IFlashcardsAppDbService service)
+        public FlashcardCollectionsController(IFlashcardsStorageService flashcardsStorageService, IFlashcardsAppDbService service)
         {
             _flashcardsCollectionService = service;
             _flashcardsStorageService = flashcardsStorageService;
@@ -43,7 +43,7 @@ namespace FlashcardsAPI.Controllers
 
         // GET: api/FlashcardCollections
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<FlashcardCollection<Flashcards>>>> GetFlashcardCollections()
+        public async Task<IActionResult> GetFlashcardCollections()
         {
             var collections = await _flashcardsCollectionService.GetFlashcardCollections();
 
@@ -56,6 +56,7 @@ namespace FlashcardsAPI.Controllers
 
         }
 
+        // Not used
         [HttpPost]
         public async Task<IActionResult> GetFlashcardCollections(Category category)
         {

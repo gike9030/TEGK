@@ -15,10 +15,10 @@ namespace FlashcardsAPI.Controllers
     [ApiController]
     public class FlashcardsController : ControllerBase
     {
-        private readonly FlashcardsStorageService _flashcardStorageService;
+        private readonly IFlashcardsStorageService _flashcardStorageService;
         private readonly IFlashcardsAppDbService _flashcardsAppDbService;
 
-        public FlashcardsController(FlashcardsStorageService flashcardStorage, IFlashcardsAppDbService service)
+        public FlashcardsController(IFlashcardsStorageService flashcardStorage, IFlashcardsAppDbService service)
         {
             _flashcardsAppDbService = service;
             _flashcardStorageService = flashcardStorage;

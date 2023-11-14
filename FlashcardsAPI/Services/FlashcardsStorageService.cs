@@ -6,7 +6,7 @@ namespace FlashcardsAPI.Services
 {
 	// TO ADD file to store flashcards in case of system shutdown
 
-	public class FlashcardsStorageService
+	public class FlashcardsStorageService : IFlashcardsStorageService
 	{
 		private readonly IServiceProvider _serviceProvider;
 		private Object _lock = new();
