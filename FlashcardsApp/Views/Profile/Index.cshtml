@@ -14,24 +14,31 @@
         <img src="@Url.Content(Model.ProfilePhoto)" alt="Profile Photo" class="profile-photo" />
         <div class="profile-photo-upload">
             <form asp-action="UploadProfilePhoto" method="post" enctype="multipart/form-data" style="display:none;" id="photo-upload-form">
-                <input type="file" name="profilePhoto" accept=".jpg" />
-                <button type="submit" class="upload-btn">Upload</button>
+                <input type="file" name="profilePhoto" accept=".jpg" id="file-input" />
             </form>
-            <button class="view-upload-btn" onclick="viewUploadForm()">View Upload</button>
+            <label for="file-input" class="view-upload-btn">
+                <span>+</span>
+            </label>
         </div>
-        <h1>@Model.FirstName @Model.LastName</h1>
 
-        <h3>Bio</h3>
+        <h1>@Model.FirstName @Model.LastName</h1>
+        <br>
+        <h3>Bio</h3>    
+        <div class="description-block">
         <p id="description-text">@Model.Description</p>
 
         <form asp-action="EditDescription" method="post" style="display:none;" id="description-form">
             <textarea id="description" name="Description">@Model.Description</textarea>
             <button type="submit" class="save-btn">Save</button>
         </form>
+        
         <button class="edit-btn" onclick="editDescription()">Edit</button>
     </div>
+    </div>
+
 
     <div class="flashcard-collections">
+        <hr>
         <h2>Your Flashcard Collections</h2>
         @if (Model.FlashcardCollections != null && Model.FlashcardCollections.Any())
         {
@@ -67,17 +74,18 @@
             }
 
         }
-            <form asp-controller="FlashcardCollection" asp-action="CreateFlashcardCollection" method="post">
-                <button class="add-collection-btn">
-                    Add New Collection
-                </button>
-            </form>
-
         }
         else
         {
             <p>No flashcard collections available.</p>
         }
+        <div class="text-center mt-3">
+            <a asp-controller="FlashcardCollection" asp-action="CreateFlashcardCollection" class="btn btn-success add-collection-btn">
+                Add New Collection
+            </a>
+        </div>
+
+
     </div>
 </div>
 
@@ -103,10 +111,33 @@
 </script>
 
 <style>
+    .description-block {
+        background-color: #f8f9fa; 
+        padding: 15px;
+        width: 500px;
+        margin-top: 10px;
+        margin-bottom: 50px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        margin-left: auto;
+        margin-right: auto;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+        .description-block #description-text {
+            margin-bottom: 10px;
+        }
+
+        .description-block #description-form {
+            margin-top: 10px;
+        }
+
+
     .add-collection-btn {
         background-color: #28a745; 
         color: white;
         border: none;
+        width: 200px;
         padding: 10px 20px;
         border-radius: 5px;
         font-size: 16px;
@@ -212,7 +243,7 @@
         font-size: 1rem; 
     margin-bottom: 10px;
 }
-    .view-upload-btn, .edit-btn {
+    .edit-btn {
     background-color: #ADD8E6;
     color: #fff;
     border: none;
@@ -222,14 +253,64 @@
     text-decoration: none;
     display: inline-block;
     font-size: 16px;
-    margin: 4px 2px;
+    margin-left: 20px;
+    margin-right: -550px;
     transition-duration: 0.4s;
     cursor: pointer;
 }
+
+    .save-btn {
+        background-color: #ADD8E6; 
+        color: #fff; 
+        border: none;
+        padding: 10px 15px; 
+        border-radius: 5px; 
+        font-size: 16px; 
+        cursor: pointer; 
+        transition-duration: 0.4s;
+        display: inline-block;
+    }
+
+        .save-btn:hover {
+            background-color: #87CEEB; 
+            color: black; 
+        }
+
+
+    .profile-photo-upload {
+        position: relative;
+        display: inline-block; 
+        margin-top: 20px;
+        text-align: center;
+    }
+
+    .view-upload-btn {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        background-color: #ADD8E6;
+        color: #fff;
+        border: none;
+        width: 30px;
+        height: 30px;
+        padding: 5px;
+        border-radius: 50%;
+        text-align: center;
+        line-height: 10px;
+        font-size: 24px;
+        cursor: pointer;
+        transform: translate(-50%, 200%); 
+        transition-duration: 0.4s;
+    }
 
 .view-upload-btn:hover, .edit-btn:hover {
     background-color: #87CEEB;
     color: black;
 }
+
+        .view-upload-btn span {
+            display: inline-block;
+            line-height: 1; 
+        }
 
 </style>

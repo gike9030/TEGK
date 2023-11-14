@@ -31,11 +31,14 @@ namespace FlashcardsApp.Controllers
                 return NotFound();
             }
 
+            string defaultImagePath = "~/images/DefaultProfilePicture.jpg"; 
+            string profilePhotoPath = string.IsNullOrEmpty(user.ProfilePhotoPath) ? defaultImagePath : user.ProfilePhotoPath;
+
             var model = new Profile
             {
                 FirstName = user.FirstName,
                 LastName = user.LastName,
-                ProfilePhoto = user.ProfilePhotoPath,
+                ProfilePhoto = profilePhotoPath,
                 Description = user.Description,
                 FlashcardCollections = _context.FlashcardCollection
                                                .Where(c => c.FlashcardsAppUserId == userId)
