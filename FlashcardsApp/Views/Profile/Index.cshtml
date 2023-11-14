@@ -55,7 +55,6 @@
                                 <h2>@collection.CollectionName</h2>
                                 <span>@collection.Category</span>
                             </div>
-
                             <form id="deleteForm-@collection.Id" asp-controller="FlashcardCollection" asp-action="Delete" asp-route-id="@collection.Id" method="post" style="display:none;"></form>
                             <div class="play-button">
                                 <a href="@Url.Action("PlayCollection", "FlashcardCollection", new { id = collection.Id })" class="btn btn-primary">
@@ -67,6 +66,12 @@
                 }
 
             }
+            <form asp-controller="FlashcardCollection" asp-action="CreateFlashcardCollection" method="post">
+                <button class="add-collection-btn">
+                    Add New Collection
+                </button>
+            </form>
+
         }
         else
         {
@@ -86,9 +91,34 @@
         var uploadForm = document.getElementById('photo-upload-form');
         uploadForm.style.display = 'block';
     }
+    function setReturnUrl(returnUrl) {
+        $.ajax({
+            url: '@Url.Action("SetReturnUrl", "FlashcardCollectionController")',
+            type: 'GET',
+            data: { returnUrl: returnUrl }
+        });
+    }
+
 </script>
 
 <style>
+    .add-collection-btn {
+        background-color: #28a745; 
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        font-size: 16px;
+        margin-top: 10px; 
+        cursor: pointer;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+        .add-collection-btn:hover {
+            background-color: #218838;
+        }
     .profile-photo-upload {
         margin-top: 20px;
         text-align: center;
@@ -172,5 +202,33 @@
         margin-top: 20px;
     }
 
+    #description-form textarea {
+        width: 60%; 
+        min-height: 100px;
+        padding: 10px; 
+        border: 1px solid #ADD8E6;
+        border-radius: 5px; 
+        font-size: 1rem; 
+        margin-bottom: 10px; 
+    }
+    .view-upload-btn, .edit-btn {
+    background-color: #ADD8E6;
+    color: #fff;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    transition-duration: 0.4s;
+    cursor: pointer;
+}
+
+.view-upload-btn:hover, .edit-btn:hover {
+    background-color: #87CEEB;
+    color: black;
+}
 
 </style>
