@@ -96,17 +96,11 @@
         descriptionText.style.display = 'none';
         descriptionForm.style.display = 'block';
     }
-    function viewUploadForm() {
-        var uploadForm = document.getElementById('photo-upload-form');
-        uploadForm.style.display = 'block';
-    }
-    function setReturnUrl(returnUrl) {
-        $.ajax({
-            url: '@Url.Action("SetReturnUrl", "FlashcardCollectionController")',
-            type: 'GET',
-            data: { returnUrl: returnUrl }
-        });
-    }
+    
+    document.getElementById('file-input').addEventListener('change', function () {
+        document.getElementById('photo-upload-form').submit();
+    });
+
 
 </script>
 
