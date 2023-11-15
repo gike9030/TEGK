@@ -14,6 +14,7 @@ using FlashcardsApp.Controllers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using FlashcardsApp.Services;
 
 namespace FlashcardsAppTests.Controllers
 {
@@ -264,6 +265,199 @@ namespace FlashcardsAppTests.Controllers
 
             // Act
             var result = controller.Edit(99) as RedirectToActionResult; // Using an ID that doesn't exist
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual("Index", result.ActionName);
+        }
+
+        [TestMethod]
+        public void TestRenameCollectionSuccess()
+        {
+            // Arrange
+            var mockHttpClientFactory = new Mock<IHttpClientFactory>();
+            var mockHttpMessageHandler = new Mock<HttpMessageHandler>();
+
+            var testCollection = new FlashcardCollection<Flashcards>
+            {
+                Id = 1,
+                CollectionName = "Original Collection",
+            };
+
+            var updatedCollection = new FlashcardCollection<Flashcards>
+            {
+                Id = 1,
+                CollectionName = "Renamed Collection",
+            };
+
+            var getResponse = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(JsonConvert.SerializeObject(testCollection), Encoding.UTF8, "application/json")
+            };
+
+            var putResponse = new HttpResponseMessage(HttpStatusCode.NoContent);
+
+            mockHttpMessageHandler.Protected()
+                .Setup<Task<HttpResponseMessage>>(
+                    "SendAsync",
+                    ItExpr.Is<HttpRequestMessage>(req => req.Method == HttpMethod.Get || req.Method == HttpMethod.Put),
+                    ItExpr.IsAny<CancellationToken>()
+                )
+                .ReturnsAsync((HttpRequestMessage request, CancellationToken token) =>
+                {
+                    return request.Method == HttpMethod.Get ? getResponse : putResponse;
+                });
+
+            var client = new HttpClient(mockHttpMessageHandler.Object)
+            {
+                BaseAddress = new Uri("http://example.com/")
+            };
+
+            mockHttpClientFactory.Setup(_ => _.CreateClient(It.IsAny<string>())).Returns(client);
+
+            var controller = new FlashcardCollectionController(mockHttpClientFactory.Object);
+
+            // Act
+            var result = controller.RenameCollection(updatedCollection) as RedirectToActionResult;
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual("Edit", result.ActionName);
+            Assert.AreEqual(updatedCollection.Id, result.RouteValues["id"]);
+        }
+
+        [TestMethod]
+        public void TestRenameCollectionUpdateFailure()
+        {
+            // Arrange
+            var mockHttpClientFactory = new Mock<IHttpClientFactory>();
+            var mockHttpMessageHandler = new Mock<HttpMessageHandler>();
+
+            var testCollection = new FlashcardCollection<Flashcards>
+            {
+                Id = 1,
+                CollectionName = "Original Collection",
+            };
+
+            var getResponse = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(JsonConvert.SerializeObject(testCollection), Encoding.UTF8, "application/json")
+            };
+
+            var updateFailureResponse = new HttpResponseMessage(HttpStatusCode.BadRequest);
+
+            mockHttpMessageHandler.Protected()
+                .Setup<Task<HttpResponseMessage>>(
+                    "SendAsync",
+                    ItExpr.IsAny<HttpRequestMessage>(),
+                    ItExpr.IsAny<CancellationToken>()
+                )
+                .ReturnsAsync((HttpRequestMessage request, CancellationToken token) =>
+                {
+                    return request.Method == HttpMethod.Put ? updateFailureResponse : getResponse;
+                });
+
+            var client = new HttpClient(mockHttpMessageHandler.Object)
+            {
+                BaseAddress = new Uri("http://example.com/")
+            };
+
+            mockHttpClientFactory.Setup(_ => _.CreateClient(It.IsAny<string>())).Returns(client);
+
+            var controller = new FlashcardCollectionController(mockHttpClientFactory.Object);
+
+            var collectionToUpdate = new FlashcardCollection<Flashcards>
+            {
+                Id = 1,
+                CollectionName = "Renamed Collection",
+            };
+
+            // Act
+            var result = controller.RenameCollection(collectionToUpdate) as RedirectToActionResult;
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual("Index", result.ActionName);
+        }
+
+        [TestMethod]
+        public void TestAddFlashcardSuccess()
+        {
+            // Arrange
+            var mockHttpClientFactory = new Mock<IHttpClientFactory>();
+            var mockHttpMessageHandler = new Mock<HttpMessageHandler>();
+
+            var collection = new FlashcardCollection<Flashcards> { Id = 1 };
+
+            var getResponse = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(JsonConvert.SerializeObject(collection), Encoding.UTF8, "application/json")
+            };
+            var postResponse = new HttpResponseMessage(HttpStatusCode.Created);
+
+            mockHttpMessageHandler.Protected()
+                .Setup<Task<HttpResponseMessage>>(
+                    "SendAsync",
+                    ItExpr.IsAny<HttpRequestMessage>(),
+                    ItExpr.IsAny<CancellationToken>()
+                )
+                .ReturnsAsync((HttpRequestMessage request, CancellationToken token) =>
+                    request.Method == HttpMethod.Get ? getResponse : postResponse);
+
+            var client = new HttpClient(mockHttpMessageHandler.Object)
+            {
+                BaseAddress = new Uri("http://example.com/")
+            };
+
+            mockHttpClientFactory.Setup(_ => _.CreateClient(It.IsAny<string>())).Returns(client);
+
+            var controller = new FlashcardCollectionController(mockHttpClientFactory.Object);
+
+            // Act
+            var result = controller.AddFlashcard(collection, "Question", "Answer") as RedirectToActionResult;
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual("Edit", result.ActionName);
+            Assert.AreEqual(collection.Id, result.RouteValues["id"]);
+        }
+
+        [TestMethod]
+        public void TestAddFlashcardFailure()
+        {
+            // Arrange
+            var mockHttpClientFactory = new Mock<IHttpClientFactory>();
+            var mockHttpMessageHandler = new Mock<HttpMessageHandler>();
+
+            var collection = new FlashcardCollection<Flashcards> { Id = 1 };
+
+            var getResponse = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(JsonConvert.SerializeObject(collection), Encoding.UTF8, "application/json")
+            };
+
+            var postFailureResponse = new HttpResponseMessage(HttpStatusCode.BadRequest);
+
+            mockHttpMessageHandler.Protected()
+                .Setup<Task<HttpResponseMessage>>(
+                    "SendAsync",
+                    ItExpr.IsAny<HttpRequestMessage>(),
+                    ItExpr.IsAny<CancellationToken>()
+                )
+                .ReturnsAsync((HttpRequestMessage request, CancellationToken token) =>
+                    request.Method == HttpMethod.Get ? getResponse : postFailureResponse);
+
+            var client = new HttpClient(mockHttpMessageHandler.Object)
+            {
+                BaseAddress = new Uri("http://example.com/")
+            };
+
+            mockHttpClientFactory.Setup(_ => _.CreateClient(It.IsAny<string>())).Returns(client);
+
+            var controller = new FlashcardCollectionController(mockHttpClientFactory.Object);
+
+            // Act
+            var result = controller.AddFlashcard(collection, "Question", "Answer") as RedirectToActionResult;
 
             // Assert
             Assert.IsNotNull(result);
