@@ -39,6 +39,22 @@ namespace FlashcardsApp.Controllers
                 return RedirectToAction("Index");
             }
         }
+        private Dictionary<ReactionType, int> CalculateReactionCounts(ICollection<Reaction<Flashcards>> reactions)
+        {
+            var reactionCounts = new Dictionary<ReactionType, int>();
+            foreach (var reaction in reactions)
+            {
+                if (reactionCounts.ContainsKey(reaction.Type))
+                {
+                    reactionCounts[reaction.Type]++;
+                }
+                else
+                {
+                    reactionCounts[reaction.Type] = 1;
+                }
+            }
+            return reactionCounts;
+        }
 
         public IActionResult Index(string? sortByCategory = null, string? search = null)
         {
@@ -60,6 +76,11 @@ namespace FlashcardsApp.Controllers
             flashcardCollections.Sort();
 
             TempData["LastSearchQuery"] = null;
+
+            foreach (var collection in flashcardCollections)
+            {
+                collection.ReactionCounts = CalculateReactionCounts(collection.Reactions);
+            }
 
 
             Func<FlashcardCollection<Flashcards>, bool> categoryFilter = (fc) =>

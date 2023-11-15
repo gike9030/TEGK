@@ -25,47 +25,6 @@ namespace FlashcardsApp.Controllers
             _userManager = userManager;
         }
 
-
-        public async Task<IActionResult> Index()
-        {
-            try
-            {
-                var response = await _httpClient.GetAsync("api/comments"); 
-
-                if (response.IsSuccessStatusCode)
-                {
-                    var json = await response.Content.ReadAsStringAsync();
-                    var comments = JsonConvert.DeserializeObject<List<Comment>>(json);
-
-                    return View(comments);
-                }
-                else
-                {
-                    if (response.StatusCode == HttpStatusCode.NotFound)
-                    {
-                        return NotFound();
-                    }
-                    else if (response.StatusCode == HttpStatusCode.Unauthorized)
-                    {
-                        return Unauthorized();
-                    }
-                    else
-                    {
-                        return View("Error");
-                    }
-                }
-            }
-            catch (HttpRequestException)
-            {
-                return View("Error");
-            }
-            catch (JsonException)
-            {
-                return View("Error");
-            }
-        }
-
-
         public IActionResult Create()
         {
             return View();
