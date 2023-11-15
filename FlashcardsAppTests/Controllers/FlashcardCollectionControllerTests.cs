@@ -639,5 +639,155 @@ namespace FlashcardsAppTests.Controllers
             Assert.AreEqual(404, result.StatusCode);
             Assert.AreEqual("Collection not found", result.Value);
         }
+
+        [TestMethod]
+        public void TestViewCollectionSuccess()
+        {
+            // Arrange
+            var mockHttpClientFactory = new Mock<IHttpClientFactory>();
+            var mockHttpMessageHandler = new Mock<HttpMessageHandler>();
+
+            var testCollection = new FlashcardCollection<Flashcards> { Id = 1, };
+
+            var getResponse = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(JsonConvert.SerializeObject(testCollection), Encoding.UTF8, "application/json")
+            };
+
+            mockHttpMessageHandler.Protected()
+                .Setup<Task<HttpResponseMessage>>(
+                    "SendAsync",
+                    ItExpr.IsAny<HttpRequestMessage>(),
+                    ItExpr.IsAny<CancellationToken>()
+                )
+                .ReturnsAsync(getResponse);
+
+            var client = new HttpClient(mockHttpMessageHandler.Object)
+            {
+                BaseAddress = new Uri("http://example.com/")
+            };
+
+            mockHttpClientFactory.Setup(_ => _.CreateClient(It.IsAny<string>())).Returns(client);
+
+            var controller = new FlashcardCollectionController(mockHttpClientFactory.Object);
+
+            // Act
+            var result = controller.ViewCollection(1) as ViewResult;
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOfType(result.Model, typeof(FlashcardCollection<Flashcards>));
+            var model = result.Model as FlashcardCollection<Flashcards>;
+            Assert.AreEqual(testCollection.Id, model.Id);
+        }
+
+        [TestMethod]
+        public void TestViewCollectionNotFound()
+        {
+            // Arrange
+            var mockHttpClientFactory = new Mock<IHttpClientFactory>();
+            var mockHttpMessageHandler = new Mock<HttpMessageHandler>();
+
+            var notFoundResponse = new HttpResponseMessage(HttpStatusCode.NotFound);
+
+            mockHttpMessageHandler.Protected()
+                .Setup<Task<HttpResponseMessage>>(
+                    "SendAsync",
+                    ItExpr.Is<HttpRequestMessage>(req => req.Method == HttpMethod.Get),
+                    ItExpr.IsAny<CancellationToken>()
+                )
+                .ReturnsAsync(notFoundResponse);
+
+            var client = new HttpClient(mockHttpMessageHandler.Object)
+            {
+                BaseAddress = new Uri("http://example.com/")
+            };
+
+            mockHttpClientFactory.Setup(_ => _.CreateClient(It.IsAny<string>())).Returns(client);
+
+            var controller = new FlashcardCollectionController(mockHttpClientFactory.Object);
+
+            // Act
+            var result = controller.ViewCollection(99) as NotFoundResult;
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(404, result.StatusCode);
+        }
+
+        [TestMethod]
+        public void TestEditFlashcardGetSuccess()
+        {
+            // Arrange
+            var mockHttpClientFactory = new Mock<IHttpClientFactory>();
+            var mockHttpMessageHandler = new Mock<HttpMessageHandler>();
+
+            var testFlashcard = new Flashcards { Id = 1, };
+
+            var getResponse = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(JsonConvert.SerializeObject(testFlashcard), Encoding.UTF8, "application/json")
+            };
+
+            mockHttpMessageHandler.Protected()
+                .Setup<Task<HttpResponseMessage>>(
+                    "SendAsync",
+                    ItExpr.IsAny<HttpRequestMessage>(),
+                    ItExpr.IsAny<CancellationToken>()
+                )
+                .ReturnsAsync(getResponse);
+
+            var client = new HttpClient(mockHttpMessageHandler.Object)
+            {
+                BaseAddress = new Uri("http://example.com/")
+            };
+
+            mockHttpClientFactory.Setup(_ => _.CreateClient(It.IsAny<string>())).Returns(client);
+
+            var controller = new FlashcardCollectionController(mockHttpClientFactory.Object);
+
+            // Act
+            var result = controller.EditFlashcard(1) as ViewResult;
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOfType(result.Model, typeof(Flashcards));
+            var model = result.Model as Flashcards;
+            Assert.AreEqual(testFlashcard.Id, model.Id);
+        }
+
+        [TestMethod]
+        public void TestEditFlashcardGetNotFound()
+        {
+            // Arrange
+            var mockHttpClientFactory = new Mock<IHttpClientFactory>();
+            var mockHttpMessageHandler = new Mock<HttpMessageHandler>();
+
+            var notFoundResponse = new HttpResponseMessage(HttpStatusCode.NotFound);
+
+            mockHttpMessageHandler.Protected()
+                .Setup<Task<HttpResponseMessage>>(
+                    "SendAsync",
+                    ItExpr.Is<HttpRequestMessage>(req => req.Method == HttpMethod.Get),
+                    ItExpr.IsAny<CancellationToken>()
+                )
+                .ReturnsAsync(notFoundResponse);
+
+            var client = new HttpClient(mockHttpMessageHandler.Object)
+            {
+                BaseAddress = new Uri("http://example.com/")
+            };
+
+            mockHttpClientFactory.Setup(_ => _.CreateClient(It.IsAny<string>())).Returns(client);
+
+            var controller = new FlashcardCollectionController(mockHttpClientFactory.Object);
+
+            // Act
+            var result = controller.EditFlashcard(99) as NotFoundResult;
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(404, result.StatusCode);
+        }
     }
 }
