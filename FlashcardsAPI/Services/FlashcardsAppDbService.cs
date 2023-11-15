@@ -14,6 +14,9 @@ namespace FlashcardsAPI.Services
 			_context = context;
 		}
 
+
+		//Profile methods CIA BUSS
+
         public async Task<Reaction<Flashcards>> ToggleReaction(int collectionId, ReactionType reactionType, string userId)
         {
             var existingReaction = await _context.Reactions
