@@ -26,7 +26,7 @@ namespace FlashcardsAPI.Controllers
 
         // GET: api/Flashcards/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Flashcards>> GetFlashcards(int id)
+        public async Task<IActionResult> GetFlashcards(int id)
         {
 
             Flashcards? flashcards = await _flashcardsAppDbService.GetFlashcard(id) ?? _flashcardStorageService.GetFlashcard(id);
@@ -36,7 +36,7 @@ namespace FlashcardsAPI.Controllers
                 return NotFound();
             }
 
-            return flashcards;
+            return Ok(flashcards);
         }
 
         // PUT: api/Flashcards/5
@@ -44,6 +44,11 @@ namespace FlashcardsAPI.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutFlashcards(int id, Flashcards flashcards)
         {
+            if (id != flashcards.Id)
+            {
+                return BadRequest();
+            }
+
             if (_flashcardStorageService.GetFlashcard(id) != null)
             {
                 _flashcardStorageService.UpdateFlashcard(id, flashcards);
