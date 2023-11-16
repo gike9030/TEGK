@@ -958,5 +958,137 @@ namespace FlashcardsAppTests.Controllers
             Assert.IsNotNull(result);
             Assert.AreEqual(404, result.StatusCode);
         }
+
+        [TestMethod]
+        public void TestViewCollections()
+        {
+            // Arrange
+            var mockHttpClientFactory = new Mock<IHttpClientFactory>();
+            var controller = new FlashcardCollectionController(mockHttpClientFactory.Object);
+
+            // Act
+            var result = controller.ViewCollections() as RedirectToActionResult;
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual("Index", result.ActionName);
+        }
+
+        [TestMethod]
+        public void TestPlayCollectionSuccess()
+        {
+            // Arrange
+            var mockHttpClientFactory = new Mock<IHttpClientFactory>();
+            var mockHttpMessageHandler = new Mock<HttpMessageHandler>();
+
+            var flashcards = new List<Flashcards>
+            {
+                new Flashcards { Id = 1, Question = "Question 1", Answer = "Answer 1" },
+                new Flashcards { Id = 2, Question = "Question 2", Answer = "Answer 2" }
+            };
+
+            var testCollection = new FlashcardCollection<Flashcards> { Id = 1, Flashcards = flashcards };
+
+            var getResponse = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(JsonConvert.SerializeObject(testCollection), Encoding.UTF8, "application/json")
+            };
+
+            mockHttpMessageHandler.Protected()
+                .Setup<Task<HttpResponseMessage>>(
+                    "SendAsync",
+                    ItExpr.IsAny<HttpRequestMessage>(),
+                    ItExpr.IsAny<CancellationToken>()
+                )
+                .ReturnsAsync(getResponse);
+
+            var client = new HttpClient(mockHttpMessageHandler.Object)
+            {
+                BaseAddress = new Uri("http://example.com/")
+            };
+
+            mockHttpClientFactory.Setup(_ => _.CreateClient(It.IsAny<string>())).Returns(client);
+
+            var controller = new FlashcardCollectionController(mockHttpClientFactory.Object);
+            controller.TempData = new TempDataDictionary(new DefaultHttpContext(), Mock.Of<ITempDataProvider>());
+
+            int cardIndex = 1;
+
+            // Act
+            var result = controller.PlayCollection(1, cardIndex) as ViewResult;
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOfType(result.Model, typeof(Flashcards));
+            var model = result.Model as Flashcards;
+            Assert.AreEqual(flashcards[cardIndex].Id, model.Id);
+            Assert.AreEqual(cardIndex, controller.ViewBag.CardIndex);
+        }
+
+        [TestMethod]
+        public void TestPlayCollectionNotFound()
+        {
+            // Arrange
+            var mockHttpClientFactory = new Mock<IHttpClientFactory>();
+            var mockHttpMessageHandler = new Mock<HttpMessageHandler>();
+
+            var notFoundResponse = new HttpResponseMessage(HttpStatusCode.NotFound);
+
+            mockHttpMessageHandler.Protected()
+                .Setup<Task<HttpResponseMessage>>(
+                    "SendAsync",
+                    ItExpr.Is<HttpRequestMessage>(req => req.Method == HttpMethod.Get),
+                    ItExpr.IsAny<CancellationToken>()
+                )
+                .ReturnsAsync(notFoundResponse);
+
+            var client = new HttpClient(mockHttpMessageHandler.Object)
+            {
+                BaseAddress = new Uri("http://example.com/")
+            };
+
+            mockHttpClientFactory.Setup(_ => _.CreateClient(It.IsAny<string>())).Returns(client);
+
+            var controller = new FlashcardCollectionController(mockHttpClientFactory.Object);
+            var tempDataProvider = Mock.Of<ITempDataProvider>();
+            controller.TempData = new TempDataDictionary(new DefaultHttpContext(), tempDataProvider);
+
+            // Act
+            var result = controller.PlayCollection(99, null) as RedirectToActionResult;
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual("Index", result.ActionName);
+
+            //Arrange - Simulate a last search query being present in TempData
+            string lastSearchQuery = "previous search";
+            controller.TempData["LastSearchQuery"] = lastSearchQuery;
+
+            // Act
+            result = controller.PlayCollection(99, null) as RedirectToActionResult;
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual("Search", result.ActionName);
+            Assert.AreEqual(lastSearchQuery, result.RouteValues["search"]);
+        }
+
+        [TestMethod]
+        public void TestUpdateElapsedTime()
+        {
+            // Arrange
+            var mockHttpClientFactory = new Mock<IHttpClientFactory>();
+
+            var controller = new FlashcardCollectionController(mockHttpClientFactory.Object);
+
+            var elapsedTime = new ElapsedTime { };
+
+            // Act
+            var result = controller.UpdateElapsedTime(elapsedTime) as OkResult;
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(200, result.StatusCode);
+        }
     }
 }
