@@ -1090,5 +1090,46 @@ namespace FlashcardsAppTests.Controllers
             Assert.IsNotNull(result);
             Assert.AreEqual(200, result.StatusCode);
         }
+
+        [TestMethod]
+        public void TestBackWithLastSearchQuery()
+        {
+            // Arrange
+            var mockHttpClientFactory = new Mock<IHttpClientFactory>();
+
+            var controller = new FlashcardCollectionController(mockHttpClientFactory.Object);
+            var tempDataProvider = Mock.Of<ITempDataProvider>();
+            controller.TempData = new TempDataDictionary(new DefaultHttpContext(), tempDataProvider);
+
+            string lastSearchQuery = "test query";
+            controller.TempData["LastSearchQuery"] = lastSearchQuery;
+
+            // Act
+            var result = controller.Back() as RedirectToActionResult;
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual("Search", result.ActionName);
+            Assert.AreEqual("Home", result.ControllerName);
+            Assert.AreEqual(lastSearchQuery, result.RouteValues["search"]);
+        }
+
+        [TestMethod]
+        public void TestBackWithoutLastSearchQuery()
+        {
+            // Arrange
+            var mockHttpClientFactory = new Mock<IHttpClientFactory>();
+
+            var controller = new FlashcardCollectionController(mockHttpClientFactory.Object);
+            controller.TempData = new TempDataDictionary(new DefaultHttpContext(), Mock.Of<ITempDataProvider>());
+
+            // Act
+            var result = controller.Back() as RedirectToActionResult;
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual("Index", result.ActionName);
+            Assert.IsNull(result.ControllerName);
+        }
     }
 }
