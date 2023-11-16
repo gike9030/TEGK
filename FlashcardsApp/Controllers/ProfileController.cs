@@ -5,118 +5,113 @@ using FlashcardsApp.Models;
 using System.Threading.Tasks;
 using System.Linq;
 using FlashcardsApp.Data;
+using System.Text;
+using Newtonsoft.Json;
+using System.Net.Http.Headers;
 
 namespace FlashcardsApp.Controllers
 {
     public class ProfileController : Controller
     {
         private readonly UserManager<FlashcardsAppUser> _userManager;
-        private readonly FlashcardsAppContext _context;
         private readonly IWebHostEnvironment _environment;
+        private readonly HttpClient _httpClient;
 
-        public ProfileController(UserManager<FlashcardsAppUser> userManager, FlashcardsAppContext context, IWebHostEnvironment environment)
+        public ProfileController(UserManager<FlashcardsAppUser> userManager, IWebHostEnvironment environment, IHttpClientFactory httpClientFactory)
         {
             _userManager = userManager;
-            _context = context;
             _environment = environment;
+            _httpClient = httpClientFactory.CreateClient("FlashcardsAPI");
         }
+
 
 
         public async Task<IActionResult> Index()
         {
             var userId = _userManager.GetUserId(User);
-            var user = await _userManager.FindByIdAsync(userId);
-            if (user == null)
+            if (string.IsNullOrEmpty(userId))
             {
                 return NotFound();
             }
 
-            string defaultImagePath = "~/images/DefaultProfilePicture.jpg"; 
-            string profilePhotoPath = string.IsNullOrEmpty(user.ProfilePhotoPath) ? defaultImagePath : user.ProfilePhotoPath;
-
-            var model = new Profile
+            var response = await _httpClient.GetAsync($"api/Profile/{userId}");
+            if (response.IsSuccessStatusCode)
             {
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                ProfilePhoto = profilePhotoPath,
-                Description = user.Description,
-                FlashcardCollections = _context.FlashcardCollection
-                                               .Where(c => c.FlashcardsAppUserId == userId)
-                                               .ToList()
-            };
+                var content = await response.Content.ReadAsStringAsync();
+                var profile = JsonConvert.DeserializeObject<Profile>(content);
 
-            return View(model);
+                return View(profile);
+            }
+
+            return View("Error");
         }
+
         [HttpPost]
         public async Task<IActionResult> EditDescription(string description)
         {
             var userId = _userManager.GetUserId(User);
-            var user = await _userManager.FindByIdAsync(userId);
-            if (user == null)
+            if (string.IsNullOrEmpty(userId))
             {
                 return NotFound();
             }
 
-            user.Description = description;
+            // Changed to send raw JSON string
+            var jsonString = JsonConvert.SerializeObject(description);
+            var content = new StringContent(jsonString, Encoding.UTF8, "application/json");
+            var response = await _httpClient.PostAsync($"api/Profile/EditDescription?userId={userId}", content);
 
-            var result = await _userManager.UpdateAsync(user);
-            if (result.Succeeded)
+            if (response.IsSuccessStatusCode)
             {
-
                 return RedirectToAction(nameof(Index));
             }
 
-
             return View("Error");
         }
-        [HttpPost]
+
         [HttpPost]
         public async Task<IActionResult> UploadProfilePhoto(IFormFile profilePhoto)
         {
             var userId = _userManager.GetUserId(User);
-            var user = await _userManager.FindByIdAsync(userId);
-
-            if (profilePhoto != null && profilePhoto.Length > 0)
+            if (string.IsNullOrEmpty(userId) || profilePhoto == null || profilePhoto.Length == 0)
             {
-                
-                var extension = Path.GetExtension(profilePhoto.FileName).ToLower();
-                if (extension != ".jpg")
-                {
-                    ModelState.AddModelError(string.Empty, "Only .jpg files are allowed.");
-                    return View("Index", user);
-                }
-
-                const int maxFileSize = 5 * 1024 * 1024;
-                if (profilePhoto.Length > maxFileSize)
-                {
-                    ModelState.AddModelError(string.Empty, "File size cannot exceed 5 MB.");
-                    return View("Index", user);
-                }
-
-                var uniqueFileName = $"{Guid.NewGuid()}_{profilePhoto.FileName}";
-                var filePath = Path.Combine(_environment.WebRootPath, "uploads", uniqueFileName);
-
-                Directory.CreateDirectory(Path.GetDirectoryName(filePath));
-
-                using (var stream = System.IO.File.Create(filePath))
-                {
-                    await profilePhoto.CopyToAsync(stream);
-                }
-
-                user.ProfilePhotoPath = Path.Combine("uploads", uniqueFileName);
-                var result = await _userManager.UpdateAsync(user);
-
-                if (result.Succeeded)
-                {
-                    return RedirectToAction(nameof(Index));
-                }
-                else
-                {
-                    ModelState.AddModelError(string.Empty, "Error uploading the photo.");
-                }
+                ModelState.AddModelError(string.Empty, "Invalid request.");
+                return View("Index");
             }
 
-            return View("Index", user);
+            var extension = Path.GetExtension(profilePhoto.FileName).ToLower();
+            if (extension != ".jpg")
+            {
+                ModelState.AddModelError(string.Empty, "Only .jpg files are allowed.");
+                return View("Index");
+            }
+
+            const int maxFileSize = 5 * 1024 * 1024;
+            if (profilePhoto.Length > maxFileSize)
+            {
+                ModelState.AddModelError(string.Empty, "File size cannot exceed 5 MB.");
+                return View("Index");
+            }
+
+            using var content = new MultipartFormDataContent();
+            var fileContent = new StreamContent(profilePhoto.OpenReadStream())
+            {
+                Headers =
+        {
+            ContentLength = profilePhoto.Length,
+            ContentType = new MediaTypeHeaderValue(profilePhoto.ContentType)
+        }
+            };
+
+            content.Add(fileContent, "profilePhoto", profilePhoto.FileName);
+            var response = await _httpClient.PostAsync($"api/Profile/UploadProfilePhoto?userId={userId}", content);
+
+            if (response.IsSuccessStatusCode)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
+            ModelState.AddModelError(string.Empty, "Error uploading the photo.");
+            return View("Index");
         }
 
 

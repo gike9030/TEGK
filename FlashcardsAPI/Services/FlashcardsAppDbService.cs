@@ -13,9 +13,87 @@ namespace FlashcardsAPI.Services
 		{
 			_context = context;
 		}
+        public async Task<Profile> GetProfileAsync(string userId)
+        {
+            var user = await _context.Users
+                                     .Where(u => u.Id == userId)
+                                     .Select(u => new Profile
+                                     {
+                                         FirstName = u.FirstName,
+                                         LastName = u.LastName,
+                                         ProfilePhoto = u.ProfilePhotoPath,
+                                         Description = u.Description,
+                                         FlashcardCollections = _context.FlashcardCollection
+                                               .Where(c => c.FlashcardsAppUserId == userId)
+                                               .ToList()
+                                     })
+                                     .FirstOrDefaultAsync();
 
+            return user;
+        }
 
-		//Profile methods CIA BUSS
+        public async Task<bool> UpdateDescriptionAsync(string userId, string newDescription)
+        {
+            var user = await _context.Users.FindAsync(userId);
+            if (user == null)
+            {
+                return false;
+            }
+
+            user.Description = newDescription;
+
+            try
+            {
+                _context.Entry(user).State = EntityState.Modified;
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        public async Task<bool> UpdateProfilePhotoAsync(string userId, IFormFile profilePhoto)
+        {
+            var user = await _context.Users.FindAsync(userId);
+            if (user == null || profilePhoto == null)
+            {
+                return false;
+            }
+
+            // Generate a unique file name with the original file extension
+            var fileExtension = Path.GetExtension(profilePhoto.FileName);
+            var uniqueFileName = Guid.NewGuid().ToString() + fileExtension;
+            var filePath = Path.Combine("uploads", uniqueFileName);
+
+            try
+            {
+                // Ensure the uploads directory exists
+                var directoryPath = Path.GetDirectoryName(filePath);
+                if (!Directory.Exists(directoryPath))
+                {
+                    Directory.CreateDirectory(directoryPath);
+                }
+
+                // Saving the file
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await profilePhoto.CopyToAsync(stream);
+                }
+
+                // Update the user profile with the new file path
+                user.ProfilePhotoPath = filePath;
+                _context.Entry(user).State = EntityState.Modified;
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
 
         public async Task<Reaction<Flashcards>> ToggleReaction(int collectionId, ReactionType reactionType, string userId)
         {

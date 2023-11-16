@@ -13,6 +13,7 @@ public class FlashcardsAppUser : IdentityUser
     [Column(TypeName = "nvarchar(100)")]
     public string? LastName { get; set; }
     public ICollection<FlashcardCollection<Flashcards>> FlashcardCollections { get; set; } = new List<FlashcardCollection<Flashcards>>();
-
+    public string? ProfilePhotoPath { get; internal set; }
+    public string? Description { get; internal set; }
 }
 

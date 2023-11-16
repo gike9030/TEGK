@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using FlashcardsApp.Data;
 using FlashcardsApp.Areas.Identity.Data;
 using FlashcardsApp.Services;
+using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("FlashcardsAppContextConnection") ?? throw new InvalidOperationException("Connection string 'FlashcardsAppContextConnection' not found.");
