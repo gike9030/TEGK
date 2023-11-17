@@ -11,11 +11,11 @@ namespace FlashcardsAPI.Controllers
     [ApiController]
     public class ReactionsController : Controller
     {
-        private readonly IFlashcardsAppDbService _flashcardsAppDbService;
+        private readonly IReactionService _ReactionService;
 
-        public ReactionsController(IFlashcardsAppDbService service)
+        public ReactionsController(IReactionService service)
         {
-            _flashcardsAppDbService = service;
+            _ReactionService = service;
         }
         [HttpPost("ToggleReaction")]
         public async Task<IActionResult> ToggleReaction(int collectionId, ReactionType reactionType, string userId)
@@ -25,10 +25,10 @@ namespace FlashcardsAPI.Controllers
                return BadRequest("Invalid parameters.");
             }
 
-           var reaction = await _flashcardsAppDbService.ToggleReaction(collectionId, reactionType, userId);
+           var reaction = await _ReactionService.ToggleReaction(collectionId, reactionType, userId);
           
 
-            var reactionCounts = await _flashcardsAppDbService.CalculateReactionCounts(collectionId);
+            var reactionCounts = await _ReactionService.CalculateReactionCounts(collectionId);
             return Ok(new { message = "Reaction toggled successfully.", reactionCounts });
         }
     }

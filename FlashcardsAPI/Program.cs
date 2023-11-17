@@ -54,8 +54,12 @@ builder.Services.AddControllers()
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddScoped<IFlashcardsAppDbService, FlashcardsAppDbService>();
-builder.Services.AddSingleton<FlashcardsStorageService>();
+
+builder.Services.AddScoped<IFlashcardCollectionService, FlashcardCollectionService>();
+builder.Services.AddScoped<IFlashcardService, FlashcardService>();
+builder.Services.AddScoped<ICommentService, CommentService>();
+builder.Services.AddScoped<IReactionService, ReactionService>();
+builder.Services.AddSingleton<IFlashcardsStorageService, FlashcardsStorageService>();
 
 var app = builder.Build();
 

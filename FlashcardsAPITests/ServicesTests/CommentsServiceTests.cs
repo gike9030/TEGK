@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FlashcardsAPITests.Controllers
+namespace FlashcardsAPITests.ServicesTests
 {
-	internal class FlashcardCollectionControllerTests
+	public class CommentsServiceTests
 	{
 	}
 }

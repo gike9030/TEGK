@@ -15,28 +15,28 @@ namespace FlashcardsAPI.Controllers
     [ApiController]
     public class FlashcardsController : ControllerBase
     {
-        private readonly FlashcardsStorageService _flashcardStorageService;
-        private readonly IFlashcardsAppDbService _flashcardsAppDbService;
+        private readonly IFlashcardsStorageService _flashcardStorageService;
+        private readonly IFlashcardService _flashcardService;
 
-        public FlashcardsController(FlashcardsStorageService flashcardStorage, IFlashcardsAppDbService service)
+        public FlashcardsController(IFlashcardsStorageService flashcardStorage, IFlashcardService service)
         {
-            _flashcardsAppDbService = service;
+            _flashcardService = service;
             _flashcardStorageService = flashcardStorage;
         }
 
         // GET: api/Flashcards/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Flashcards>> GetFlashcards(int id)
+        public async Task<IActionResult> GetFlashcards(int id)
         {
 
-            Flashcards? flashcards = await _flashcardsAppDbService.GetFlashcard(id) ?? _flashcardStorageService.GetFlashcard(id);
+            Flashcards? flashcards = await _flashcardService.GetFlashcard(id) ?? _flashcardStorageService.GetFlashcard(id);
 
             if (flashcards == null)
             {
                 return NotFound();
             }
 
-            return flashcards;
+            return Ok(flashcards);
         }
 
         // PUT: api/Flashcards/5
@@ -44,13 +44,18 @@ namespace FlashcardsAPI.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutFlashcards(int id, Flashcards flashcards)
         {
+            if (id != flashcards.Id)
+            {
+                return BadRequest();
+            }
+
             if (_flashcardStorageService.GetFlashcard(id) != null)
             {
                 _flashcardStorageService.UpdateFlashcard(id, flashcards);
                 return NoContent();
             }
 
-            Flashcards? updatedFlashcard = await _flashcardsAppDbService.UpdateFlashcard(id, flashcards);
+            Flashcards? updatedFlashcard = await _flashcardService.UpdateFlashcard(id, flashcards);
 
             if (updatedFlashcard == null) 
             {
@@ -80,7 +85,7 @@ namespace FlashcardsAPI.Controllers
                 return NoContent();
             }
 
-            bool isSuccess = await _flashcardsAppDbService.DeleteFlashcard(id);
+            bool isSuccess = await _flashcardService.DeleteFlashcard(id);
 
             if (isSuccess == false)
             {
