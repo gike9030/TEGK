@@ -12,18 +12,18 @@ namespace FlashcardsAPI.Controllers
     public class FlashcardCollectionsController : ControllerBase
     {
         private IFlashcardsStorageService _flashcardsStorageService;
-        private readonly IFlashcardsAppDbService _flashcardsCollectionService;
+        private readonly IFlashcardCollectionService _flashcardCollectionService;
 
-        public FlashcardCollectionsController(IFlashcardsStorageService flashcardsStorageService, IFlashcardsAppDbService service)
+        public FlashcardCollectionsController(IFlashcardsStorageService flashcardsStorageService, IFlashcardCollectionService service)
         {
-            _flashcardsCollectionService = service;
+            _flashcardCollectionService = service;
             _flashcardsStorageService = flashcardsStorageService;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetFlashcardsInCollection(int id)
         {
-            IEnumerable<Flashcards>? flashcards = await _flashcardsCollectionService.GetFlashcardsInCollection(id);
+            IEnumerable<Flashcards>? flashcards = await _flashcardCollectionService.GetFlashcardsInCollection(id);
 
             if (flashcards == null)
             {
@@ -45,7 +45,7 @@ namespace FlashcardsAPI.Controllers
         [HttpGet]
         public async Task<IActionResult> GetFlashcardCollections()
         {
-            var collections = await _flashcardsCollectionService.GetFlashcardCollections();
+            var collections = await _flashcardCollectionService.GetFlashcardCollections();
 
             if (collections == null)
             {
@@ -60,7 +60,7 @@ namespace FlashcardsAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> GetFlashcardCollections(Category category)
         {
-            IEnumerable<FlashcardCollection<Flashcards>>? collections = await _flashcardsCollectionService.GetFlashcardCollectionsByCategory(category);
+            IEnumerable<FlashcardCollection<Flashcards>>? collections = await _flashcardCollectionService.GetFlashcardCollectionsByCategory(category);
             
             if(collections == null)
             {
@@ -75,7 +75,7 @@ namespace FlashcardsAPI.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<FlashcardCollection<Flashcards>>> GetFlashcardCollections(int id)
         {
-            FlashcardCollection<Flashcards>? collection = await _flashcardsCollectionService.GetFlashcardCollection(id);
+            FlashcardCollection<Flashcards>? collection = await _flashcardCollectionService.GetFlashcardCollection(id);
 
             if (collection == null)
             {
@@ -106,7 +106,7 @@ namespace FlashcardsAPI.Controllers
         [HttpPut]
         public async Task<IActionResult> PutFlashcardCollection(FlashcardCollection<Flashcards> collection)
         {
-            FlashcardCollection<Flashcards>? updatedCollection = await _flashcardsCollectionService.UpdateFlashcardCollection(collection.Id, collection);
+            FlashcardCollection<Flashcards>? updatedCollection = await _flashcardCollectionService.UpdateFlashcardCollection(collection.Id, collection);
 
             if (updatedCollection == null)
             {
@@ -121,7 +121,7 @@ namespace FlashcardsAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<FlashcardCollection<Flashcards>>> PostFlashcardCollections(FlashcardCollection<Flashcards> collection)
         {
-            FlashcardCollection<Flashcards>? addedCollection = await _flashcardsCollectionService.AddFlashcardsCollection(collection);
+            FlashcardCollection<Flashcards>? addedCollection = await _flashcardCollectionService.AddFlashcardsCollection(collection);
 
             if (addedCollection == null)
             {
@@ -137,7 +137,7 @@ namespace FlashcardsAPI.Controllers
         {
             _flashcardsStorageService.RemoveFlashcardsFromCollection(id);
 
-            bool? isSuccess = await _flashcardsCollectionService.DeleteFlashcardCollection(id);
+            bool? isSuccess = await _flashcardCollectionService.DeleteFlashcardCollection(id);
 
             if (isSuccess == false)
             {

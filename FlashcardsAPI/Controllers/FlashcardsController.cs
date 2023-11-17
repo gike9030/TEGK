@@ -16,11 +16,11 @@ namespace FlashcardsAPI.Controllers
     public class FlashcardsController : ControllerBase
     {
         private readonly IFlashcardsStorageService _flashcardStorageService;
-        private readonly IFlashcardsAppDbService _flashcardsAppDbService;
+        private readonly IFlashcardService _flashcardService;
 
-        public FlashcardsController(IFlashcardsStorageService flashcardStorage, IFlashcardsAppDbService service)
+        public FlashcardsController(IFlashcardsStorageService flashcardStorage, IFlashcardService service)
         {
-            _flashcardsAppDbService = service;
+            _flashcardService = service;
             _flashcardStorageService = flashcardStorage;
         }
 
@@ -29,7 +29,7 @@ namespace FlashcardsAPI.Controllers
         public async Task<IActionResult> GetFlashcards(int id)
         {
 
-            Flashcards? flashcards = await _flashcardsAppDbService.GetFlashcard(id) ?? _flashcardStorageService.GetFlashcard(id);
+            Flashcards? flashcards = await _flashcardService.GetFlashcard(id) ?? _flashcardStorageService.GetFlashcard(id);
 
             if (flashcards == null)
             {
@@ -55,7 +55,7 @@ namespace FlashcardsAPI.Controllers
                 return NoContent();
             }
 
-            Flashcards? updatedFlashcard = await _flashcardsAppDbService.UpdateFlashcard(id, flashcards);
+            Flashcards? updatedFlashcard = await _flashcardService.UpdateFlashcard(id, flashcards);
 
             if (updatedFlashcard == null) 
             {
@@ -85,7 +85,7 @@ namespace FlashcardsAPI.Controllers
                 return NoContent();
             }
 
-            bool isSuccess = await _flashcardsAppDbService.DeleteFlashcard(id);
+            bool isSuccess = await _flashcardService.DeleteFlashcard(id);
 
             if (isSuccess == false)
             {

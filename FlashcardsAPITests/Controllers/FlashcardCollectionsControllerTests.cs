@@ -27,7 +27,7 @@ namespace FlashcardsAPITests.Controllers
 				flashcard2
 			};
 
-			var mockDb = new Mock<IFlashcardsAppDbService>();
+			var mockDb = new Mock<IFlashcardCollectionService>();
 			var mockFlashcardManager = new Mock<IFlashcardsStorageService>();
 
 			mockDb.Setup(db => db.GetFlashcardsInCollection(collectionId)).ReturnsAsync(list1);
@@ -49,7 +49,7 @@ namespace FlashcardsAPITests.Controllers
 			int collectionId = 1;
 			List<Flashcards> list1 = new();
 
-			var mockDb = new Mock<IFlashcardsAppDbService>();
+			var mockDb = new Mock<IFlashcardCollectionService>();
 			var mockFlashcardManager = new Mock<IFlashcardsStorageService>();
 
 			mockDb.Setup(db => db.GetFlashcardsInCollection(collectionId)).ReturnsAsync(list1);
@@ -84,7 +84,7 @@ namespace FlashcardsAPITests.Controllers
 				}
 			};
 
-			var mockDb = new Mock<IFlashcardsAppDbService>();
+			var mockDb = new Mock<IFlashcardCollectionService>();
 			var mockFlashcardManager = new Mock<IFlashcardsStorageService>();
 
 			mockDb.Setup(db => db.GetFlashcardCollections()).ReturnsAsync(flashcardCollectionList);
@@ -106,7 +106,7 @@ namespace FlashcardsAPITests.Controllers
 		{
 			List<FlashcardCollection<Flashcards>> flashcardCollectionList = new() { };
 
-			var mockDb = new Mock<IFlashcardsAppDbService>();
+			var mockDb = new Mock<IFlashcardCollectionService>();
 			var mockFlashcardManager = new Mock<IFlashcardsStorageService>();
 
 			mockDb.Setup(db => db.GetFlashcardCollections()).ReturnsAsync(flashcardCollectionList);
@@ -125,7 +125,7 @@ namespace FlashcardsAPITests.Controllers
 		{
 			List<FlashcardCollection<Flashcards>> flashcardCollectionList = new() { };
 
-			var mockDb = new Mock<IFlashcardsAppDbService>();
+			var mockDb = new Mock<IFlashcardCollectionService>();
 			var mockFlashcardManager = new Mock<IFlashcardsStorageService>();
 
 			mockDb.Setup(db => db.GetFlashcardCollections()).ReturnsAsync((List<FlashcardCollection<Flashcards>>?)null);
@@ -143,7 +143,7 @@ namespace FlashcardsAPITests.Controllers
 			int id = 1;
 			FlashcardCollection<Flashcards> flashcardCollection = new() { Id = id };
 
-			var mockDb = new Mock<IFlashcardsAppDbService>();
+			var mockDb = new Mock<IFlashcardCollectionService>();
 			var mockFlashcardManager = new Mock<IFlashcardsStorageService>();
 
 			mockDb.Setup(db => db.GetFlashcardCollection(id)).ReturnsAsync(flashcardCollection);
@@ -167,7 +167,7 @@ namespace FlashcardsAPITests.Controllers
 			int id = 1;
 			FlashcardCollection<Flashcards> flashcardCollection = new() { Id = id };
 
-			var mockDb = new Mock<IFlashcardsAppDbService>();
+			var mockDb = new Mock<IFlashcardCollectionService>();
 			var mockFlashcardManager = new Mock<IFlashcardsStorageService>();
 
 			mockDb.Setup(db => db.GetFlashcardCollection(id)).ReturnsAsync(flashcardCollection);
@@ -188,7 +188,7 @@ namespace FlashcardsAPITests.Controllers
 		{
 			FlashcardCollection<Flashcards> collection = new() { Id = 1, CollectionName = "One" };
 
-			var mockDb = new Mock<IFlashcardsAppDbService>();
+			var mockDb = new Mock<IFlashcardCollectionService>();
 			var mockFlashcardManager = new Mock<IFlashcardsStorageService>();
 
 			mockDb.Setup(db => db.UpdateFlashcardCollection(collection.Id, collection)).ReturnsAsync(collection);
@@ -205,7 +205,7 @@ namespace FlashcardsAPITests.Controllers
 		{
 			FlashcardCollection<Flashcards> collection = new() { Id = 1, CollectionName = "One" };
 
-			var mockDb = new Mock<IFlashcardsAppDbService>();
+			var mockDb = new Mock<IFlashcardCollectionService>();
 			var mockFlashcardManager = new Mock<IFlashcardsStorageService>();
 
 			mockDb.Setup(db => db.UpdateFlashcardCollection(collection.Id, collection)).ReturnsAsync((FlashcardCollection<Flashcards>?)null);
@@ -223,7 +223,7 @@ namespace FlashcardsAPITests.Controllers
 			int id = 1;
 			FlashcardCollection<Flashcards> collection = new() { Id = id, CollectionName = "One" };
 
-			var mockDb = new Mock<IFlashcardsAppDbService>();
+			var mockDb = new Mock<IFlashcardCollectionService>();
 			var mockFlashcardManager = new Mock<IFlashcardsStorageService>();
 
 			mockDb.Setup(db => db.DeleteFlashcardCollection(collection.Id)).ReturnsAsync(true);
@@ -241,7 +241,7 @@ namespace FlashcardsAPITests.Controllers
 			int id = 1;
 			FlashcardCollection<Flashcards> collection = new() { Id = id, CollectionName = "One" };
 
-			var mockDb = new Mock<IFlashcardsAppDbService>();
+			var mockDb = new Mock<IFlashcardCollectionService>();
 			var mockFlashcardManager = new Mock<IFlashcardsStorageService>();
 
 			mockDb.Setup(db => db.DeleteFlashcardCollection(collection.Id)).ReturnsAsync(false);

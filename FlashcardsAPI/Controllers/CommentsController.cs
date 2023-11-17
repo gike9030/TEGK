@@ -15,11 +15,11 @@ namespace FlashcardsAPI.Controllers
     [ApiController]
     public class CommentsController : ControllerBase
     {
-        private readonly IFlashcardsAppDbService _flashcardsAppDbService;
+        private readonly ICommentService _commentService;
 
-        public CommentsController(IFlashcardsAppDbService service)
+        public CommentsController(ICommentService service)
         {
-            _flashcardsAppDbService = service;
+            _commentService = service;
         }
 
         // POST: api/Comments
@@ -34,7 +34,7 @@ namespace FlashcardsAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            Comment? updated = await _flashcardsAppDbService.AddComment(comment);
+            Comment? updated = await _commentService.AddComment(comment);
 
             if (updated == null)
             {
@@ -50,7 +50,7 @@ namespace FlashcardsAPI.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<Comment>> GetComment(int id)
         {
-            Comment? comment = await _flashcardsAppDbService.GetComment(id);
+            Comment? comment = await _commentService.GetComment(id);
 
             if (comment == null)
             {
@@ -75,7 +75,7 @@ namespace FlashcardsAPI.Controllers
                 return BadRequest("Comment ID mismatch.");
             }
 
-            Comment? isSuccess = await _flashcardsAppDbService.UpdateComment(id, comment);
+            Comment? isSuccess = await _commentService.UpdateComment(id, comment);
             
             if (isSuccess == null)
             {
@@ -91,7 +91,7 @@ namespace FlashcardsAPI.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeleteComment(int id)
         {
-            bool isSuccess = await _flashcardsAppDbService.DeleteComment(id);
+            bool isSuccess = await _commentService.DeleteComment(id);
 
             if (isSuccess == false)
             {
