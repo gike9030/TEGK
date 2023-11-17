@@ -17,7 +17,7 @@ namespace FlashcardsApp.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.12")
+                .HasAnnotation("ProductVersion", "7.0.10")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -34,9 +34,6 @@ namespace FlashcardsApp.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Email")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
@@ -45,7 +42,7 @@ namespace FlashcardsApp.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("FirstName")
-                        .HasColumnType("nvarchar(500)");
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("LastName")
                         .HasColumnType("nvarchar(100)");
@@ -73,9 +70,6 @@ namespace FlashcardsApp.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
 
-                    b.Property<string>("ProfilePhotoPath")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
 
@@ -97,36 +91,6 @@ namespace FlashcardsApp.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
-                });
-
-            modelBuilder.Entity("FlashcardsApp.Models.Comment", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Content")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FirstName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("FlashcardCollectionId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("FlashcardCollectionId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Comment");
                 });
 
             modelBuilder.Entity("FlashcardsApp.Models.FlashcardCollection<FlashcardsApp.Models.Flashcards>", b =>
@@ -211,6 +175,32 @@ namespace FlashcardsApp.Migrations
                     b.ToTable("Reactions");
                 });
 
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("NormalizedName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NormalizedName")
+                        .IsUnique()
+                        .HasDatabaseName("RoleNameIndex")
+                        .HasFilter("[NormalizedName] IS NOT NULL");
+
+                    b.ToTable("AspNetRoles", (string)null);
+                });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
@@ -322,23 +312,6 @@ namespace FlashcardsApp.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("FlashcardsApp.Models.Comment", b =>
-                {
-                    b.HasOne("FlashcardsApp.Models.FlashcardCollection<FlashcardsApp.Models.Flashcards>", "FlashcardCollection")
-                        .WithMany("Comments")
-                        .HasForeignKey("FlashcardCollectionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("FlashcardsApp.Areas.Identity.Data.FlashcardsAppUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId");
-
-                    b.Navigation("FlashcardCollection");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("FlashcardsApp.Models.FlashcardCollection<FlashcardsApp.Models.Flashcards>", b =>
                 {
                     b.HasOne("FlashcardsApp.Areas.Identity.Data.FlashcardsAppUser", "FlashcardsAppUser")
@@ -428,8 +401,6 @@ namespace FlashcardsApp.Migrations
 
             modelBuilder.Entity("FlashcardsApp.Models.FlashcardCollection<FlashcardsApp.Models.Flashcards>", b =>
                 {
-                    b.Navigation("Comments");
-
                     b.Navigation("Flashcards");
 
                     b.Navigation("Reactions");

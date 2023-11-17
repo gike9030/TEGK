@@ -61,7 +61,6 @@
                         @if (collection.FlashcardsAppUserId == UserManager.GetUserId(User))
                         {
                             <a asp-action="Edit" asp-route-id="@collection.Id" class="dropdown-item">Edit</a>
-                            <a asp-action="ViewCollection" asp-route-id="@collection.Id" class="dropdown-item">View</a>
                             <a class="dropdown-item" href="#" onclick="event.preventDefault(); if(confirm('Are you sure you want to delete this collection?')) { document.getElementById('deleteForm-@collection.Id').submit(); }">Delete</a>
                         }
                         <a asp-action="ViewCollection" asp-route-id="@collection.Id" class="dropdown-item">View</a>

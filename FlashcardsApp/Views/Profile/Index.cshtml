@@ -65,7 +65,7 @@
                                     <a asp-controller="FlashcardCollection" asp-action="Edit" asp-route-id="@collection.Id" class="dropdown-item">Edit</a>
                                     <a asp-controller="FlashcardCollection" asp-action="ViewCollection" asp-route-id="@collection.Id" class="dropdown-item">View</a>
                                     <a class="dropdown-item" href="#" onclick="event.preventDefault(); if(confirm('Are you sure you want to delete this collection?')) { document.getElementById('deleteForm-@collection.Id').submit(); }">Delete</a>
-                </div>
+                                </div>
                             </div>
 
                             <div class="card-content text-center">
