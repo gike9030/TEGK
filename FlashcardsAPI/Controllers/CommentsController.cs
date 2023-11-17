@@ -26,7 +26,7 @@ namespace FlashcardsAPI.Controllers
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<Comment>> PostComment([FromBody] Comment comment)
+        public async Task<IActionResult> PostComment([FromBody] Comment comment)
         {
 
             if (!ModelState.IsValid)
@@ -48,7 +48,7 @@ namespace FlashcardsAPI.Controllers
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<Comment>> GetComment(int id)
+        public async Task<IActionResult> GetComment(int id)
         {
             Comment? comment = await _commentService.GetComment(id);
 
@@ -57,7 +57,7 @@ namespace FlashcardsAPI.Controllers
                 return NotFound($"Comment with ID {id} not found.");
             }
 
-            return comment;
+            return Ok(comment);
         }
 
 
