@@ -213,7 +213,6 @@ namespace FlashcardsAPI.Services
 
 			var collection = await _context.FlashcardCollection
 			    .Include(c => c.Comments)
-				.Include(c => c.Reactions)
 				.Include(c => c.Flashcards)
 				.FirstOrDefaultAsync(c => c.Id == id);
 
