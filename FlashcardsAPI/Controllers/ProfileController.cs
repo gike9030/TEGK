@@ -42,22 +42,21 @@ namespace FlashcardsAPI.Controllers
             return BadRequest("Failed to update description.");
         }
 
-        // POST: api/Profile/UploadProfilePhoto
         [HttpPost("UploadProfilePhoto")]
-        public async Task<IActionResult> UploadProfilePhoto(string userId, IFormFile profilePhoto)
+        public async Task<IActionResult> UploadProfilePhoto(string userId, string profilePhotoPath)
         {
-            if (profilePhoto == null || profilePhoto.Length == 0)
+            if (string.IsNullOrEmpty(profilePhotoPath))
             {
-                return BadRequest("No file provided.");
+                return BadRequest("No file path provided.");
             }
 
-            var updateResult = await _flashcardsAppDbService.UpdateProfilePhotoAsync(userId, profilePhoto);
+            var updateResult = await _flashcardsAppDbService.UpdateProfilePhotoPathAsync(userId, profilePhotoPath);
             if (updateResult)
             {
                 return Ok();
             }
 
-            return BadRequest("Error uploading the photo.");
+            return BadRequest("Error updating the photo path.");
         }
     }
 }

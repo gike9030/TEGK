@@ -5,14 +5,16 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FlashcardsAPI.Services
 {
-	// Move each interface to seperate Services in the future. Not implemented do to time constraints
-	public class FlashcardsAppDbService : IFlashcardsAppDbService
-	{
-		private readonly ApplicationDbContext _context;
-		public FlashcardsAppDbService(ApplicationDbContext context) 
-		{
-			_context = context;
-		}
+    // Move each interface to seperate Services in the future. Not implemented do to time constraints
+    public class FlashcardsAppDbService : IFlashcardsAppDbService
+    {
+        private readonly ApplicationDbContext _context;
+
+        public FlashcardsAppDbService(ApplicationDbContext context)
+        {
+            _context = context;
+        }
+
         public async Task<Profile> GetProfileAsync(string userId)
         {
             var user = await _context.Users
@@ -50,40 +52,23 @@ namespace FlashcardsAPI.Services
             }
             catch (Exception)
             {
+                // Ideally, you might want to log this exception
                 return false;
             }
         }
 
-        public async Task<bool> UpdateProfilePhotoAsync(string userId, IFormFile profilePhoto)
+        public async Task<bool> UpdateProfilePhotoPathAsync(string userId, string profilePhotoPath)
         {
             var user = await _context.Users.FindAsync(userId);
-            if (user == null || profilePhoto == null)
+            if (user == null)
             {
                 return false;
             }
 
-            // Generate a unique file name with the original file extension
-            var fileExtension = Path.GetExtension(profilePhoto.FileName);
-            var uniqueFileName = Guid.NewGuid().ToString() + fileExtension;
-            var filePath = Path.Combine("uploads", uniqueFileName);
+            user.ProfilePhotoPath = profilePhotoPath;
 
             try
             {
-                // Ensure the uploads directory exists
-                var directoryPath = Path.GetDirectoryName(filePath);
-                if (!Directory.Exists(directoryPath))
-                {
-                    Directory.CreateDirectory(directoryPath);
-                }
-
-                // Saving the file
-                using (var stream = new FileStream(filePath, FileMode.Create))
-                {
-                    await profilePhoto.CopyToAsync(stream);
-                }
-
-                // Update the user profile with the new file path
-                user.ProfilePhotoPath = filePath;
                 _context.Entry(user).State = EntityState.Modified;
                 await _context.SaveChangesAsync();
                 return true;
@@ -93,9 +78,8 @@ namespace FlashcardsAPI.Services
                 return false;
             }
         }
-
-
-        public async Task<Reaction<Flashcards>> ToggleReaction(int collectionId, ReactionType reactionType, string userId)
+    
+public async Task<Reaction<Flashcards>> ToggleReaction(int collectionId, ReactionType reactionType, string userId)
         {
             var existingReaction = await _context.Reactions
                 .FirstOrDefaultAsync(r => r.FlashcardCollectionId == collectionId && r.UserId == userId && r.Type == reactionType);

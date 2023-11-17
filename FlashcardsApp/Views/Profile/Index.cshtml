@@ -11,7 +11,7 @@
 
 <div class="profile-container">
     <div class="profile-header">
-        <img src="@Url.Content("~/" + Model.ProfilePhoto)" alt="Profile Photo" />
+        <img src="@Url.Content($"~/uploads/{Model.ProfilePhoto}")" alt="Profile Photo" />
 
         <div class="profile-photo-upload">
             <form asp-action="UploadProfilePhoto" method="post" enctype="multipart/form-data" style="display:none;" id="photo-upload-form">
