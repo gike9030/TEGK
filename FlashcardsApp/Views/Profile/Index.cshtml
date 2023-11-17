@@ -11,8 +11,16 @@
 
 <div class="profile-container">
     <div class="profile-header">
-        <img src="@Url.Content($"~/uploads/{Model.ProfilePhoto}")" alt="Profile Photo" />
-
+        <div class="profile-photo-container">
+            @if (string.IsNullOrEmpty(Model.ProfilePhoto))
+            {
+                <img src="@Url.Content("~/images/DefaultProfilePicture.jpg")" alt="Default Profile Photo"  />
+            }
+            else
+            {
+                <img src="@Url.Content($"~/{Model.ProfilePhoto}")" alt="Profile Photo"  />
+            }
+        </div>
         <div class="profile-photo-upload">
             <form asp-action="UploadProfilePhoto" method="post" enctype="multipart/form-data" style="display:none;" id="photo-upload-form">
                 <input type="file" name="profilePhoto" accept=".jpg" id="file-input" />
@@ -158,6 +166,23 @@
         margin: 20px auto; 
 }
 
+    .profile-photo-container {
+        position: relative;
+        display: inline-block;
+        margin-bottom: 10px; 
+        
+    }
+
+        .profile-photo-container img {
+            width: 200px; 
+            height: 200px; 
+            border-radius: 50%; 
+            object-fit: cover; 
+            display: block; 
+            margin-left: auto; 
+            margin-right: auto; 
+        }
+
 .profile-header {
     text-align: center;
         width: 100%;
@@ -281,8 +306,8 @@
 
     .view-upload-btn {
         position: absolute;
-        bottom: 0;
-        right: 0;
+        bottom: 30px;
+        right: 40px;
         background-color: #ADD8E6;
         color: #fff;
         border: none;
@@ -291,10 +316,10 @@
         padding: 5px;
         border-radius: 50%;
         text-align: center;
-        line-height: 10px;
+        line-height: 20px;
         font-size: 24px;
         cursor: pointer;
-        transform: translate(-50%, 200%); 
+        transform: translate(50%, 50%); 
         transition-duration: 0.4s;
     }
 

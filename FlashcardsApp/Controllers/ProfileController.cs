@@ -23,10 +23,8 @@ namespace FlashcardsApp.Controllers
             _userManager = userManager;
             _environment = environment;
             _httpClient = httpClientFactory.CreateClient("FlashcardsAPI");
-        _logger = logger;
-    }
-
-
+            _logger = logger;
+        }
 
         public async Task<IActionResult> Index()
         {
@@ -57,7 +55,6 @@ namespace FlashcardsApp.Controllers
                 return NotFound();
             }
 
-            // Changed to send raw JSON string
             var jsonString = JsonConvert.SerializeObject(description);
             var content = new StringContent(jsonString, Encoding.UTF8, "application/json");
             var response = await _httpClient.PostAsync($"api/Profile/EditDescription?userId={userId}", content);
@@ -125,13 +122,9 @@ namespace FlashcardsApp.Controllers
 
         private async Task<bool> UpdateProfilePhotoPathInApi(string userId, string profilePhotoPath)
         {
-            var content = new FormUrlEncodedContent(new[]
-            {
-        new KeyValuePair<string, string>("userId", userId),
-        new KeyValuePair<string, string>("profilePhotoPath", profilePhotoPath)
-    });
+            string requestUri = $"api/Profile/UploadProfilePhoto?userId={Uri.EscapeDataString(userId)}&profilePhotoPath={Uri.EscapeDataString(profilePhotoPath)}";
 
-            var response = await _httpClient.PostAsync("api/Profile/UploadProfilePhotoPath", content);
+            var response = await _httpClient.PostAsync(requestUri, null);
 
             if (!response.IsSuccessStatusCode)
             {

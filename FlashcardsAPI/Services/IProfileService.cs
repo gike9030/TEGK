@@ -8,6 +8,6 @@ namespace FlashcardsAPI.Services
     {
         public Task<Profile> GetProfileAsync(string userId);
         public  Task<bool> UpdateDescriptionAsync(string userId, string newDescription);
-        Task<bool> UpdateProfilePhotoPathAsync(string userId, string profilePhotoPath);
+        public Task<bool> UpdateProfilePhotoPathAsync(string userId, string profilePhotoPath);
     }
 }

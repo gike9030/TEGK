@@ -52,7 +52,6 @@ namespace FlashcardsAPI.Services
             }
             catch (Exception)
             {
-                // Ideally, you might want to log this exception
                 return false;
             }
         }
@@ -278,7 +277,6 @@ public async Task<Reaction<Flashcards>> ToggleReaction(int collectionId, Reactio
 
 			var collection = await _context.FlashcardCollection
 			    .Include(c => c.Comments)
-				.Include(c => c.Reactions)
 				.Include(c => c.Flashcards)
 				.FirstOrDefaultAsync(c => c.Id == id);
 
