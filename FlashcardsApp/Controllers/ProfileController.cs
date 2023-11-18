@@ -8,9 +8,11 @@ using FlashcardsApp.Data;
 using System.Text;
 using Newtonsoft.Json;
 using System.Net.Http.Headers;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FlashcardsApp.Controllers
 {
+    [Authorize]
     public class ProfileController : Controller
     {
         private readonly UserManager<FlashcardsAppUser> _userManager;
