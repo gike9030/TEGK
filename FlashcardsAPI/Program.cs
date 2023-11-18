@@ -59,6 +59,7 @@ builder.Services.AddScoped<IFlashcardCollectionService, FlashcardCollectionServi
 builder.Services.AddScoped<IFlashcardService, FlashcardService>();
 builder.Services.AddScoped<ICommentService, CommentService>();
 builder.Services.AddScoped<IReactionService, ReactionService>();
+builder.Services.AddScoped<IProfileService, ProfileService>();
 builder.Services.AddSingleton<IFlashcardsStorageService, FlashcardsStorageService>();
 
 var app = builder.Build();

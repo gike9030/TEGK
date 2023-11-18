@@ -54,7 +54,7 @@
                                 Hello, @user.FirstName!
                             </button>
                             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userMenu">
-                                <a class="dropdown-item" asp-area="Identity" asp-page="/Account/UserProfile">My Profile</a>
+                                    <a class="dropdown-item" asp-area="" asp-controller="Profile" asp-action="Index">My Profile</a>
                                 <a class="dropdown-item" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Settings</a>
                                 <form asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Content("~/")" method="post" id="logoutForm">
                                     <button type="submit" class="dropdown-item">Logout</button>
