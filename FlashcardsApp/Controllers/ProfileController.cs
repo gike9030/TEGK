@@ -31,11 +31,7 @@ namespace FlashcardsApp.Controllers
         public async Task<IActionResult> Index()
         {
             var userId = _userManager.GetUserId(User);
-            if (string.IsNullOrEmpty(userId))
-            {
-                return NotFound();
-            }
-
+     
             var response = await _httpClient.GetAsync($"api/Profile/{userId}");
             if (response.IsSuccessStatusCode)
             {
@@ -52,10 +48,6 @@ namespace FlashcardsApp.Controllers
         public async Task<IActionResult> EditDescription(string description)
         {
             var userId = _userManager.GetUserId(User);
-            if (string.IsNullOrEmpty(userId))
-            {
-                return NotFound();
-            }
 
             var jsonString = JsonConvert.SerializeObject(description);
             var content = new StringContent(jsonString, Encoding.UTF8, "application/json");
@@ -74,7 +66,7 @@ namespace FlashcardsApp.Controllers
         {
             _logger.LogInformation("UploadProfilePhoto method called");
             var userId = _userManager.GetUserId(User);
-            if (string.IsNullOrEmpty(userId) || profilePhoto == null || profilePhoto.Length == 0)
+            if (profilePhoto == null || profilePhoto.Length == 0)
             {
                 ModelState.AddModelError(string.Empty, "Invalid request.");
                 return View("Index");
