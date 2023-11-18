@@ -37,6 +37,7 @@
         justify-content: center;
         align-items: center;
     }
+
     .timer-exit-block {
         position: absolute;
         bottom: -70px;
@@ -46,7 +47,7 @@
         align-items: center;
         justify-content: space-between;
         z-index: 1000;
-        width: 200px; 
+        width: 200px;
     }
 
     #timerDisplay {
@@ -154,16 +155,16 @@
 </style>
 
 <div class="flashcard-container">
-        <div class="flashcard" onclick="flipCard()">
-            <div class="card-inner">
-                <div class="card-front">
-                    @Model.Question
-                </div>
-                <div class="card-back">
-                    @Model.Answer
-                </div>
+    <div class="flashcard" onclick="flipCard()">
+        <div class="card-inner">
+            <div class="card-front">
+                @Model.Question
+            </div>
+            <div class="card-back">
+                @Model.Answer
             </div>
         </div>
+    </div>
 
     <div class="modal" id="timeSpentModal">
         <div class="modal-content">
@@ -187,73 +188,65 @@
             }
         }
     </div>
+
+<div class="flashcard-container">
+
     <div class="timer-exit-block">
         <div id="timerDisplay">0h 0m 0s</div>
         <button onclick="exitPlayMode()" class="exit-btn">Exit</button>
     </div>
 </div>
 
-<script>
-    function flipCard() {
-        var card = document.querySelector(".flashcard");
-        card.classList.toggle("flipped");
-    }
+    <script>
+        var timer;
 
-    var elapsedSeconds = 0;
-
-    function displayElapsedTime(elapsedSeconds) {
-        let hours = Math.floor(elapsedSeconds / 3600);
-        let minutes = Math.floor((elapsedSeconds % 3600) / 60);
-        let seconds = elapsedSeconds % 60;
-        document.getElementById("timerDisplay").innerText = hours + "h " + minutes + "m " + seconds + "s";
-    }
-
-    function startTimer() {
-        let startTime = parseInt(sessionStorage.getItem("startTime"));
-
-        if (!startTime) {
-            startTime = Date.now();
-            sessionStorage.setItem("startTime", startTime.toString());
+        function flipCard() {
+            var card = document.querySelector(".flashcard");
+            card.classList.toggle("flipped");
         }
 
-        let initialElapsedSeconds = Math.floor((Date.now() - startTime) / 1000);
-        displayElapsedTime(initialElapsedSeconds);
+        function displayElapsedTime(elapsedSeconds) {
+            let hours = Math.floor(elapsedSeconds / 3600);
+            let minutes = Math.floor((elapsedSeconds % 3600) / 60);
+            let seconds = elapsedSeconds % 60;
+            document.getElementById("timerDisplay").innerText = `${hours}h ${minutes}m ${seconds}s`;
+        }
 
-        setInterval(function () {
-            let elapsedSeconds = Math.floor((Date.now() - startTime) / 1000);
-            displayElapsedTime(elapsedSeconds);
-        }, 1000);
-    }
+        function startTimer() {
+            let startTime = sessionStorage.getItem("startTime");
 
-    function exitPlayMode() {
-        showTimeSpentModal();
-    }
+            if (!startTime) {
+                startTime = Date.now();
+                sessionStorage.setItem("startTime", startTime);
+            } else {
+                startTime = parseInt(startTime);
+            }
 
-    window.addEventListener('beforeunload', function (event) {
-        showTimeSpentModal();
-    });
+            clearInterval(timer);
+            timer = setInterval(function () {
+                let elapsedSeconds = Math.floor((Date.now() - startTime) / 1000);
+                displayElapsedTime(elapsedSeconds);
+            }, 250);
+        }
 
-    function showTimeSpentModal() {
-        let elapsedSeconds = Math.floor((Date.now() - parseInt(sessionStorage.getItem("startTime"))) / 1000);
-        let hours = Math.floor(elapsedSeconds / 3600);
-        let minutes = Math.floor((elapsedSeconds % 3600) / 60);
-        let seconds = elapsedSeconds % 60;
+        function exitPlayMode() {
+            clearInterval(timer);
 
-        document.getElementById("timeSpentDisplay").innerText = hours + "h " + minutes + "m " + seconds + "s";
+            let elapsedSeconds = Math.floor((Date.now() - parseInt(sessionStorage.getItem("startTime"))) / 1000);
+            sessionStorage.removeItem("startTime");
 
-        document.getElementById("timeSpentModal").style.display = "block";
+            let hours = Math.floor(elapsedSeconds / 3600);
+            let minutes = Math.floor((elapsedSeconds % 3600) / 60);
+            let seconds = elapsedSeconds % 60;
 
-        sessionStorage.removeItem("startTime");
-    }
+            document.getElementById("timeSpentDisplay").innerText = `${hours}h ${minutes}m ${seconds}s`;
+            document.getElementById("timeSpentModal").style.display = "block";
+        }
 
-    function closeModal() {
-        document.getElementById("timeSpentModal").style.display = "none";
-        let lastSearchQuery = "@TempData["LastSearchQuery"]";
-        if (lastSearchQuery) {
-            window.location.href = "@Url.Action("Search", "Home", new { search = TempData["LastSearchQuery"] })"; 
-        } else {
+        function closeModal() {
+            document.getElementById("timeSpentModal").style.display = "none";
             window.location.href = "@Url.Action("Index", "FlashcardCollection")";
         }
-    }
 
-</script>
+        startTimer();
+    </script>
