@@ -14,9 +14,8 @@ public class FlashcardsAppUser : IdentityUser
     [Column(TypeName = "nvarchar(500)")]
      public string? FirstName { get; set; }
 
-   // public byte[] ProfilePhoto { get; set; }
-
-    //public string Description { get; set; }
+    public string? ProfilePhotoPath { get; internal set; }
+    public string? Description { get; internal set; }
 
     [PersonalData]
     [Column(TypeName = "nvarchar(100)")]

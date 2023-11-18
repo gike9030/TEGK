@@ -62,17 +62,17 @@ namespace FlashcardsApp.Controllers
             try
             {
                 flashcardCollections = HttpApiService.GetFromAPI<List<FlashcardCollection<Flashcards>>>(_httpClient, "/FlashcardCollections/GetFlashcardCollections");
-               
+
                 if (flashcardCollections == null)
-                { 
-                    throw new FlashcardsControllerException("Failed to fetch a flashcard collection.", HttpStatusCode.BadRequest); 
+                {
+                    throw new FlashcardsControllerException("Failed to fetch a flashcard collection.", HttpStatusCode.BadRequest);
                 }
             }
             catch (Exception ex)
             {
                 return HandleException(ex);
             }
-           
+
             flashcardCollections.Sort();
 
             TempData["LastSearchQuery"] = null;
@@ -83,18 +83,19 @@ namespace FlashcardsApp.Controllers
             }
 
 
-            if (!string.IsNullOrEmpty(sortByCategory))
+            Func<FlashcardCollection<Flashcards>, bool> categoryFilter = (fc) =>
             {
-                if (Enum.TryParse(sortByCategory, out Category categoryValue))
-                {
-                    flashcardCollections = flashcardCollections.Where(f => f.Category == categoryValue).ToList();
-                }
-            }
+                return string.IsNullOrEmpty(sortByCategory) || fc.Category.ToString() == sortByCategory;
+            };
+
+            flashcardCollections = flashcardCollections.Where(categoryFilter).ToList();
+
             ViewBag.CurrentSort = sortByCategory;
 
             return View(flashcardCollections);
 
         }
+
 
         public IActionResult CreateFlashcardCollection()
         {
