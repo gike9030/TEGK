@@ -39,7 +39,8 @@ namespace FlashcardsAPI.Services
 				FlashcardCollection<Flashcards>? collection = await _context.FlashcardCollection
 				.Include(c => c.Flashcards)
 				.Include(c => c.Comments)
-				.FirstOrDefaultAsync(c => c.Id == id);
+                .Include(c => c.Reactions)
+                .FirstOrDefaultAsync(c => c.Id == id);
 
 				foreach (var flashcard in collection.Flashcards)
 				{
@@ -50,8 +51,12 @@ namespace FlashcardsAPI.Services
 				{
 					_context.Comments.Remove(comment);
 				}
+                foreach (var reaction in collection.Reactions)
+                {
+                    _context.Reactions.Remove(reaction);
+                }
 
-				_context.FlashcardCollection.Remove(collection);
+                _context.FlashcardCollection.Remove(collection);
 				await _context.SaveChangesAsync();
 
 				return true;
