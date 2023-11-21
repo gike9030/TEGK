@@ -48,6 +48,8 @@ namespace FlashcardsApp.Controllers
         public async Task<IActionResult> EditDescription(string description)
         {
             var userId = _userManager.GetUserId(User);
+            
+            if (description == null) { description = string.Empty; }
 
             var jsonString = JsonConvert.SerializeObject(description);
             var content = new StringContent(jsonString, Encoding.UTF8, "application/json");
