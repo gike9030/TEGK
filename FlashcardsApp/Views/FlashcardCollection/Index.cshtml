@@ -14,6 +14,11 @@
     <div class="alert alert-danger">@TempData["Error"]</div>
 }
 
+
+<div class="image-container">
+    <img src="~/images/icon.png" alt="Collection Image" class="rounded-image" />
+</div>
+
 <form asp-action="Index" method="get" class="mb-3 text-center">
     <label for="sortByCategory">Sort by category:</label>
     <select id="sortByCategory" name="sortByCategory" onchange="this.form.submit();" class="mx-auto">
@@ -32,11 +37,7 @@
     </select>
 </form>
 
-<div class="image-container">
-    <img src="~/images/icon.png" alt="Collection Image" class="rounded-image" />
-</div>
-
-<h1 class="text-center">@ViewData["Title"]</h1>
+@* <h1 class="text-center">@ViewData["Title"]</h1> *@
 
 @if (!string.IsNullOrEmpty(TempData["ErrorMessage"] as string))
 {
@@ -123,10 +124,7 @@
                         </div>
                     </form>
                 </div>
-
             </div>
-            
-
         </div>
     }
 </div>
@@ -224,6 +222,7 @@
         justify-content: center;
         align-items: center;
         height: 200px; 
+        margin-bottom: 3rem;
     }
 
     .rounded-image {
@@ -296,7 +295,7 @@
         }
 
     .flashcard-feed {
-        margin-top: 20px;
+        margin-top: 0px;
     }
 
     .flashcard-item {
