@@ -17,8 +17,6 @@ Web application for creating and sharing flash card collections with your univer
 - Sukurti kortelių pirminę versiją ir filtruoti pagal kategoriją.
 
 ## Deadline 2: 11-15
-
-- Sukurti draugų sistemą.
-- Sukurit naują testo tipo kolekciją.
+- Įgyvendinti kolekcijų komentarus.
 - Įgyvendinti kolekcijų reakcijas.
 - Sukurti vartotojo individualų puslapį.
