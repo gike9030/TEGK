@@ -6,24 +6,27 @@
 
 @{
     ViewData["Title"] = "Edit Flashcard Collection";
+    var backgroundImagePath = Url.Content("~/images/ggg.jpg");
 }
-
-<h1 style="text-align:center">@ViewData["Title"]</h1>
+<div class="full-screen-image-container"></div>
+<div class="content-above-background">
+    <h1 style="text-align:center; margin-top: 10px;">@ViewData["Title"]</h1>
 <div class="row mt-5 border p-2 editContainer">
     <ul class="navbar-nav mr-auto col-3 border-end">
         <li class="nav-item active">
-            <button type="button" class="editButton nav-link active" data-target="editField1">Add flashcard</button>
+            <button type="button" class="editButton nav-link active centered" data-target="editField1">Add flashcard</button>
         </li>
         <li class="nav-item">
-            <button type="button" class="editButton nav-link" data-target="editField2">Change name</button>
+            <button type="button" class="editButton nav-link centered" data-target="editField2">Change name</button>
         </li>
         <li class="nav-item">
-            <button type="button" class="editButton nav-link" data-target="editField3">Add flashcards from file</button>
+            <button type="button" class="editButton nav-link centered" data-target="editField3">Add from file</button>
         </li>
     </ul>
+
     
     <form id="editField1" asp-action="AddFlashcard" method="post" class="mb-5 editField visible col-9">
-        <h2>Add a New Flashcard</h2>
+        <h2>Add flashcard</h2>
         <input type="hidden" asp-for="Id" />
         <div class="form-group mb-5">
             <label>Front Side</label>
@@ -47,7 +50,7 @@
     </form>
 
     <form id="editField3" asp-action="AddFlashcardsFromFile" method="post" enctype="multipart/form-data" class="mb-5 editField col-9">
-        <h2>Add New Flashcards from a File</h2>
+        <h2>Add collection from file</h2>
         <input type="hidden" asp-for="Id" />
         <div class="form-group">
             <label for="flashcardFile">
@@ -55,11 +58,11 @@
             </label>
             <input type="file" name="flashcardFile" id="flashcardFile" accept=".txt" class="form-control"/>
         </div>
-        <button type="submit" class="btn btn-success">Add flashcards from file</button>
+        <button type="submit" class="btn btn-success">Add from file</button>
     </form>
 </div>
 
-<h2>Existing Flashcards</h2>
+<h2 class="text-center mt-4 mb-4">Existing Flashcards</h2>
 <div id="existingFlashcards">
     @if (Model.Flashcards != null && Model.Flashcards.Any())
     {
@@ -90,9 +93,70 @@
         <p>No flashcards added yet.</p>
     }
 </div>
-
+</div>
 
 <style>
+
+    .full-screen-image-container {
+        position: fixed;
+        margin-left: -15%;
+        width: 100vw;
+        height: 120vh;
+        overflow: hidden;
+        background-image: url('@backgroundImagePath');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        z-index: -1;
+    }
+
+    .content-above-background {
+        position: relative;
+        z-index: 1;
+    }
+
+
+    .full-screen-image-container::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(to right, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0) 10%, rgba(255, 255, 255, 0) 90%, rgba(255, 255, 255, 1) 100%);
+        z-index: 2;
+    }
+    .editButton {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+    }
+
+
+    #editField2 h2 {
+        margin-bottom: 30px; 
+        background: #fffffb;
+    }
+
+    .btn-success {
+        margin-top: 20px;
+        background-color: #007bff;
+        color: white;
+        padding: 10px 16px;
+        border: none;
+        border-radius: 8px;
+        text-decoration: none;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        width: 100%;
+    }
+
+        .btn-success:hover {
+            background-color: #0056b3;
+        }
+
     .flashcard-container {
         position: relative;
         display: inline-block;
@@ -100,9 +164,10 @@
         height: 300px;
         margin: 10px;
         border: 1px solid #ccc;
-        border-radius: 8px;
+        border-radius: 15px;
         text-align: center;
         vertical-align: top;
+        background: #fffffb;
     }
 
     .flashcard-edit-button {
@@ -171,7 +236,11 @@
     .editContainer {
         height: 90vh;
         max-height: 350px;
+        border-radius: 15px;
+        margin-bottom: 60px;
+        background: #fffffb;
     }
+
 </style>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

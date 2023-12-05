@@ -2,7 +2,105 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+
+<head>
+  <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden; 
+        }
+        .full-screen-image-container {
+            position: relative;
+            width: 100vw;
+            height: 120vh;
+            overflow: hidden;
+        }
+            .full-screen-image-container img {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                min-width: 100%;
+                min-height: 100%;
+                object-fit: cover;
+                margin-left: -15%;
+            }
+            .full-screen-image-container::after {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: linear-gradient( to right, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0) 10%, rgba(255, 255, 255, 0) 90%, rgba(255, 255, 255, 1) 100% );
+                z-index: 2; 
+            }
+        .navbar {
+            position: relative;
+            z-index: 10; 
+        }
+        .overlay-text {
+            position: absolute;
+            top: 80%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+           color: black;
+            font-size: 1.5em;
+            text-align: center;
+            width: 50%; 
+            letter-spacing: 1.5px;
+            padding: 20px; 
+            box-sizing: border-box; 
+            background-color: white;
+            border-radius: 10px; 
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+        
+        }
+        #quizmania {
+            background-color: white; 
+            padding-top: 80px;
+        }
+            .overlay-text, #quizmania p, #quizmania h3 {
+                font-size: 1.5em;
+                text-align: center;
+                letter-spacing: 1.5px;
+            }
+        .img-circle {
+            border-radius: 50%; 
+        }
+  </style>
+</head>
+
+   
+    <div class="full-screen-image-container">
+        <img src="~/images/main.png" alt="Descriptive Alt Text">
+        <div class="overlay-text">
+
+            <h3>QUIZMANIA</h3>
+            <p><em>Your Ultimate Flashcard Companion!</em></p>
+            <p>Welcome to Quizmania, where learning transforms into an exciting journey! Our platform offers a unique blend of fun, flexibility, and efficiency, making it perfect for students, professionals, and lifelong learners. Create, customize, and conquer your learning goals with our interactive flashcards.</p>
+            <p>Embrace learning anytime, anywhere, and join our community to share knowledge and insights. With Quizmania, track your progress, celebrate every milestone, and make learning an adventure. Sign up today and revolutionize the way you learn!</p>
+            <br>
+        </div>
+    </div>
+    <div id="quizmania" class="container text-center">
+        <hr >
+        <div class="row">
+            <div class="col-sm-4">
+                <p class="text-center"><strong>Interactive Learning</strong></p><br>
+                <img src="~/images/confidence1.png" class="img-circle" alt="Interactive Learning" width="255" height="255">
+                <p>Engage with dynamic flashcards that make learning stick.</p>
+            </div>
+            <div class="col-sm-4">
+                <p class="text-center"><strong>Community Wisdom</strong></p><br>
+                <img src="~/images/community_wisdom.jpg" class="img-circle" alt="Community Wisdom" width="255" height="255">
+                <p>Share and discover knowledge in a vibrant learning community.</p>
+            </div>
+            <div class="col-sm-4">
+                <p class="text-center"><strong>Track Your Growth</strong></p><br>
+                <img src="~/images/track_growth.png" class="img-circle" alt="Track Growth" width="255" height="255">
+                <p>Monitor your learning journey and celebrate your progress.</p>
+            </div>
+        </div>
+     </div>

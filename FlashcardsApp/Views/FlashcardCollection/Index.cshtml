@@ -1,12 +1,17 @@
 ﻿@using FlashcardsApp.Areas.Identity.Data;
 @using Microsoft.AspNetCore.Identity;
+@using Microsoft.AspNetCore.Html
+
 @inject UserManager<FlashcardsAppUser> UserManager
+
 
 @model IEnumerable<FlashcardsApp.Models.FlashcardCollection<Flashcards>>
 
 @{
     ViewData["Title"] = "Feed";
     var categories = Enum.GetNames(typeof(FlashcardsApp.Models.Category));
+    var backgroundImagePath = Url.Content("~/images/ggg.jpg"); 
+
 }
 
 @if (TempData["Error"] != null)
@@ -14,15 +19,12 @@
     <div class="alert alert-danger">@TempData["Error"]</div>
 }
 
+<div class= "full-screen-image-container"></div>
 
-<div class="image-container">
-    <img src="~/images/icon.png" alt="Collection Image" class="rounded-image" />
-</div>
-
-<form asp-action="Index" method="get" class="mb-3 text-center">
-    <label for="sortByCategory">Sort by category:</label>
-    <select id="sortByCategory" name="sortByCategory" onchange="this.form.submit();" class="mx-auto">
-        <option value="">--View All Categories--</option>
+<form asp-action="Index" method="get" class="mb-3 text-center sort-form">
+<label for="sortByCategory" class="sort-label">Sort:</label>
+<select id="sortByCategory" name="sortByCategory" onchange="this.form.submit();" class="sort-select">
+    <option value="">All Categories</option>
         @foreach (var category in categories)
         {
             if (category == ViewBag.CurrentSort)
@@ -33,10 +35,11 @@
             {
                 <option value="@category">@category</option>
             }
-        }
-    </select>
+    }
+</select>
 </form>
 
+<div class="content-above-background">
 @* <h1 class="text-center">@ViewData["Title"]</h1> *@
 
 @if (!string.IsNullOrEmpty(TempData["ErrorMessage"] as string))
@@ -82,24 +85,25 @@
 
                 <div class="reaction-buttons-container">
                     <button class="reaction-toggle-btn">
-                        @GetReactionIcon(userReactionType)
+                            @GetReactionIcon(collection.Reactions, UserManager.GetUserId(User))
                     </button>
-                    <div class="reactions">
-                        @foreach (var reactionType in Enum.GetNames(typeof(ReactionType)))
-                        {
-                            var isUserReaction = userReactionType.ToString() == reactionType;
-                            <form asp-action="ToggleReaction" asp-controller="Reactions" method="post">
-                                <input type="hidden" name="CollectionId" value="@collection.Id" />
-                                <input type="hidden" name="ReactionType" value="@reactionType" />
-                                <button type="submit" class="reaction-btn" data-reaction-type="@reactionType" disabled="@(!isUserReaction && userReactionType.HasValue)">
-                                    @GetEmoji(reactionType)
-                                    <span class="reaction-count">
-                                        @(collection.ReactionCounts.TryGetValue(Enum.Parse<ReactionType>(reactionType), out var count) ? count.ToString() : "0")
-                                    </span>
-                                </button>
-                            </form>
-                        }
-                    </div>
+                        <div class="reactions">
+                            @foreach (var reactionType in Enum.GetNames(typeof(ReactionType)))
+                            {
+                                var isUserReaction = userReactionType.ToString() == reactionType;
+                                <form asp-action="ToggleReaction" asp-controller="Reactions" method="post">
+                                    <input type="hidden" name="CollectionId" value="@collection.Id" />
+                                    <input type="hidden" name="ReactionType" value="@reactionType" />
+                                    <button type="submit" class="reaction-btn" data-reaction-type="@reactionType" disabled="@(!isUserReaction && userReactionType.HasValue)">
+                                        @GetEmoji(reactionType)
+                                        <span class="reaction-count">
+                                            @(collection.ReactionCounts.TryGetValue(Enum.Parse<ReactionType>(reactionType), out var count) ? count.ToString() : "0")
+                                        </span>
+                                    </button>
+                                </form>
+                            }
+                        </div>
+
                 </div>
             </div>
             <div class="comment-section">
@@ -129,8 +133,10 @@
     }
 </div>
 
-<div class="text-center mt-3">
-    <a asp-action="CreateFlashcardCollection" class="btn btn-success">Create New Collection</a>
+    <div class="text-center mt-3">
+        <a asp-action="CreateFlashcardCollection" class="btn btn-create-collection">Create New Collection</a>
+    </div>
+
 </div>
 
 @functions {
@@ -138,39 +144,136 @@
     {
         return reactions.FirstOrDefault(r => r.UserId == userId)?.Type;
     }
-
-    private string GetReactionIcon(ReactionType? userReactionType)
+    private IHtmlContent GetReactionIcon(IEnumerable<Reaction<Flashcards>> reactions, string userId)
     {
-        return userReactionType.HasValue ? GetEmoji(userReactionType.ToString()) : "+";
+        var userReactionType = GetUserReactionType(reactions, userId);
+        bool isUserReaction = userReactionType.HasValue;
+        return GetEmoji(userReactionType?.ToString(), isUserReaction);
     }
-
-
-    public string GetEmoji(string reactionType)
+    public IHtmlContent GetEmoji(string reactionType, bool isSelected = false)
     {
-        return reactionType switch
+        string emojiFileName = "";
+        string cssClass = isSelected ? "emoji-selected" : "emoji"; 
+
+        switch (reactionType)
         {
-            "Hearts" => "❤️",
-            "Haha" => "😆",
-            "Like" => "👍",
-            "Angry" => "😠",
-            _ => string.Empty 
-        };
+            case "Hearts":
+                emojiFileName = "love.png";
+                break;
+            case "Haha":
+                emojiFileName = "laugh.png";
+                break;
+            case "Like":
+                emojiFileName = "shocked.png";
+                break;
+            case "Angry":
+                emojiFileName = "angry.png";
+                break;
+            default:
+                return new HtmlString("+"); 
+        }
+
+        if (!string.IsNullOrEmpty(emojiFileName))
+        {
+            string imageUrl = Url.Content($"~/images/emojis/{emojiFileName}");
+            return new HtmlString($"<img src='{imageUrl}' alt='{reactionType}' class='{cssClass}' />");
+        }
+        else
+        {
+            return HtmlString.Empty;
+        }
     }
 }
 
-
 <style>
+    html, body {
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden;
+    }
+
+    .emoji {
+        width: 24px;
+        height: 24px;
+        vertical-align: middle;
+    }
+
+    .emoji-selected {
+        width: 44px;
+        height: 44px;
+        vertical-align: middle;
+    }
+
+    .sort-form {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 5px;
+        border-radius: 15px;
+        background-color: white;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        margin-left: 32%;
+        margin-right: 32%;
+    }
+
+    .sort-label {
+        margin-right: 10px;
+    }
+
+    .sort-select {
+        border: 1px solid #ccc;
+        border-radius: 20px;
+        padding: 5px 10px;
+        background-color: white;
+    }
+
+
+    .full-screen-image-container {
+        position: fixed;
+        margin-left: -15%;
+        width: 100vw;
+        height: 120vh;
+        overflow: hidden;
+        background-image: url('@backgroundImagePath'); 
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        z-index: -1; 
+    }
+
+    .content-above-background {
+        position: relative;
+        z-index: 1; 
+    }
+
+
+        .full-screen-image-container::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to right, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0) 10%, rgba(255, 255, 255, 0) 90%, rgba(255, 255, 255, 1) 100%);
+            z-index: 2;
+        }
+
+    .navbar {
+        position: relative;
+        z-index: 10;
+    }
+
     .reaction-buttons-container {
         position: absolute;
         bottom: 10px;
         right: 10px;
     }
     .reaction-toggle-btn {
-        background: #ffffff; 
+        background: #fffffb;
         border: 1px solid #ccc;
         border-radius: 50%;
-        width: 50px;
-        height: 50px;
+        width: 60px;
+        height: 60px;
         font-size: 24px;
         transition: all 0.3s;
         cursor: pointer;
@@ -190,12 +293,12 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        border-radius: 50%; /
+        border-radius: 50%; 
         padding: 10px; 
         margin: 5px;
         transition: transform 0.3s;
         cursor: pointer;
-        border: 1px solid #ccc; 
+        border: 1px solid #fffffb;
         font-size: 17px; 
     }
 
@@ -216,21 +319,6 @@
         transform: scale(1.2);
     }
 
-
-    .image-container {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 200px; 
-        margin-bottom: 3rem;
-    }
-
-    .rounded-image {
-        border-radius: 50%; 
-        max-width: 100%; 
-        max-height: 100%; 
-    }
-
     .add-comment-section .comment-form {
         display: flex;
         align-items: center;
@@ -245,17 +333,17 @@
     .add-comment-section .form-control {
         flex-grow: 1; 
         margin-right: 8px; 
-        border-radius: 8px;
-        border: 1px solid #ccc;
+        border-radius: 15px;
+        border: 1px solid #fffffb;
         padding: 10px;
     }
 
     .add-comment-section .btn-primary {
         padding: 10px 16px;
         border: none;
-        border-radius: 8px;
+        border-radius: 15px;
         background-color: #007bff;
-        color: white;
+        color: #fffffb;
         cursor: pointer;
     }
 
@@ -274,8 +362,8 @@
         height: 70px;
         padding: 10px;
         margin-bottom: 10px;
-        border: 1px solid #ccc;
-        border-radius: 8px;
+        border: 1px solid #fffffb;
+        border-radius: 15px;
         resize: none; 
     }
 
@@ -283,9 +371,9 @@
         width: auto;
         padding: 8px 16px;
         border: none;
-        border-radius: 8px;
+        border-radius: 15px;
         background-color: #007bff;
-        color: white;
+        color: #fffffb;
         cursor: pointer;
         align-self: flex-end;
     }
@@ -315,6 +403,7 @@
     .collection-card, .comment-section {
         flex: 1; 
         margin: 10px; 
+        background: #fffffb;
     }
     .comment-section {
         display: flex;
@@ -326,9 +415,9 @@
         min-width: 200px; 
         width: 50%; 
         height: 290px;
-        background-color: #f8f9fa;
+        background-color: #fffffb;
         border: 1px solid #ddd;
-        border-radius: 4px;
+        border-radius: 15px;
         padding: 15px;
         position: relative;
         margin-top: 65px;
@@ -341,9 +430,9 @@
     }
 
     .comment {
-        background-color: #ffffff;
+        background-color: #fffffb;
         border: 1px solid #ccc;
-        border-radius: 15px;
+        border-radius: 25px;
         padding: 8px 15px;
         margin-bottom: 10px;
         word-wrap: break-word;
@@ -354,7 +443,7 @@
         margin-right: 20px;
         width: 10px;
         height: 300px;
-        border: 1px solid #ccc;
+        border: 1px solid #fffffb;
         border-radius: 10px;
         padding: 10px;
         box-shadow: 0 4px 8px rgba(0,0,0,0.1);
@@ -392,4 +481,20 @@
         padding: 0.125rem 0.3rem;
         font-size: 0.675rem;
     }
+
+    .btn-create-collection {
+        background-color: #007bff; 
+        color: white;
+        padding: 10px 16px;
+        border: none;
+        border-radius: 8px;
+        text-decoration: none;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+        .btn-create-collection:hover {
+            background-color: #0056b3; 
+        }
+
 </style>

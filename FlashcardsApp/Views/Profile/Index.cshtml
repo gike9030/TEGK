@@ -6,9 +6,11 @@
 
 @{
     ViewData["Title"] = "User Profile";
+    var backgroundImagePath = Url.Content("~/images/ggg.jpg");
 }
+<div class="full-screen-image-container"></div>
 
-
+<div class="content-above-background">
 <div class="profile-container">
     <div class="profile-header">
         <div class="profile-photo-container">
@@ -89,7 +91,7 @@
             <p>No flashcard collections available.</p>
         }
         <div class="text-center mt-3">
-            <a asp-controller="FlashcardCollection" asp-action="CreateFlashcardCollection" class="btn btn-success add-collection-btn">
+            <a asp-controller="FlashcardCollection" asp-action="CreateFlashcardCollection" class="btn btn-success">
                 Add New Collection
             </a>
         </div>
@@ -97,7 +99,7 @@
 
     </div>
 </div>
-
+</div>
 <script>
     function editDescription() {
         var descriptionText = document.getElementById('description-text');
@@ -114,6 +116,52 @@
 </script>
 
 <style>
+
+    .full-screen-image-container {
+        position: fixed;
+        margin-left: -15%;
+        width: 100vw;
+        height: 120vh;
+        overflow: hidden;
+        background-image: url('@backgroundImagePath');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        z-index: -1;
+    }
+
+    .content-above-background {
+        position: relative;
+        z-index: 1;
+    }
+
+
+    .full-screen-image-container::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(to right, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0) 10%, rgba(255, 255, 255, 0) 90%, rgba(255, 255, 255, 1) 100%);
+        z-index: 2;
+    }
+    .btn-success {
+        margin-top: 20px;
+        background-color: #007bff;
+        color: white;
+        padding: 10px 16px;
+        border: none;
+        border-radius: 8px;
+        text-decoration: none;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        width: 30%;
+    }
+
+        .btn-success:hover {
+            background-color: #0056b3;
+        }
     .description-block {
         background-color: #f8f9fa; 
         padding: 15px;
@@ -209,6 +257,7 @@
     }
 
     .collection-card {
+        background: white;
         border: 1px solid #ccc;
         border-radius: 10px;
         box-shadow: 0 4px 8px rgba(0,0,0,0.1);
