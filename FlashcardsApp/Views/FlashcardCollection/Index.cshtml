@@ -1,6 +1,9 @@
 ﻿@using FlashcardsApp.Areas.Identity.Data;
 @using Microsoft.AspNetCore.Identity;
+@using Microsoft.AspNetCore.Html
+
 @inject UserManager<FlashcardsAppUser> UserManager
+
 
 @model IEnumerable<FlashcardsApp.Models.FlashcardCollection<Flashcards>>
 
@@ -22,16 +25,16 @@
 <label for="sortByCategory" class="sort-label">Sort:</label>
 <select id="sortByCategory" name="sortByCategory" onchange="this.form.submit();" class="sort-select">
     <option value="">All Categories</option>
-                    @foreach (var category in categories)
-                    {
-        if (category == ViewBag.CurrentSort)
+        @foreach (var category in categories)
         {
-            <option value="@category" selected>@category</option>
-                    }
-        else
-        {
-            <option value="@category">@category</option>
-        }
+            if (category == ViewBag.CurrentSort)
+            {
+                <option value="@category" selected>@category</option>
+            }
+            else
+            {
+                <option value="@category">@category</option>
+            }
     }
 </select>
 </form>
@@ -84,22 +87,23 @@
                     <button class="reaction-toggle-btn">
                         @GetReactionIcon(userReactionType)
                     </button>
-                    <div class="reactions">
-                        @foreach (var reactionType in Enum.GetNames(typeof(ReactionType)))
-                        {
-                            var isUserReaction = userReactionType.ToString() == reactionType;
-                            <form asp-action="ToggleReaction" asp-controller="Reactions" method="post">
-                                <input type="hidden" name="CollectionId" value="@collection.Id" />
-                                <input type="hidden" name="ReactionType" value="@reactionType" />
-                                <button type="submit" class="reaction-btn" data-reaction-type="@reactionType" disabled="@(!isUserReaction && userReactionType.HasValue)">
-                                    @GetEmoji(reactionType)
-                                    <span class="reaction-count">
-                                        @(collection.ReactionCounts.TryGetValue(Enum.Parse<ReactionType>(reactionType), out var count) ? count.ToString() : "0")
-                                    </span>
-                                </button>
-                            </form>
-                        }
-                    </div>
+                        <div class="reactions">
+                            @foreach (var reactionType in Enum.GetNames(typeof(ReactionType)))
+                            {
+                                var isUserReaction = userReactionType.ToString() == reactionType;
+                                <form asp-action="ToggleReaction" asp-controller="Reactions" method="post">
+                                    <input type="hidden" name="CollectionId" value="@collection.Id" />
+                                    <input type="hidden" name="ReactionType" value="@reactionType" />
+                                    <button type="submit" class="reaction-btn" data-reaction-type="@reactionType" disabled="@(!isUserReaction && userReactionType.HasValue)">
+                                        @GetEmoji(reactionType) @* Use @ to render the HTML content *@
+                                        <span class="reaction-count">
+                                            @(collection.ReactionCounts.TryGetValue(Enum.Parse<ReactionType>(reactionType), out var count) ? count.ToString() : "0")
+                                        </span>
+                                    </button>
+                                </form>
+                            }
+                        </div>
+
                 </div>
             </div>
             <div class="comment-section">
@@ -140,26 +144,45 @@
     {
         return reactions.FirstOrDefault(r => r.UserId == userId)?.Type;
     }
-
-    private string GetReactionIcon(ReactionType? userReactionType)
+    private IHtmlContent GetReactionIcon(ReactionType? userReactionType)
     {
-        return userReactionType.HasValue ? GetEmoji(userReactionType.ToString()) : "+";
+        return userReactionType.HasValue ? GetEmoji(userReactionType.ToString()) : new HtmlString("+");
     }
 
 
-    public string GetEmoji(string reactionType)
+    public IHtmlContent GetEmoji(string reactionType)
     {
-        return reactionType switch
+        string emojiFileName = "";
+
+        switch (reactionType)
         {
-            "Hearts" => "❤️",
-            "Haha" => "😆",
-            "Like" => "👍",
-            "Angry" => "😠",
-            _ => string.Empty 
-        };
+            case "Hearts":
+                emojiFileName = "love.png";
+                break;
+            case "Haha":
+                emojiFileName = "laugh.png";
+                break;
+            case "Like":
+                emojiFileName = "shocked.png";
+                break;
+            case "Angry":
+                emojiFileName = "angry.png";
+                break;
+            default:
+                return new HtmlString(" "); // Return an empty HTML string
+        }
+
+        if (!string.IsNullOrEmpty(emojiFileName))
+        {
+            string imageUrl = Url.Content($"~/images/emojis/{emojiFileName}");
+            return new HtmlString($"<img src='{imageUrl}' alt='{reactionType}' class='emoji' />");
+        }
+        else
+        {
+            return HtmlString.Empty;
+        }
     }
 }
-
 
 <style>
     html, body {
@@ -167,6 +190,15 @@
         padding: 0;
         overflow-x: hidden;
     }
+
+    .emoji {
+        width: 24px;
+        height: 24px;
+        vertical-align: middle;
+    }
+
+
+
 
     .sort-form {
         display: flex;
