@@ -5,27 +5,31 @@
 @model IEnumerable<FlashcardsApp.Models.FlashcardCollection<Flashcards>>
 @{
     ViewData["Title"] = "Search Results";
+    var backgroundImagePath = Url.Content("~/images/ggg.jpg");
 }
-
+<div class="full-screen-image-container"></div>
 @if (TempData["Error"] != null)
 {
-    <div class="alert alert-danger">@TempData["Error"]</div>
-}
-
-<h1 class="text-center">@ViewData["Title"]</h1>
-
-@if (!string.IsNullOrEmpty(TempData["EmptyResults"] as string))
-{
-    <div class="alert alert-warning">
-        @TempData["EmptyResults"]
+    <div class="alert alert-warning" style="background: #f7f9e6;">
+        @TempData["Error"]
     </div>
 }
+
+<h1 style="text-align:center; margin-top: 10px;color: #474350;">@ViewData["Title"]</h1>
+
+    @if (!string.IsNullOrEmpty(TempData["EmptyResults"] as string))
+    {
+        <div class="alert alert-warning" style="background: #f7f9e6;">
+            @TempData["EmptyResults"]
+        </div>
+    }
+
 
 @if (!string.IsNullOrEmpty(TempData["ErrorMessage"] as string))
 {
-    <div class="alert alert-warning">
-        @TempData["ErrorMessage"]
-    </div>
+        <div class="alert alert-warning" style="background: #f7f9e6;">
+            @TempData["ErrorMessage"]
+        </div>
 }
 
 <div class="collection-grid">
@@ -67,6 +71,22 @@
 </div>
 
 <style>
+    .btn-success {
+        margin-top: 20px;
+        background-color: #007bff;
+        color: white;
+        padding: 10px 16px;
+        border: none;
+        border-radius: 8px;
+        text-decoration: none;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        width: 50%;
+    }
+
+        .btn-success:hover {
+            background-color: #0056b3;
+        }
     .collection-grid {
         display: flex;
         flex-wrap: wrap;
@@ -78,6 +98,7 @@
     .collection-card {
         width: 300px;
         height: 300px;
+        background: #fffffb;
         border: 1px solid #ccc;
         border-radius: 10px;
         padding: 10px;
@@ -120,5 +141,35 @@
     .card-content span {
         display: block;
         margin-top: 20px;
+    }
+
+    .full-screen-image-container {
+        position: fixed;
+        margin-left: -15%;
+        width: 100vw;
+        height: 120vh;
+        overflow: hidden;
+        background-image: url('@backgroundImagePath');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        z-index: -1;
+    }
+
+    .content-above-background {
+        position: relative;
+        z-index: 1;
+    }
+
+
+    .full-screen-image-container::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(to right, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0) 10%, rgba(255, 255, 255, 0) 90%, rgba(255, 255, 255, 1) 100%);
+        z-index: 2;
     }
 </style>

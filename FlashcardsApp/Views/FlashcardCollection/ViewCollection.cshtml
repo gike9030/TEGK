@@ -2,9 +2,10 @@
 
 @{
     ViewData["Title"] = "View Flashcards";
-}
-
-<h1>@Model.CollectionName</h1>
+    var backgroundImagePath = Url.Content("~/images/ggg.jpg");
+}<div class="full-screen-image-container">
+    <div class="content-above-background">
+        <h1 style="text-align:center; margin-top: 10px;">@Model.CollectionName</h1>
 
 <div>
     @if (Model.Flashcards != null && Model.Flashcards.Any())
@@ -28,6 +29,8 @@
         <p>No flashcards in this collection.</p>
     }
 </div>
+    </div>
+</div>
 
 <style>
     .flashcard-container {
@@ -37,6 +40,7 @@
         margin: 10px;
         border: 1px solid #ccc;
         border-radius: 8px;
+        background: #fffffb;
         text-align: center;
         vertical-align: top;
     }
@@ -51,5 +55,36 @@
 
     .flashcard-answer {
         background-color: #fff;
+    }
+
+
+    .full-screen-image-container {
+        position: fixed;
+        margin-left: -15%;
+        width: 100vw;
+        height: 120vh;
+        overflow: hidden;
+        background-image: url('@backgroundImagePath');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        z-index: -1;
+    }
+
+    .content-above-background {
+        position: relative;
+        z-index: 1;
+    }
+
+
+    .full-screen-image-container::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(to right, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0) 10%, rgba(255, 255, 255, 0) 90%, rgba(255, 255, 255, 1) 100%);
+        z-index: 2;
     }
 </style>

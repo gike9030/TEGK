@@ -1,5 +1,8 @@
 ﻿@model Flashcards
-
+@{
+    var backgroundImagePath = Url.Content("~/images/ggg.jpg");
+}
+<div class="full-screen-image-container"></div>
 <style>
     .flashcard {
         width: 70%;
@@ -11,6 +14,7 @@
     }
 
     .card-inner {
+        margin-top: 100px;
         position: relative;
         width: 100%;
         height: 100%;
@@ -29,6 +33,7 @@
         height: 100%;
         -webkit-backface-visibility: hidden;
         backface-visibility: hidden;
+        border-radius: 20px;
     }
 
     .card-front {
@@ -96,7 +101,7 @@
         top: 50%;
         transform: translateY(-50%);
         font-size: 2rem;
-        background-color: rgba(255,255,255,0.7);
+        margin-top: 100px;
         padding: 10px 15px;
         border: none;
         cursor: pointer;
@@ -104,7 +109,7 @@
     }
 
         .prev-btn:hover, .next-btn:hover {
-            background-color: rgba(255,255,255,1);
+            color: darkblue;
         }
 
     .prev-btn {
@@ -152,9 +157,38 @@
             background-color: #187CBD;
         }
 
+    .full-screen-image-container {
+        position: fixed;
+        margin-left: -15%;
+        width: 100vw;
+        height: 120vh;
+        overflow: hidden;
+        background-image: url('@backgroundImagePath');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        z-index: -1;
+    }
+
+    .content-above-background {
+        position: relative;
+        z-index: 1;
+    }
+
+
+    .full-screen-image-container::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(to right, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0) 10%, rgba(255, 255, 255, 0) 90%, rgba(255, 255, 255, 1) 100%);
+        z-index: 2;
+    }
 </style>
 
-<div class="flashcard-container">
+<div class="content-above-background">
     <div class="flashcard" onclick="flipCard()">
         <div class="card-inner">
             <div class="card-front">
@@ -196,7 +230,7 @@
         <button onclick="exitPlayMode()" class="exit-btn">Exit</button>
     </div>
 </div>
-
+</div>
     <script>
         var timer;
 
