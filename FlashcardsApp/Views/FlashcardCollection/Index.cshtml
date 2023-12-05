@@ -85,7 +85,7 @@
 
                 <div class="reaction-buttons-container">
                     <button class="reaction-toggle-btn">
-                        @GetReactionIcon(userReactionType)
+                            @GetReactionIcon(collection.Reactions, UserManager.GetUserId(User))
                     </button>
                         <div class="reactions">
                             @foreach (var reactionType in Enum.GetNames(typeof(ReactionType)))
@@ -95,7 +95,7 @@
                                     <input type="hidden" name="CollectionId" value="@collection.Id" />
                                     <input type="hidden" name="ReactionType" value="@reactionType" />
                                     <button type="submit" class="reaction-btn" data-reaction-type="@reactionType" disabled="@(!isUserReaction && userReactionType.HasValue)">
-                                        @GetEmoji(reactionType) @* Use @ to render the HTML content *@
+                                        @GetEmoji(reactionType)
                                         <span class="reaction-count">
                                             @(collection.ReactionCounts.TryGetValue(Enum.Parse<ReactionType>(reactionType), out var count) ? count.ToString() : "0")
                                         </span>
@@ -144,15 +144,16 @@
     {
         return reactions.FirstOrDefault(r => r.UserId == userId)?.Type;
     }
-    private IHtmlContent GetReactionIcon(ReactionType? userReactionType)
+    private IHtmlContent GetReactionIcon(IEnumerable<Reaction<Flashcards>> reactions, string userId)
     {
-        return userReactionType.HasValue ? GetEmoji(userReactionType.ToString()) : new HtmlString("+");
+        var userReactionType = GetUserReactionType(reactions, userId);
+        bool isUserReaction = userReactionType.HasValue;
+        return GetEmoji(userReactionType?.ToString(), isUserReaction);
     }
-
-
-    public IHtmlContent GetEmoji(string reactionType)
+    public IHtmlContent GetEmoji(string reactionType, bool isSelected = false)
     {
         string emojiFileName = "";
+        string cssClass = isSelected ? "emoji-selected" : "emoji"; 
 
         switch (reactionType)
         {
@@ -169,13 +170,13 @@
                 emojiFileName = "angry.png";
                 break;
             default:
-                return new HtmlString(" "); // Return an empty HTML string
+                return new HtmlString("+"); 
         }
 
         if (!string.IsNullOrEmpty(emojiFileName))
         {
             string imageUrl = Url.Content($"~/images/emojis/{emojiFileName}");
-            return new HtmlString($"<img src='{imageUrl}' alt='{reactionType}' class='emoji' />");
+            return new HtmlString($"<img src='{imageUrl}' alt='{reactionType}' class='{cssClass}' />");
         }
         else
         {
@@ -197,8 +198,11 @@
         vertical-align: middle;
     }
 
-
-
+    .emoji-selected {
+        width: 44px;
+        height: 44px;
+        vertical-align: middle;
+    }
 
     .sort-form {
         display: flex;
@@ -268,8 +272,8 @@
         background: #fffffb;
         border: 1px solid #ccc;
         border-radius: 50%;
-        width: 50px;
-        height: 50px;
+        width: 60px;
+        height: 60px;
         font-size: 24px;
         transition: all 0.3s;
         cursor: pointer;
