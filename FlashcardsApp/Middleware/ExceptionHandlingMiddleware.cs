@@ -31,6 +31,10 @@ public class ExceptionHandlingMiddleware
         var code = HttpStatusCode.InternalServerError;
 
         if (exception is FlashcardsControllerException) code = HttpStatusCode.BadRequest;
+        else if (exception is UnauthorizedAccessException) code = HttpStatusCode.Unauthorized;
+        else if (exception is InvalidOperationException) code = HttpStatusCode.BadRequest;
+        else if (exception is ArgumentNullException) code = HttpStatusCode.BadRequest;
+        else if (exception is ArgumentException) code = HttpStatusCode.BadRequest;
 
         var result = JsonConvert.SerializeObject(new { error = exception.Message });
         context.Response.ContentType = "application/json";

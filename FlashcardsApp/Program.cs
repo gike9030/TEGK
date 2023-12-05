@@ -3,17 +3,17 @@ using Microsoft.EntityFrameworkCore;
 using FlashcardsApp.Data;
 using FlashcardsApp.Areas.Identity.Data;
 using FlashcardsApp.Services;
+using System;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Get the connection string from the configuration
 var connectionString = builder.Configuration.GetConnectionString("FlashcardsAppContextConnection") ?? throw new InvalidOperationException("Connection string 'FlashcardsAppContextConnection' not found.");
 
-builder.Services.AddDbContext<FlashcardsAppContext>(options => options.UseSqlServer(connectionString));
-
-builder.Services.AddDefaultIdentity<FlashcardsAppUser>(options => options.SignIn.RequireConfirmedAccount = false).AddEntityFrameworkStores<FlashcardsAppContext>();
-
-builder.Services.AddRazorPages();
-
 // Add services to the container.
+builder.Services.AddDbContext<FlashcardsAppContext>(options => options.UseSqlServer(connectionString));
+builder.Services.AddDefaultIdentity<FlashcardsAppUser>(options => options.SignIn.RequireConfirmedAccount = false).AddEntityFrameworkStores<FlashcardsAppContext>();
+builder.Services.AddRazorPages();
 builder.Services.AddControllersWithViews();
 builder.Services.AddLogging();
 
@@ -29,19 +29,18 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
+app.UseHttpsRedirection();
+
+// Register custom exception handling middleware
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
-app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
 app.UseAuthentication();
-
 app.UseAuthorization();
 
 app.MapControllerRoute(
