@@ -9,7 +9,7 @@ public class LoggingInterceptor : IInterceptor
 
     public LoggingInterceptor()
     {
-        _logFilePath = "interceptor.txt";
+        _logFilePath = "MethodCalls.txt";
     }
 
     public void Intercept(IInvocation invocation)

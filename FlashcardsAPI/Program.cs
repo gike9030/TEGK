@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Text.Json.Serialization;
+using FlashcardsAPI.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 ConfigurationManager configuration = builder.Configuration;
@@ -56,11 +57,11 @@ builder.Services.AddSwaggerGen();
 // Register the LoggingInterceptor
 builder.Services.AddTransient<LoggingInterceptor>();
 
-InterceptWith<LoggingInterceptor, IFlashcardCollectionService, FlashcardCollectionService>(builder.Services);
-InterceptWith<LoggingInterceptor, IFlashcardService, FlashcardService>(builder.Services);
-InterceptWith<LoggingInterceptor, ICommentService, CommentService>(builder.Services);
-InterceptWith<LoggingInterceptor, IReactionService, ReactionService>(builder.Services);
-InterceptWith<LoggingInterceptor, IProfileService, ProfileService>(builder.Services);
+builder.Services.InterceptWith<LoggingInterceptor, IFlashcardCollectionService, FlashcardCollectionService>();
+builder.Services.InterceptWith<LoggingInterceptor, IFlashcardService, FlashcardService>();
+builder.Services.InterceptWith<LoggingInterceptor, ICommentService, CommentService>();
+builder.Services.InterceptWith<LoggingInterceptor, IReactionService, ReactionService>();
+builder.Services.InterceptWith<LoggingInterceptor, IProfileService, ProfileService>();
 
 builder.Services.AddSingleton<IFlashcardsStorageService, FlashcardsStorageService>();
 
@@ -82,19 +83,3 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
-
-static void InterceptWith<TInterceptor, TInterface, TImplementation>(IServiceCollection services)
-    where TInterceptor : class, IInterceptor
-    where TInterface : class
-    where TImplementation : class, TInterface
-{
-    services.AddTransient<TInterface>(serviceProvider =>
-    {
-        var proxyGenerator = new ProxyGenerator();
-        var actualService = serviceProvider.GetRequiredService<TImplementation>();
-        var interceptor = serviceProvider.GetRequiredService<TInterceptor>();
-        return proxyGenerator.CreateInterfaceProxyWithTarget<TInterface>(actualService, interceptor);
-    });
-
-    services.AddTransient<TImplementation>();
-}
