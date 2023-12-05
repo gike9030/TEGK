@@ -32,12 +32,21 @@ namespace JWTAuthentication.NET6._0.Auth
             .HasForeignKey(e => e.FlashcardCollectionId)
             .IsRequired();
 
+            builder.Entity<Following>()
+            .HasOne(e => e.FollowingUser)
+            .WithMany(e => e.Followings)
+            .HasForeignKey(e => e.FollowingUserId)
+            .IsRequired();
+
+            builder.Entity<Following>()
+            .HasOne(e => e.FollowedUser);
         }
 
         public DbSet<FlashcardCollection<Flashcards>> FlashcardCollection { get; set; }
         public DbSet<Flashcards> Flashcards { get; set; }
         public DbSet<Reaction<Flashcards>> Reactions { get; set; }
-        public DbSet<Comment> Comments { get; set; } = default!;
+        public DbSet<Comment> Comments { get; set; }
+        public DbSet<Following> Followings { get; set; }
 
     }
 }
