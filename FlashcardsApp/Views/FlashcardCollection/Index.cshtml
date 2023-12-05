@@ -67,7 +67,11 @@
                             <a asp-action="Edit" asp-route-id="@collection.Id" class="dropdown-item">Edit</a>
                             <a class="dropdown-item" href="#" onclick="event.preventDefault(); if(confirm('Are you sure you want to delete this collection?')) { document.getElementById('deleteForm-@collection.Id').submit(); }">Delete</a>
                         }
-                        <a asp-action="ViewCollection" asp-route-id="@collection.Id" class="dropdown-item">View</a>
+                        @if (collection.FlashcardsAppUserId != UserManager.GetUserId(User))
+                            {
+                                <a asp-action="Follow" asp-controller="Following" asp-route-followingUserId=@UserManager.GetUserId(User) asp-route-followedUserId=@collection.FlashcardsAppUserId class="dropdown-item">Follow creator</a>
+                            }
+                            <a asp-action="ViewCollection" asp-route-id="@collection.Id" class="dropdown-item">View</a>
                     </div>
                 </div>
 

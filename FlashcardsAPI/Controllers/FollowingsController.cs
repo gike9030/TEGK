@@ -22,9 +22,9 @@ namespace FlashcardsAPI.Controllers
             _followingService = followingService;
         }
 
-		[HttpGet("{id}")]
-		public async Task<ActionResult<Following>> GetUsersFollowedByUserWithId(string id)
-		{
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Following>> GetUsersFollowedByUserWithId(string id)
+        {
             List<Following>? following = await _followingService.GetUsersFollowedByUserWithId(id);
 
             if (following == null)
@@ -32,10 +32,23 @@ namespace FlashcardsAPI.Controllers
                 return NotFound();
             }
 
-			return Ok(following);
-		}
+            return Ok(following);
+        }
 
-		[HttpGet("{id}")]
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Following>> GetUsersFollowedByUserWithIdCollections(string id)
+        {
+            List<FlashcardCollection<Flashcards>>? collections = await _followingService.GetFollowingFlashcardCollections(id);
+
+            if (collections == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(collections);
+        }
+
+        [HttpGet("{id}")]
 		public async Task<ActionResult<Following>> GetUsersFollowingUserWithId(string id)
 		{
 			List<Following>? following = await _followingService.GetUsersThatFollowUserWithId(id);

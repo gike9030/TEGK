@@ -38,14 +38,25 @@ public class FlashcardsAppContext : IdentityDbContext<FlashcardsAppUser>
          .HasForeignKey(e => e.FlashcardCollectionId)
          .IsRequired();
 
-        // Customize the ASP.NET Identity model and override the defaults if needed.
-        // For example, you can rename the ASP.NET Identity table names and more.
-        // Add your customizations after calling base.OnModelCreating(builder);
-    }
+		builder.Entity<Following>()
+        .HasOne(e => e.FollowingUser)
+        .WithMany(e => e.Followings)
+        .HasForeignKey(e => e.FollowingUserId)
+        .IsRequired();
 
-    public DbSet<FlashcardCollection<Flashcards>> FlashcardCollection { get; set; }
+		builder.Entity<Following>()
+		.HasOne(e => e.FollowedUser);
+
+		// Customize the ASP.NET Identity model and override the defaults if needed.
+		// For example, you can rename the ASP.NET Identity table names and more.
+		// Add your customizations after calling base.OnModelCreating(builder);
+	}
+
+	public DbSet<FlashcardCollection<Flashcards>> FlashcardCollection { get; set; }
     public DbSet<Flashcards> Flashcards { get; set; }
     public DbSet<Reaction<Flashcards>> Reactions { get; set; }
     public DbSet<Comment> Comment { get; set; }
+	public DbSet<Following> Followings { get; set; }
+
 
 }

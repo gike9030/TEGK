@@ -52,7 +52,28 @@ namespace FlashcardsAPI.Services
 
 		}
 
-		public async Task<List<Following>?> GetUsersFollowedByUserWithId(string id)
+        public async Task<List<FlashcardCollection<Flashcards>>?> GetFollowingFlashcardCollections(string id)
+        {
+            if (_context.Followings == null || _context.FlashcardCollection == null)
+            {
+                return null;
+            }
+
+            var followings = await _context.Followings.Where(f => f.FollowingUserId == id).ToListAsync();
+
+            List<string?> followingIds = new();
+
+			foreach (var f in followings)
+			{
+				followingIds.Add(f.FollowedUserId);
+			}
+
+			List<FlashcardCollection<Flashcards>>? collecitons = await _context.FlashcardCollection.Where(c => followingIds.Contains(c.FlashcardsAppUserId)).ToListAsync();
+
+			return collecitons;
+        }
+
+        public async Task<List<Following>?> GetUsersFollowedByUserWithId(string id)
 		{
 			if (_context.Followings == null)
 			{
