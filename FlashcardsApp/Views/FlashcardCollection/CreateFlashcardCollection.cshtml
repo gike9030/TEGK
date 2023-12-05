@@ -6,7 +6,11 @@
 
 @{
     ViewData["Title"] = "Create Flashcard Collection";
+    var backgroundImagePath = Url.Content("~/images/ggg.jpg");
 }
+<div class="full-screen-image-container"></div>
+
+<div class="content-above-background">
 <div class="main-container">
     <div class="circle" style="width: 100px; height: 100px; top: 10%; left: 20%;"></div>
     <div class="circle" style="width: 150px; height: 150px; top: 70%; left: 80%;"></div>
@@ -50,6 +54,7 @@
     </div>
 </div>
 </div>
+</div>
 <style>
     .btn-create-collection {
         background-color: #007bff;
@@ -74,22 +79,42 @@
 
     .main-container {
         display: flex;
-        justify-content: center; 
         align-items: center; 
         height: 80vh; 
-        margin: 0;
+        margin-left:-200px;
         padding: 0;
         overflow: hidden; 
     position: relative; 
 }
 
-.circle {
-    position: absolute;
-    border-radius: 50%;
-    background-color: rgba(255, 255, 255, 0.6); 
-    will-change: transform;
-}
-    body{
-        background-color: #f7e1d7; 
+    .full-screen-image-container {
+        position: fixed;
+        margin-left: -15%;
+        width: 100vw;
+        height: 120vh;
+        overflow: hidden;
+        background-image: url('@backgroundImagePath');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        z-index: -1;
     }
+
+    .content-above-background {
+        position: relative;
+        z-index: 1;
+    }
+
+
+    .full-screen-image-container::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(to right, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0) 10%, rgba(255, 255, 255, 0) 90%, rgba(255, 255, 255, 1) 100%);
+        z-index: 2;
+    }
+
 </style>
