@@ -12,7 +12,6 @@ using System.Text.Json.Serialization;
 var builder = WebApplication.CreateBuilder(args);
 ConfigurationManager configuration = builder.Configuration;
 
-// Add services to the container.
 
 // For Entity Framework
 var connectionString = builder.Configuration.GetConnectionString("FlashcardsAppContextConnection") ?? throw new InvalidOperationException("Connection string 'FlashcardsAppContextConnection' not found.");
@@ -57,7 +56,6 @@ builder.Services.AddSwaggerGen();
 // Register the LoggingInterceptor
 builder.Services.AddTransient<LoggingInterceptor>();
 
-// Register your services with interceptors
 InterceptWith<LoggingInterceptor, IFlashcardCollectionService, FlashcardCollectionService>(builder.Services);
 InterceptWith<LoggingInterceptor, IFlashcardService, FlashcardService>(builder.Services);
 InterceptWith<LoggingInterceptor, ICommentService, CommentService>(builder.Services);
@@ -85,7 +83,6 @@ app.MapControllers();
 
 app.Run();
 
-// Extension method for service interception
 static void InterceptWith<TInterceptor, TInterface, TImplementation>(IServiceCollection services)
     where TInterceptor : class, IInterceptor
     where TInterface : class

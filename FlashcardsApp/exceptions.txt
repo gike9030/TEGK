@@ -1,0 +1,7 @@
+[DateTime: 2023-12-05 12:15:28]
+[Exception Type: FlashcardsApp.CustomExceptions.FlashcardsControllerException]
+[Message: Failed to fetch a flashcard collection.]
+[Status Code: BadRequest]
+[StackTrace:    at FlashcardsApp.Controllers.FlashcardCollectionController.Index(String sortByCategory, String search) in C:\Users\Kajus\OneDrive\Desktop\project\TEGK\FlashcardsApp\Controllers\FlashcardCollectionController.cs:line 68]
+--------------------------------------------------
+

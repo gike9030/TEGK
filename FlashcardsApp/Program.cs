@@ -34,7 +34,6 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-// Register custom exception handling middleware
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.UseStaticFiles();
