@@ -14,6 +14,7 @@ namespace FlashcardsApp.Controllers
 		{
 			_httpClient = httpClientFactory.CreateClient("FlashcardsAPI");
 		}
+		
 		public IActionResult Follow(string followingUserId, string followedUserId)
 		{
 
@@ -22,12 +23,26 @@ namespace FlashcardsApp.Controllers
 
 			if (resp.IsSuccessStatusCode)
 			{
-				TempData["Error"] = "User followed";
+				TempData["Success"] = "User followed";
 				return RedirectToAction("Index", "FlashcardCollection");
 			}
 
             TempData["Error"] = "Failed to follow user";
             return RedirectToAction("Index", "FlashcardCollection");
+        }
+
+		public async Task<IActionResult> Unfollow(string followingUserId, string followedUserId)
+		{
+            var res = await HttpApiService.DeleteFromAPI(_httpClient, "/Followings/DeleteFollowing/" + followingUserId + "/" + followedUserId);
+
+			if (res.IsSuccessStatusCode)
+			{
+				TempData["Success"] = "Unfollowed user successfuly";
+				return RedirectToAction("Index", "Profile");
+			}
+
+			TempData["Error"] = "Failed to unfollow user";
+			return RedirectToAction("Index", "Profile");
         }
 	}
 }

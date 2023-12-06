@@ -39,7 +39,7 @@ namespace FlashcardsAPI.Services
 			{
 				return false;
 			}
-			var following = await _context.Followings.FirstAsync(f => f.FollowingUserId == followingId && f.FollowedUserId == followedId);
+			var following = await _context.Followings.FirstOrDefaultAsync(f => f.FollowingUserId == followingId && f.FollowedUserId == followedId);
 			if (following == null)
 			{
 				return false;
