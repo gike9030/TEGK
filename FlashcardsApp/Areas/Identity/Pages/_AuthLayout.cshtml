@@ -1,12 +1,13 @@
 ﻿﻿@{
     Layout = "/Views/Shared/_Layout.cshtml";
-}
-
+    var backgroundImagePath = Url.Content("~/images/main.png");
+}<div class="full-screen-image-container"></div>
+    <div class="content-above-background">
 <div class="row justify-content-center">
     <div class="col-6">
 
     </div>
-    <div class="col-6 row">
+        <div class="col-6 row">
         <div class="col-10 ">
             <div class="card login-logout-card">
                 <div class="card-header">
@@ -34,7 +35,44 @@
         </div>
     </div>
 </div>
+</div>
+<style>
+    .full-screen-image-container {
+        position: fixed;
+        margin-left: -15%;
+        width: 100vw;
+        height: 120vh;
+        overflow: hidden;
+        background-image: url('@backgroundImagePath');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        z-index: -1;
+    }
 
+    .content-above-background {
+        position: relative;
+        margin-top: 100px;
+        margin-right: -300px;
+        z-index: 1;
+    }
+
+    .card {
+        border-radius: 15px; 
+    }
+
+
+    .full-screen-image-container::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(to right, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0) 10%, rgba(255, 255, 255, 0) 90%, rgba(255, 255, 255, 1) 100%);
+        z-index: 2;
+    }
+</style>
 @section Scripts {
     @await RenderSectionAsync("Scripts", required: false)
 }
