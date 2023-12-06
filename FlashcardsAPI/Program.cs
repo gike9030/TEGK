@@ -62,7 +62,8 @@ builder.Services.InterceptWith<LoggingInterceptor, IFlashcardService, FlashcardS
 builder.Services.InterceptWith<LoggingInterceptor, ICommentService, CommentService>();
 builder.Services.InterceptWith<LoggingInterceptor, IReactionService, ReactionService>();
 builder.Services.InterceptWith<LoggingInterceptor, IProfileService, ProfileService>();
-builder.Services.AddScoped<IFollowingService, FollowingService>();
+builder.Services.InterceptWith<LoggingInterceptor, IFollowingService,FollowingService>();
+
 builder.Services.AddSingleton<IFlashcardsStorageService, FlashcardsStorageService>();
 
 var app = builder.Build();
