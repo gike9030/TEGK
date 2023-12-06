@@ -24,38 +24,6 @@ namespace FlashcardsApp.Controllers
             _httpClient = httpClientFactory.CreateClient("FlashcardsAPI");
         }
 
-        private IActionResult HandleException(Exception ex)
-        {
-            ExceptionLogger.LogException(ex);
-
-            if (ex is FlashcardsControllerException controllerEx)
-            {
-                TempData["ErrorMessage"] = controllerEx.Message;
-                return View("Error");
-            }
-            else
-            {
-                TempData["ErrorMessage"] = "An unexpected error occurred.";
-                return RedirectToAction("Index");
-            }
-        }
-        private Dictionary<ReactionType, int> CalculateReactionCounts(ICollection<Reaction<Flashcards>> reactions)
-        {
-            var reactionCounts = new Dictionary<ReactionType, int>();
-            foreach (var reaction in reactions)
-            {
-                if (reactionCounts.ContainsKey(reaction.Type))
-                {
-                    reactionCounts[reaction.Type]++;
-                }
-                else
-                {
-                    reactionCounts[reaction.Type] = 1;
-                }
-            }
-            return reactionCounts;
-        }
-
         public IActionResult Index(string? sortByCategory = null, string? search = null)
         {
             List<FlashcardCollection<Flashcards>>? flashcardCollections;
@@ -333,5 +301,37 @@ namespace FlashcardsApp.Controllers
             return RedirectToAction("Index");
         }
 
-    }
+		private IActionResult HandleException(Exception ex)
+		{
+			ExceptionLogger.LogException(ex);
+
+			if (ex is FlashcardsControllerException controllerEx)
+			{
+				TempData["ErrorMessage"] = controllerEx.Message;
+				return View("Error");
+			}
+			else
+			{
+				TempData["ErrorMessage"] = "An unexpected error occurred.";
+				return RedirectToAction("Index");
+			}
+		}
+		private Dictionary<ReactionType, int> CalculateReactionCounts(ICollection<Reaction<Flashcards>> reactions)
+		{
+			var reactionCounts = new Dictionary<ReactionType, int>();
+			foreach (var reaction in reactions)
+			{
+				if (reactionCounts.ContainsKey(reaction.Type))
+				{
+					reactionCounts[reaction.Type]++;
+				}
+				else
+				{
+					reactionCounts[reaction.Type] = 1;
+				}
+			}
+			return reactionCounts;
+		}
+
+	}
 }

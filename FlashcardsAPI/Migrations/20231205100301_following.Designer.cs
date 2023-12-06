@@ -4,6 +4,7 @@ using JWTAuthentication.NET6._0.Auth;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FlashcardsAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231205100301_following")]
+    partial class following
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -410,7 +413,7 @@ namespace FlashcardsAPI.Migrations
                         .IsRequired();
 
                     b.HasOne("FlashcardsAPI.Models.FlashcardsAppUser", "FollowingUser")
-                        .WithMany("Followings")
+                        .WithMany()
                         .HasForeignKey("FollowingUserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -492,8 +495,6 @@ namespace FlashcardsAPI.Migrations
             modelBuilder.Entity("FlashcardsAPI.Models.FlashcardsAppUser", b =>
                 {
                     b.Navigation("FlashcardCollections");
-
-                    b.Navigation("Followings");
                 });
 #pragma warning restore 612, 618
         }

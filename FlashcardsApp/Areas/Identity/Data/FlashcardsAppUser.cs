@@ -21,5 +21,6 @@ public class FlashcardsAppUser : IdentityUser
     [Column(TypeName = "nvarchar(100)")]
     public string? LastName { get; set; }
     public ICollection<FlashcardCollection<Flashcards>> FlashcardCollections { get; set; } = new List<FlashcardCollection<Flashcards>>();
+	public ICollection<Following> Followings { get; set; } = new List<Following>();
 }
 
