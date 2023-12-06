@@ -15,11 +15,11 @@ namespace FlashcardsApp.Controllers
         private readonly HttpClient _httpClient;
         private readonly SearchService _searchService;
 
-        public HomeController(ILogger<HomeController> logger, SearchService searchService) 
+        public HomeController(IHttpClientFactory httpClientFactory, ILogger<HomeController> logger, SearchService searchService) 
         {
             _logger = logger;
             _searchService = searchService;
-            _httpClient = new HttpClient { BaseAddress = new Uri("https://localhost:7296/api") };
+            _httpClient = httpClientFactory.CreateClient("FlashcardsAPI");
         }
 
         [HttpGet]

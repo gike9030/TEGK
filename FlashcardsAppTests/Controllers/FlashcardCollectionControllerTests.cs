@@ -90,6 +90,51 @@ namespace FlashcardsAppTests.Controllers
         }
 
         [TestMethod]
+        public void TestExceptionWhenFetchCollectionsIsNull()
+        {
+            // Arrange
+            var mockHandler = new Mock<HttpMessageHandler>();
+
+            // Simulate a null response
+            var response = new HttpResponseMessage
+            {
+                StatusCode = HttpStatusCode.OK,
+                Content = null // Simulate a null response content
+            };
+
+            mockHandler
+                .Protected()
+                .Setup<Task<HttpResponseMessage>>(
+                    "SendAsync",
+                    ItExpr.Is<HttpRequestMessage>(req => req.Method == HttpMethod.Get && req.RequestUri.ToString().Contains("FlashcardCollections/GetFlashcardCollections")),
+                    ItExpr.IsAny<CancellationToken>()
+                )
+                .ReturnsAsync(response);
+
+            var mockHttpClient = new HttpClient(mockHandler.Object)
+            {
+                BaseAddress = new Uri("http://example.com")
+            };
+
+            var mockHttpClientFactory = new Mock<IHttpClientFactory>();
+            mockHttpClientFactory.Setup(factory => factory.CreateClient("FlashcardsAPI"))
+                                 .Returns(mockHttpClient);
+
+            var tempData = new TempDataDictionary(new DefaultHttpContext(), Mock.Of<ITempDataProvider>());
+            var controller = new FlashcardCollectionController(mockHttpClientFactory.Object)
+            {
+                TempData = tempData
+            };
+
+            //Act
+            var result = controller.Index() as ViewResult;
+
+            //Assert
+            Assert.IsInstanceOfType(result, typeof(ViewResult));
+            Assert.AreEqual("Error", result.ViewName);
+        }
+
+        [TestMethod]
         public void TestCreateFlashcardCollectionView()
         {
             // Arrange
