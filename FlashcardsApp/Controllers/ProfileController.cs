@@ -9,6 +9,7 @@ using System.Text;
 using Newtonsoft.Json;
 using System.Net.Http.Headers;
 using Microsoft.AspNetCore.Authorization;
+using FlashcardsApp.Services;
 
 namespace FlashcardsApp.Controllers
 {
@@ -38,7 +39,9 @@ namespace FlashcardsApp.Controllers
                 var content = await response.Content.ReadAsStringAsync();
                 var profile = JsonConvert.DeserializeObject<Profile>(content);
 
-                return View(profile);
+                var followingCollections = HttpApiService.GetFromAPI<List<FlashcardCollection<Flashcards>>>(_httpClient, "/Followings/GetUsersFollowedByUserWithIdCollections/" + userId);
+
+                return View(new ProfileViewModel() {Profile = profile, FollowingCollections = followingCollections});
             }
 
             return View("Error");
@@ -49,7 +52,7 @@ namespace FlashcardsApp.Controllers
         {
             var userId = _userManager.GetUserId(User);
             
-            if (description == null) { description = string.Empty; }
+            description ??= string.Empty;
 
             var jsonString = JsonConvert.SerializeObject(description);
             var content = new StringContent(jsonString, Encoding.UTF8, "application/json");

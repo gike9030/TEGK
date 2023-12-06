@@ -2,25 +2,31 @@
 @using FlashcardsApp.Areas.Identity.Data
 @using Microsoft.AspNetCore.Identity
 @inject UserManager<FlashcardsAppUser> UserManager
-@model FlashcardsApp.Models.Profile
+@model FlashcardsApp.Models.ProfileViewModel
 
 @{
     ViewData["Title"] = "User Profile";
     var backgroundImagePath = Url.Content("~/images/ggg.jpg");
 }
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+
 <div class="full-screen-image-container"></div>
 
 <div class="content-above-background">
 <div class="profile-container">
     <div class="profile-header">
         <div class="profile-photo-container">
-            @if (string.IsNullOrEmpty(Model.ProfilePhoto))
+            @if (string.IsNullOrEmpty(Model.Profile.ProfilePhoto))
             {
                 <img src="@Url.Content("~/images/DefaultProfilePicture.jpg")" alt="Default Profile Photo"  />
             }
             else
             {
-                <img src="@Url.Content($"~/{Model.ProfilePhoto}")" alt="Profile Photo"  />
+                <img src="@Url.Content($"~/{Model.Profile.ProfilePhoto}")" alt="Profile Photo"  />
             }
         </div>
         <div class="profile-photo-upload">
@@ -32,14 +38,14 @@
             </label>
         </div>
 
-        <h1>@Model.FirstName @Model.LastName</h1>
+        <h1>@Model.Profile.FirstName @Model.Profile.LastName</h1>
         <br>
         <h3>Bio</h3>    
         <div class="description-block">
-        <p id="description-text">@Model.Description</p>
+        <p id="description-text">@Model.Profile.Description</p>
 
         <form asp-action="EditDescription" method="post" style="display:none;" id="description-form">
-            <textarea id="description" name="Description">@Model.Description</textarea>
+            <textarea id="description" name="Description">@Model.Profile.Description</textarea>
             <button type="submit" class="save-btn">Save</button>
         </form>
         
@@ -51,9 +57,9 @@
     <div class="flashcard-collections">
         <hr>
         <h2>Your Flashcard Collections</h2>
-        @if (Model.FlashcardCollections != null && Model.FlashcardCollections.Any())
+        @if (Model.Profile.FlashcardCollections != null && Model.Profile.FlashcardCollections.Any())
         {
-            foreach (var collection in Model.FlashcardCollections)
+            foreach (var collection in Model.Profile.FlashcardCollections)
             {
                 @if (collection.FlashcardsAppUserId == UserManager.GetUserId(User))
                 {
@@ -96,6 +102,47 @@
             </a>
         </div>
 
+            <div class="flashcard-collections">
+                <hr>
+                <h2>Flashcard collections of people you follow</h2>
+                @if (Model.FollowingCollections != null && Model.FollowingCollections.Any())
+                {
+                    foreach (var collection in Model.FollowingCollections)
+                    {
+                        
+                        <div class="flashcard-item">
+                            <div class="collection-card">
+                                <div class="dropdown">
+                                    <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </button>
+                                    <div class="dropdown-menu dropdown-menu-right">
+                                        <a asp-controller="FlashcardCollection" asp-action="Edit" asp-route-id="@collection.Id" class="dropdown-item">Edit</a>
+                                        <a asp-controller="FlashcardCollection" asp-action="ViewCollection" asp-route-id="@collection.Id" class="dropdown-item">View</a>
+                                        <a asp-controller="Following" asp-action="Unfollow" asp-route-followingUserId="@UserManager.GetUserId(User)" asp-route-followedUserId="@collection.FlashcardsAppUserId" class="dropdown-item">Unfollow user</a>
+                                        <a class="dropdown-item" href="#" onclick="event.preventDefault(); if(confirm('Are you sure you want to delete this collection?')) { document.getElementById('deleteForm-@collection.Id').submit(); }">Delete</a>
+                                    </div>
+                                </div>
+
+                                <div class="card-content text-center">
+                                    <h2>@collection.CollectionName</h2>
+                                    <span>@collection.Category</span>
+                                </div>
+                                <form id="deleteForm-@collection.Id" asp-controller="FlashcardCollection" asp-action="Delete" asp-route-id="@collection.Id" method="post" style="display:none;"></form>
+                                <div class="play-button">
+                                    <a href="@Url.Action("PlayCollection", "FlashcardCollection", new { id = collection.Id })" class="btn btn-primary">
+                                        <i class="fas fa-play"></i> Play
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                    }
+                }
+                else
+                {
+                    <p>No flashcard collections available.</p>
+                }
 
     </div>
 </div>

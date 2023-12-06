@@ -16,5 +16,7 @@ public class FlashcardsAppUser : IdentityUser
 
     public string? ProfilePhotoPath { get; internal set; }
     public string? Description { get; internal set; }
+
+    public ICollection<Following> Followings { get; set;} = new List<Following>();
 }
 
